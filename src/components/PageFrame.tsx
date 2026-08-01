@@ -16,7 +16,6 @@ export function PageFrame({children, role}: PageFrameProps) {
           <div
             className={styles.frame}
             data-testid="page-frame"
-            data-layout-height="auto"
           >
             {children}
           </div>

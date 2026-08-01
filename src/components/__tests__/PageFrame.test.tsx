@@ -9,7 +9,7 @@ describe('PageFrame', () => {
     const frames = screen.getAllByTestId('page-frame');
     expect(frames).toHaveLength(1);
     expect(screen.getByText('Lesson content')).toBeDefined();
-    expect(frames[0].getAttribute('data-layout-height')).toBe('auto');
+    expect(frames[0].closest('.astryx-layout')?.getAttribute('data-height')).toBe('auto');
     expect(screen.queryByRole('main')).toBeNull();
   });
 });
