@@ -4,6 +4,7 @@ import {cropAspectRatio, toViewport} from '@/lib/geometry';
 import {rbDeckControls} from '../rekordbox/deck';
 import {
   RB_DECK_REGIONS,
+  getRbDeckVisualRect,
   getRbDeckRegionForControl,
   getRbDeckMarkerOffset,
 } from '../rekordbox/deckRegions';
@@ -29,11 +30,12 @@ describe('rekordbox deck responsive regions', () => {
     'keeps 44px marker targets from overlapping at a %ipx viewport',
     (width) => {
       for (const region of RB_DECK_REGIONS) {
-        const height = width / cropAspectRatio(region.rect, 1200, 634);
+        const visualRect = getRbDeckVisualRect(region.id, width < 768);
+        const height = width / cropAspectRatio(visualRect, 1200, 634);
         const centers = region.controlIds.map((id) => {
           const control = rbDeckControls.find((candidate) => candidate.id === id)!;
-          const point = toViewport(control.at, region.rect);
-          const offset = getRbDeckMarkerOffset(id);
+          const point = toViewport(control.at, visualRect);
+          const offset = getRbDeckMarkerOffset(id, width < 768);
           return {id, x: point.x * width + offset.x, y: point.y * height + offset.y};
         });
 
@@ -48,4 +50,13 @@ describe('rekordbox deck responsive regions', () => {
       }
     },
   );
+
+  it('uses the full player-deck crop on desktop and caps narrow enlargement', () => {
+    const fullDeck = {x: 0, y: 0.268, w: 0.48, h: 0.265};
+
+    for (const region of RB_DECK_REGIONS) {
+      expect(getRbDeckVisualRect(region.id, false)).toEqual(fullDeck);
+      expect(375 / (getRbDeckVisualRect(region.id, true).w * 1200)).toBeLessThanOrEqual(2);
+    }
+  });
 });

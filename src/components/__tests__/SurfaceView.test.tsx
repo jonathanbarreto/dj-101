@@ -1,5 +1,6 @@
-import {act, render, screen} from '@testing-library/react';
+import {act, render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {renderToString} from 'react-dom/server';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import * as content from '@/content';
 import type {Control} from '@/content/types';
@@ -59,6 +60,16 @@ afterEach(() => {
 });
 
 describe('SurfaceView', () => {
+  it('server-renders the deterministic Info region even when the URL has a valid hash', () => {
+    window.history.replaceState(null, '', '/rekordbox/rb-deck#rb-deck-slip');
+
+    const html = renderToString(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    expect(html).toContain('data-tab-value="info"');
+    expect(html).toMatch(/data-tab-value="info"[^>]*data-selected="selected"/);
+    expect(html).not.toMatch(/data-tab-value="jog"[^>]*data-selected="selected"/);
+  });
+
   it('shows only hardware section links with controller hrefs on the hardware overview', () => {
     render(<SurfaceView surface="hardware" />);
 
@@ -123,10 +134,28 @@ describe('SurfaceView', () => {
 
     expect(screen.getByRole('button', {name: 'SLIP'})).toBeDefined();
     expect(screen.getByText('Controls in Jog')).toBeDefined();
-    expect(screen.getByRole('button', {name: /^Open SLIP lesson/})).toBeDefined();
+    expect(screen.getByRole('button', {name: /^SLIP /})).toBeDefined();
+    expect(screen.queryByText('Open SLIP lesson')).toBeNull();
   });
 
-  it('selects, focuses, and opens a valid hash destination', () => {
+  it('keeps the full player-deck visual crop while filtering desktop markers', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    act(() => animationFrames.shift()!(0));
+    expect(screen.getByRole('img', {name: /rekordbox 7/i}).getAttribute('sizes')).toBe('209vw');
+
+    await user.click(screen.getByRole('button', {name: 'Jog'}));
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    expect(screen.getByRole('img', {name: /rekordbox 7/i}).getAttribute('sizes')).toBe('209vw');
+    expect(screen.getByRole('button', {name: 'SLIP'})).toBeDefined();
+  });
+
+  it('selects, focuses, and opens a valid hash destination', async () => {
+    const user = userEvent.setup();
     window.history.replaceState(null, '', '/rekordbox/rb-deck#rb-deck-slip');
     render(<SurfaceView surface="software" sectionId="rb-deck" />);
 
@@ -137,6 +166,11 @@ describe('SurfaceView', () => {
     const trigger = screen.getByRole('button', {name: 'SLIP'});
     expect(screen.getByRole('button', {name: 'Jog'}).getAttribute('aria-current')).toBe('page');
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    const dialog = screen.getByRole('dialog', {name: 'SLIP'});
+    await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(trigger.getAttribute('aria-expanded')).toBe('false'));
     expect(document.activeElement).toBe(trigger);
   });
 
@@ -144,7 +178,7 @@ describe('SurfaceView', () => {
     const user = userEvent.setup();
     render(<SurfaceView surface="software" sectionId="rb-deck" />);
 
-    await user.click(screen.getByRole('button', {name: /^Open ARTWORK lesson/}));
+    await user.click(screen.getByRole('button', {name: /^ARTWORK /}));
     act(() => {
       while (animationFrames.length > 0) animationFrames.shift()!(0);
     });

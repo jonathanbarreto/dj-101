@@ -5,12 +5,14 @@ import {List, ListItem} from '@astryxdesign/core/List';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Tab, TabList} from '@astryxdesign/core/TabList';
 import {Text} from '@astryxdesign/core/Text';
+import {useMediaQuery} from '@astryxdesign/core/hooks';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {controlsInSection, SECTIONS} from '@/content';
 import {
   getRbDeckMarkerOffset,
   getRbDeckRegion,
   getRbDeckRegionForControl,
+  getRbDeckVisualRect,
   RB_DECK_REGIONS,
   type RbDeckRegionId,
 } from '@/content/rekordbox/deckRegions';
@@ -38,18 +40,16 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const {isShiftActive} = useShift();
   const section = sectionId === undefined ? undefined : SECTIONS[sectionId];
   const isRbDeck = sectionId === 'rb-deck';
+  const isNarrow = useMediaQuery('(max-width: 767px)', false);
   const allControls = useMemo(
     () => (section === undefined ? [] : controlsInSection(section.id)),
     [section],
   );
-  const initialHashRegion = isRbDeck
-    ? getRbDeckRegionForControl(hashControlId() ?? '')?.id
-    : undefined;
-  const [activeRegionId, setActiveRegionId] = useState<RbDeckRegionId>(
-    initialHashRegion ?? 'info',
-  );
+  const [activeRegionId, setActiveRegionId] = useState<RbDeckRegionId>('info');
   const activeRegion = isRbDeck ? getRbDeckRegion(activeRegionId) : undefined;
-  const targetRect = activeRegion?.rect ?? section?.rect ?? FULL;
+  const targetRect = activeRegion
+    ? getRbDeckVisualRect(activeRegion.id, isNarrow)
+    : section?.rect ?? FULL;
   const controls = activeRegion
     ? allControls.filter((control) => activeRegion.controlIds.includes(control.id))
     : allControls;
@@ -124,6 +124,15 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     };
   }, [pendingControlId, activeRegionId]);
 
+  useEffect(() => {
+    if (!openControlId) return;
+    const dialog = document
+      .getElementById(openControlId)
+      ?.querySelector<HTMLElement>('[role="dialog"]');
+    const destination = dialog?.querySelector<HTMLElement>('a[href], button');
+    destination?.focus();
+  }, [openControlId]);
+
   function selectRegion(value: string) {
     setActiveRegionId(value as RbDeckRegionId);
     setOpenControlId(null);
@@ -177,7 +186,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 onOpenChange={(nextIsOpen) => {
                   setOpenControlId(nextIsOpen ? control.id : null);
                 }}
-                markerOffset={activeRegion ? getRbDeckMarkerOffset(control.id) : undefined}
+                markerOffset={activeRegion
+                  ? getRbDeckMarkerOffset(control.id, isNarrow)
+                  : undefined}
               />
             ))}
       </Stage>
@@ -192,7 +203,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               <ListItem
                 key={control.id}
                 className={styles.controlIndexItem}
-                label={`Open ${control.label} lesson`}
+                label={control.label}
                 description={control.primary.summary}
                 onClick={() => activateControl(control.id, true)}
                 isSelected={openControlId === control.id}

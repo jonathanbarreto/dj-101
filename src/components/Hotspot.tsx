@@ -30,6 +30,14 @@ export function Hotspot({
   const isOpen = visible && (isControlled ? controlledIsOpen : openControlId === control.id);
 
   function setOpen(nextIsOpen: boolean) {
+    if (!nextIsOpen) {
+      queueMicrotask(() => {
+        document
+          .getElementById(control.id)
+          ?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]')
+          ?.focus();
+      });
+    }
     if (!isControlled) setOpenControlId(nextIsOpen ? control.id : null);
     onOpenChange?.(nextIsOpen);
   }
@@ -71,7 +79,7 @@ export function Hotspot({
             height: '2px',
             transformOrigin: 'left center',
             transform: `rotate(${Math.atan2(-markerOffset.y, -markerOffset.x)}rad)`,
-            background: 'var(--color-border-strong)',
+            background: 'var(--color-border-emphasized)',
           }}
         />
       )}

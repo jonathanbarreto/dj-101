@@ -1,5 +1,5 @@
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
-import {render, screen} from '@testing-library/react';
+import {render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {Control, Rect} from '@/content/types';
 import {Hotspot} from '../Hotspot';
@@ -76,6 +76,21 @@ describe('Hotspot', () => {
     expect(trigger.parentElement?.style.transition).toBe(
       'left var(--duration-medium) var(--ease-standard), top var(--duration-medium) var(--ease-standard)',
     );
+  });
+
+  it('uses the Astryx emphasized-border token for marker leader lines', () => {
+    const {container} = render(
+      <Hotspot
+        control={control}
+        rect={FULL}
+        isShiftActive={false}
+        markerOffset={{x: 20, y: 0}}
+      />,
+    );
+
+    expect(
+      container.querySelector<HTMLElement>('[data-hotspot-leader]')?.style.background,
+    ).toBe('var(--color-border-emphasized)');
   });
 
   it('does not render a marker outside the crop', () => {
@@ -164,7 +179,7 @@ describe('Hotspot', () => {
     await user.keyboard('{Escape}');
 
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
-    expect(document.activeElement).toBe(trigger);
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
   });
 
   it('resets an open popover after the hotspot leaves and re-enters the crop', async () => {

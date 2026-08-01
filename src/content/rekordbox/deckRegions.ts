@@ -9,6 +9,17 @@ export interface RbDeckRegion {
   controlIds: readonly string[];
 }
 
+export const RB_DECK_DESKTOP_RECT: Rect = {x: 0, y: 0.268, w: 0.48, h: 0.265};
+
+const narrowVisualRects: Readonly<Record<RbDeckRegionId, Rect>> = {
+  info: {x: 0, y: 0.268, w: 0.24, h: 0.13},
+  sync: {x: 0.24, y: 0.268, w: 0.24, h: 0.13},
+  wave: {x: 0, y: 0.31, w: 0.48, h: 0.223},
+  pads: {x: 0, y: 0.31, w: 0.48, h: 0.223},
+  loop: {x: 0.3, y: 0.395, w: 0.18, h: 0.138},
+  jog: {x: 0.3, y: 0.395, w: 0.18, h: 0.138},
+};
+
 /** Same-master crops measured from the 1200x634 software master via /dev/coords. */
 export const RB_DECK_REGIONS: readonly RbDeckRegion[] = [
   {
@@ -57,14 +68,28 @@ export const RB_DECK_REGIONS: readonly RbDeckRegion[] = [
 
 const markerOffsets: Readonly<Record<string, Point>> = {
   'rb-deck-artwork': {x: 3, y: 0},
-  'rb-deck-original-bpm': {x: 0, y: 16},
+  'rb-deck-original-bpm': {x: 0, y: 28},
+  'rb-deck-original-key': {x: 8, y: 0},
+  'rb-deck-key-sync': {x: 0, y: -8},
   'rb-deck-key-shift': {x: 0, y: 20},
+  'rb-deck-beat-sync': {x: 0, y: -8},
   'rb-deck-master': {x: 0, y: 20},
-  'rb-deck-hot-cue-marker': {x: 6, y: 0},
+  'rb-deck-hot-cue-marker': {x: -10, y: 0},
   'rb-deck-cue-point-marker': {x: 22, y: 0},
-  'rb-deck-lighting-scenes': {x: 28, y: 0},
-  'rb-deck-performance-pad-toggle': {x: 14, y: -2},
-  'rb-deck-grid-edit-toggle': {x: 14, y: 2},
+  'rb-deck-lighting-scenes': {x: 55, y: 0},
+  'rb-deck-performance-pad-toggle': {x: 17, y: 0},
+  'rb-deck-grid-edit-toggle': {x: 62, y: 0},
+  'rb-deck-auto-loop': {x: -20, y: 0},
+  'rb-deck-loop-length': {x: 25, y: 0},
+  'rb-deck-loop-mode': {x: -20, y: 0},
+  'rb-deck-slip': {x: -48, y: 0},
+};
+
+const desktopMarkerOffsets: Readonly<Record<string, Point>> = {
+  ...markerOffsets,
+  'rb-deck-loop-length': {x: -67, y: 0},
+  'rb-deck-play-pause': {x: 0, y: 8},
+  'rb-deck-slip': {x: -48, y: -8},
 };
 
 export function getRbDeckRegion(id: RbDeckRegionId): RbDeckRegion {
@@ -75,6 +100,11 @@ export function getRbDeckRegionForControl(controlId: string): RbDeckRegion | und
   return RB_DECK_REGIONS.find((region) => region.controlIds.includes(controlId));
 }
 
-export function getRbDeckMarkerOffset(controlId: string): Point {
-  return markerOffsets[controlId] ?? {x: 0, y: 0};
+export function getRbDeckMarkerOffset(controlId: string, isNarrow = true): Point {
+  const offsets = isNarrow ? markerOffsets : desktopMarkerOffsets;
+  return offsets[controlId] ?? {x: 0, y: 0};
+}
+
+export function getRbDeckVisualRect(regionId: RbDeckRegionId, isNarrow: boolean): Rect {
+  return isNarrow ? narrowVisualRects[regionId] : RB_DECK_DESKTOP_RECT;
 }
