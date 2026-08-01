@@ -3,7 +3,7 @@
 import {Button} from '@astryxdesign/core/Button';
 import {Link} from '@astryxdesign/core/Link';
 import {Stack} from '@astryxdesign/core/Stack';
-import {Tab, TabList} from '@astryxdesign/core/TabList';
+import {Tab, TabList, TabMenu} from '@astryxdesign/core/TabList';
 import type {SectionSpec, Surface} from '@/content';
 import {resumeHref, type ResumeTarget} from '@/lib/resume-state';
 import styles from './SurfaceNavigator.module.css';
@@ -20,6 +20,8 @@ export interface SurfaceNavigatorProps {
   activeRegionLabel?: string;
   selectedControlLabel?: string;
   regions: Region[];
+  isCompact: boolean;
+  overflowRegionIds?: string[];
   onRegionChange: (value: string) => void;
   resumeTarget?: ResumeTarget;
 }
@@ -31,11 +33,16 @@ export function SurfaceNavigator({
   activeRegionLabel,
   selectedControlLabel,
   regions,
+  isCompact,
+  overflowRegionIds,
   onRegionChange,
   resumeTarget,
 }: SurfaceNavigatorProps) {
   const rootHref = surface === 'hardware' ? '/controller' : '/rekordbox';
   const fullMapLabel = surface === 'hardware' ? 'Full controller map' : 'Full rekordbox map';
+  const overflowIds = isCompact ? new Set(overflowRegionIds) : new Set<string>();
+  const directRegions = regions.filter((region) => !overflowIds.has(region.id));
+  const overflowRegions = regions.filter((region) => overflowIds.has(region.id));
 
   return (
     <Stack direction="vertical" gap={2}>
@@ -64,9 +71,16 @@ export function SurfaceNavigator({
             hasDivider
             aria-label={`${section?.label ?? fullMapLabel} region`}
           >
-            {regions.map((region) => (
+            {directRegions.map((region) => (
               <Tab key={region.id} value={region.id} label={region.label} />
             ))}
+            {overflowRegions.length > 0 ? (
+              <TabMenu
+                key="overflow"
+                label="More"
+                options={overflowRegions.map((region) => ({value: region.id, label: region.label}))}
+              />
+            ) : null}
           </TabList>
         </div>
       ) : null}

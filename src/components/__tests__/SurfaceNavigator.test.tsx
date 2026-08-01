@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
@@ -25,6 +26,7 @@ describe('SurfaceNavigator', () => {
         activeRegionLabel="Signal path"
         selectedControlLabel="HEADPHONES MIXING"
         regions={mixerRegions}
+        isCompact={false}
         onRegionChange={onRegionChange}
         resumeTarget={{surface: 'software', sectionId: 'rb-deck', controlId: 'rb-deck-slip'}}
       />,
@@ -52,6 +54,7 @@ describe('SurfaceNavigator', () => {
         surface="software"
         section={SECTIONS['rb-deck']}
         regions={[{id: 'info', label: 'Info'}, {id: 'jog', label: 'Jog / tempo'}]}
+        isCompact={false}
         onRegionChange={vi.fn()}
       />,
     );
@@ -70,6 +73,7 @@ describe('SurfaceNavigator', () => {
         section={SECTIONS['deck-left']}
         activeRegionId="transport"
         regions={[{id: 'transport', label: 'Loop / transport'}, {id: 'jog', label: 'Jog / tempo'}]}
+        isCompact={false}
         onRegionChange={vi.fn()}
       />,
     );
@@ -78,5 +82,39 @@ describe('SurfaceNavigator', () => {
     expect(screen.getByText('Left deck')).toBeDefined();
     expect(screen.getByRole('button', {name: 'Loop / transport'})).toBeDefined();
     expect(screen.getByRole('button', {name: 'Jog / tempo'})).toBeDefined();
+  });
+
+  it('keeps two mixer regions direct and moves the selected compact region into an accessible More menu', async () => {
+    const onRegionChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <SurfaceNavigator
+        surface="hardware"
+        section={SECTIONS.mixer}
+        activeRegionId="color"
+        regions={mixerRegions}
+        isCompact
+        overflowRegionIds={['color', 'outputs', 'headphones', 'mic']}
+        onRegionChange={onRegionChange}
+      />,
+    );
+
+    expect(screen.getByRole('button', {name: 'Signal path'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Four channels'})).toBeDefined();
+    expect(screen.queryByRole('button', {name: 'Outputs'})).toBeNull();
+    const overflowTrigger = screen.getByRole('button', {name: 'Color FX'});
+    expect(overflowTrigger.getAttribute('aria-haspopup')).toBe('menu');
+
+    await user.click(overflowTrigger);
+    const overflowMenu = screen.getByRole('menu', {name: 'More'});
+    expect(within(overflowMenu).getByRole('menuitem', {name: 'Color FX'})).toBeDefined();
+    await user.click(within(overflowMenu).getByRole('menuitem', {name: 'Headphones + sampler'}));
+    expect(onRegionChange).toHaveBeenCalledWith('headphones');
+  });
+
+  it('does not add horizontal scrolling to the region navigation CSS', () => {
+    const css = readFileSync(`${process.cwd()}/src/components/SurfaceNavigator.module.css`, 'utf8');
+
+    expect(css).not.toMatch(/overflow(?:-x)?:\s*(?:auto|scroll)/);
   });
 });
