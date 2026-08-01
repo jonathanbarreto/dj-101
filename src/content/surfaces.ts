@@ -19,8 +19,9 @@ export const SURFACES: Record<Surface, SurfaceSpec> = {
 };
 
 // Hardware crops were measured from the 3129x1652 overhead DDJ-1000 master.
-// Rear/front are intentionally full-image placeholders: this top-down product shot
-// does not depict those elevations, so a precise crop would be misleading.
+// Rear/front retain full-image structural rects for routing only. Their pages are
+// text-first connection lessons because this top-down master does not depict those
+// elevations; they are deliberately excluded from overview-image markers/hotspots.
 // rekordbox values were measured from the clean 1200x634 Performance-mode master.
 export const SECTIONS: Record<SectionId, SectionSpec> = {
   'deck-left':  {id:'deck-left',  surface:'hardware', label:'Left deck',  rect:{x:0.0070,y:0.0220,w:0.3240,h:0.9560}, marker:{x:0.1690,y:0.5000}},

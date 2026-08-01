@@ -27,3 +27,4 @@ export function controlsInSection(section: string): Control[] {
 
 export * from './types';
 export * from './surfaces';
+export * from './hardware/connections';

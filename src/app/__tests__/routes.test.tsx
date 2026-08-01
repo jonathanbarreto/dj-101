@@ -72,6 +72,24 @@ describe('routes', () => {
     expect(notFound).toHaveBeenCalledTimes(2);
   });
 
+  it('renders rear and front as text-first connection lessons without a false overhead image', async () => {
+    const rear = render(await ControllerSectionPage({
+      params: Promise.resolve({section: 'rear'}),
+    }));
+    expect(screen.getByRole('heading', {level: 1, name: 'Rear connections'})).toBeDefined();
+    expect(screen.getByRole('heading', {name: 'Dual-computer changeover'})).toBeDefined();
+    expect(screen.getByRole('heading', {name: 'Beginner setup recipes'})).toBeDefined();
+    expect(screen.getByRole('table', {name: 'Rear connection inventory'})).toBeDefined();
+    expect(screen.getByRole('list', {name: 'Safe seven-step handoff'}).children).toHaveLength(7);
+    expect(screen.queryByRole('img')).toBeNull();
+    rear.unmount();
+
+    render(await ControllerSectionPage({params: Promise.resolve({section: 'front'})}));
+    expect(screen.getByRole('heading', {level: 1, name: 'Front headphones'})).toBeDefined();
+    expect(screen.getByText(/both sockets carry the same cue mix/i)).toBeDefined();
+    expect(screen.queryByRole('img')).toBeNull();
+  });
+
   it('rejects unknown and cross-surface rekordbox sections', async () => {
     await expect(RekordboxSectionPage({params: Promise.resolve({section: 'not-real'})}))
       .rejects.toThrow('NEXT_NOT_FOUND');

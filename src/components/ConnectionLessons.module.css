@@ -1,0 +1,36 @@
+.intro {
+  max-inline-size: 72ch;
+  padding-block-end: var(--spacing-4);
+  border-block-end: var(--border-width) solid var(--color-border);
+}
+
+.callout {
+  max-inline-size: 72ch;
+  padding: var(--spacing-3);
+  border-inline-start: var(--spacing-1) solid var(--color-accent);
+  border-radius: var(--radius-element);
+  background: var(--color-background-muted);
+}
+
+.desktopInventory {
+  display: block;
+  min-inline-size: 0;
+}
+
+.mobileInventory {
+  display: none;
+}
+
+.lessonDetail {
+  min-inline-size: 0;
+}
+
+@media (max-width: 767px) {
+  .desktopInventory {
+    display: none;
+  }
+
+  .mobileInventory {
+    display: block;
+  }
+}

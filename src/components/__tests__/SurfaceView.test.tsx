@@ -134,8 +134,15 @@ describe('SurfaceView', () => {
   it('shows only hardware section links with controller hrefs on the hardware overview', () => {
     render(<SurfaceView surface="hardware" />);
 
-    expect(screen.getByRole('link', {name: 'Left deck'}).getAttribute('href'))
-      .toBe('/controller/deck-left');
+    const deckLink = screen.getByRole('link', {name: 'Left deck'});
+    expect(deckLink.getAttribute('href')).toBe('/controller/deck-left');
+    expect(deckLink.style.left).not.toBe('');
+    const rearLink = screen.getByRole('link', {name: /Rear connections/});
+    const frontLink = screen.getByRole('link', {name: /Front headphones/});
+    expect(rearLink.getAttribute('href')).toBe('/controller/rear');
+    expect(frontLink.getAttribute('href')).toBe('/controller/front');
+    expect(rearLink.style.left).toBe('');
+    expect(frontLink.style.left).toBe('');
     expect(screen.queryByRole('link', {name: 'Player deck'})).toBeNull();
     expect(screen.getByRole('switch', {name: /shift/i})).toBeDefined();
   });

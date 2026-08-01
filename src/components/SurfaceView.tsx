@@ -85,6 +85,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const stageRect = crop.sectionId === sectionId ? crop.rect : FULL;
   const baseHref = surface === 'hardware' ? '/controller' : '/rekordbox';
   const sections = Object.values(SECTIONS).filter((candidate) => candidate.surface === surface);
+  const imageSections = sections.filter(
+    (candidate) => candidate.id !== 'rear' && candidate.id !== 'front',
+  );
   const isCompactHardware = isNarrow && section !== undefined && surface === 'hardware';
   const showControlIndex = (activeRegion !== undefined && controls.length > 0)
     || (isCompactHardware && controls.length > 0);
@@ -285,7 +288,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       )}
       <Stage surface={surface} rect={stageRect}>
         {section === undefined
-          ? sections.map((candidate) => (
+          ? imageSections.map((candidate) => (
               <Link
                 key={candidate.id}
                 href={`${baseHref}/${candidate.id}`}
@@ -316,6 +319,23 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               />
             ))}
       </Stage>
+      {section === undefined && surface === 'hardware' && (
+        <List
+          hasDividers
+          header={<Text type="label">Connections beyond the overhead view</Text>}
+        >
+          <ListItem
+            href="/controller/rear"
+            label="Rear connections"
+            description="Audio, microphones, power, dual USB routing, safe changeovers, and setup recipes"
+          />
+          <ListItem
+            href="/controller/front"
+            label="Front headphones"
+            description="The shared cue bus and its two headphone plug sizes"
+          />
+        </List>
+      )}
       {showControlIndex && section && (
         <div className={styles.controlIndex}>
           <List
