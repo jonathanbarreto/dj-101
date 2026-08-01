@@ -408,6 +408,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           <ControlIndex
             controls={controls}
             selectedControlId={selectedControlId}
+            isShiftActive={isShiftActive}
             title={`Controls in ${activeRegion?.label ?? section.label}`}
             onSelect={(controlId, trigger) => selectControl(controlId, trigger, 'lesson')}
           />

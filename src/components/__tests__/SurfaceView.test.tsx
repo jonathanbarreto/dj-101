@@ -68,6 +68,19 @@ describe('SurfaceView lesson coordination', () => {
     expect(screen.queryByRole('button', {name: 'Read full lesson'})).toBeNull();
   });
 
+  it('updates the control index for the active Shift state', async () => {
+    const user = userEvent.setup();
+    media(true);
+    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+
+    const loopIn = document.querySelector('[data-control-id="deck-left-loop-in"]');
+    expect(loopIn?.textContent).toContain('Sets the loop start or halves an active loop');
+
+    await user.click(screen.getByRole('switch', {name: /shift/i}));
+
+    expect(loopIn?.textContent).toContain('Fine-adjusts the loop-in point with the jog');
+  });
+
   it('saves a control resume target and exposes it through the navigator', async () => {
     const user = userEvent.setup();
     const first = render(<SurfaceView surface="hardware" sectionId="deck-left" />);
