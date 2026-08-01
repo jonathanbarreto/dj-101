@@ -86,7 +86,7 @@ Transitions animate only image position/scale and selection emphasis. They use A
 
 ### Region navigation
 
-Deck, rekordbox, and mixer region tabs remain Astryx `TabList` patterns where all choices fit. The mixer consolidates the four repetitive CH3/CH1/CH2/CH4 lessons into one **Four channels** region: it explains that the mixer has four simultaneously available physical strips, that DECK SELECT switches the left deck between layers 1/3 and the right deck between 2/4, and that one representative strip teaches the shared TRIM, meter, EQ, COLOR, CUE, fader, and crossfader-assignment controls. The region also preserves the two materially different input-selector cases: LINE-only on channels 1/2 and PHONO/LINE on channels 3/4. Signal path, Color FX, outputs, monitoring/sampler, and mic remain separate regions. This reduced set fits without horizontal scrolling or an overflow menu.
+Deck, rekordbox, and mixer region tabs remain Astryx `TabList` patterns where all choices fit. The mixer consolidates the four repetitive CH3/CH1/CH2/CH4 lessons into one **Four channels** region: it explains that the mixer has four simultaneously available physical strips, that DECK SELECT switches the left deck between layers 1/3 and the right deck between 2/4, and that one representative strip teaches the shared TRIM, meter, EQ, COLOR, CUE, fader, and crossfader-assignment controls. The region also preserves the two materially different input-selector cases: LINE-only on channels 1/2 and PHONO/LINE on channels 3/4. Signal path, Color FX, outputs, monitoring/sampler, and mic remain separate regions. Wide layouts show all six regions directly; narrow layouts keep Signal path and Four channels direct and place the four supporting regions in Astryx `TabMenu`. This reduced set never horizontally scrolls, and a selected overflow item is reflected in the menu label.
 
 The control index remains available on desktop and tablet as a discoverable alternative to image hotspots. Selecting an index item opens the complete lesson directly.
 
@@ -173,7 +173,7 @@ Each component has one purpose and can be tested without understanding the full 
 - Full lesson Dialog contains every existing lesson field and uses one scroll container.
 - Hotspot, list, direct hash, Escape, explicit close, region change, and responsive change preserve the state/focus contract.
 - View map stores resume state; Resume restores the correct section, region, control, and hash.
-- Mixer exposes all six consolidated regions by keyboard without horizontal overflow.
+- Mixer exposes all six consolidated regions by keyboard without horizontal overflow, using `TabMenu` for narrow-width overflow.
 - Home cards use existing master images only and preserve exact public routes.
 - Reduced motion removes crop animation.
 

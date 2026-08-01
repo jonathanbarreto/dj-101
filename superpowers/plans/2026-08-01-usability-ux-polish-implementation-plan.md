@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 15 App Router, React 19, TypeScript, Astryx Core/Neutral 0.2.x, CSS Modules with Astryx tokens, Vitest, Testing Library, agent-browser.
 
-**Design contract:** The audience ranges from first-time DJs to experienced DJs learning this controller. `AppShell` + `Layout` provide the frame; `ClickableCard`, `List`, `TabList`, `Popover`, and `Dialog` provide interaction. The signature interaction is the same photographed controller smoothly reframing from map to section to region while orientation remains visible. Mobile opens lessons directly; tablet/desktop use a concise preview before the full lesson. All states must remain usable with keyboard, touch, dark/light themes, and reduced motion.
+**Design contract:** The audience ranges from first-time DJs to experienced DJs learning this controller. `AppShell` + `Layout` provide the frame; `ClickableCard`, `List`, `TabList`/`TabMenu`, `Popover`, and `Dialog` provide interaction. The signature interaction is the same photographed controller smoothly reframing from map to section to region while orientation remains visible. Mobile opens lessons directly; tablet/desktop use a concise preview before the full lesson. All states must remain usable with keyboard, touch, dark/light themes, and reduced motion.
 
 ---
 
@@ -255,12 +255,13 @@ Use one controlled API containing `surface`, `section`, `activeRegionId`, `regio
 - `View map` targets `/controller` or `/rekordbox`;
 - Resume uses `resumeHref`;
 - deck and rekordbox show all fitting `Tab` values;
-- mixer shows six direct tabs: Signal path, Four channels, Color FX, Outputs, Headphones + sampler, and Mic;
-- selecting any value calls `onRegionChange`; no mixer tab requires horizontal scrolling or an overflow menu.
+- wide mixer layouts show six direct tabs: Signal path, Four channels, Color FX, Outputs, Headphones + sampler, and Mic;
+- narrow mixer layouts show Signal path and Four channels directly and use `TabMenu` for Color FX, Outputs, Headphones + sampler, and Mic; selecting an overflow option reflects its label in the menu trigger;
+- selecting any value calls `onRegionChange`; no mixer tab requires horizontal scrolling.
 
 - [ ] **Step 4: Implement navigation using Astryx components**
 
-Use `PageBreadcrumbs` for the orientation path, `Button` or `Link` for View map/Resume, and `TabList`/`Tab` for the six consolidated mixer regions. Do not horizontally scroll the mixer region list. Every region remains keyboard reachable through Astryx’s roving focus behavior.
+Use `PageBreadcrumbs` for the orientation path, `Button` or `Link` for View map/Resume, and `TabList`/`Tab` with narrow-width `TabMenu` for the six consolidated mixer regions. Do not horizontally scroll the mixer region list. Every region remains keyboard reachable through Astryx’s roving focus/menu behavior.
 
 - [ ] **Step 5: Verify GREEN and commit**
 
