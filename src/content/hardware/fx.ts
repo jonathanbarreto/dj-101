@@ -23,8 +23,8 @@ export const hardwareFxControls: Control[] = [
     primary: manual(
       'Selects one Sound Color FX for the mixer',
       'The four buttons choose DUB ECHO, PITCH, NOISE, or FILTER globally. Press a button and it flashes to show the selected effect; press that selected button again to cancel it. Only one Sound Color FX can be selected for all four channels at a time, but nothing is heard until a channel’s COLOR knob leaves its centre-off detent.',
-      'Choose the effect before a transition, then apply it independently with each channel’s COLOR knob. That separation lets you filter one outgoing track while another channel stays neutral. The same per-channel COLOR path also works for a compatible external input, so a turntable or line player can take part without using a rekordbox deck.',
-      {gotcha: 'The row selects one global effect; it does not apply that effect equally to every channel. Each per-channel COLOR knob controls its own amount and direction, and centre remains off.'},
+      'Choose the effect before a transition, then apply it independently with each channel’s COLOR knob. That separation lets you filter one outgoing track while another channel stays neutral. These onboard hardware Sound Color FX also work with a compatible external input, so a turntable or line player can take part without using a rekordbox deck.',
+      {gotcha: 'The row selects one global effect; it does not apply that effect equally to every channel. Each per-channel COLOR knob controls its own amount and direction, and centre remains off. Rekordbox functions cannot be used for an external input.'},
     ),
     referenceLinks: [
       {href: '/reference/sound-color-fx', label: 'Compare the four Sound Color FX directions'},
@@ -135,9 +135,9 @@ export const hardwareFxControls: Control[] = [
     ),
     shift: manual(
       'Invokes the Release FX configured in rekordbox 7',
-      'Hold SHIFT and press ON/OFF to invoke the Release FX assigned in rekordbox 7. The configured exit effect is applied and the active Beat FX is cancelled; depending on the rekordbox preference, the action can also turn the active Sound Color FX off. The audible result therefore follows your software configuration rather than one fixed hardware sound.',
-      'Use Release FX as a deliberate exit from a build or effect chain, especially when you want one rehearsed gesture to transition out and clear the active Beat FX. Test the configured choice and the Sound Color FX preference in headphones before relying on it during a set.',
-      {gotcha: 'RELEASE FX is configurable. Do not assume a particular sound, tail length, hold behavior, or latched state until you have checked the rekordbox 7 assignment.'},
+      'Hold SHIFT and press ON/OFF to invoke the Release FX assigned in rekordbox 7 for a rekordbox USB/software source. The configured exit effect is applied and the active Beat FX is cancelled; depending on the rekordbox preference, the action can also turn the active Sound Color FX off. The audible result therefore follows your software configuration rather than one fixed hardware sound.',
+      'Use Release FX as a deliberate exit from a build or effect chain on a rekordbox deck, especially when you want one rehearsed gesture to transition out and clear the active Beat FX. Test the configured choice and the Sound Color FX preference in headphones before relying on it during a set.',
+      {source: 'rekordbox7', gotcha: 'RELEASE FX is a rekordbox function and cannot process an analogue external input. It is configurable, so do not assume a particular sound, tail length, hold behavior, or latched state until you have checked the rekordbox 7 assignment.'},
     ),
   },
 ];

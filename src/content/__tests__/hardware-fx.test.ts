@@ -27,6 +27,8 @@ describe('DDJ-1000 hardware effects controls', () => {
     expect(copy).toMatch(/each channel.*COLOR|per-channel COLOR/i);
     expect(copy).toMatch(/centre.*off/i);
     expect(copy).toMatch(/external (input|source)/i);
+    expect(copy).toMatch(/onboard.*external input/i);
+    expect(copy).toMatch(/rekordbox functions.*cannot.*external input/i);
     expect(byRef(20).referenceLinks).toEqual([
       {href: '/reference/sound-color-fx', label: 'Compare the four Sound Color FX directions'},
     ]);
@@ -100,6 +102,9 @@ describe('DDJ-1000 hardware effects controls', () => {
     expect(shift).toMatch(/exit|release/i);
     expect(shift).toMatch(/cancel.*Beat FX/i);
     expect(shift).toMatch(/Sound Color FX.*preference|preference.*Sound Color FX/i);
+    expect(control.shift?.source).toBe('rekordbox7');
+    expect(shift).toMatch(/USB|software source/i);
+    expect(shift).toMatch(/cannot.*analogue external input|analogue external input.*cannot/i);
     expect(shift).not.toMatch(/always hold|is momentary|is latched|has a fixed tail/i);
   });
 
@@ -129,7 +134,11 @@ describe('DDJ-1000 hardware effects controls', () => {
 
     for (const control of hardwareFxControls) {
       for (const behavior of [control.primary, control.shift].filter(Boolean)) {
-        expect(behavior!.source, control.id).toBe('manual');
+        if (control.ref === 31 && behavior === control.shift) {
+          expect(behavior!.source, control.id).toBe('rekordbox7');
+        } else {
+          expect(behavior!.source, control.id).toBe('manual');
+        }
         expect(behavior!.detail.length, `${control.id} detail`).toBeGreaterThan(100);
         expect(behavior!.why.length, `${control.id} why`).toBeGreaterThan(100);
         expect(`${behavior!.summary} ${behavior!.detail} ${behavior!.why}`)

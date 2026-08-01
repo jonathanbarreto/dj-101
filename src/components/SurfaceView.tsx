@@ -161,12 +161,16 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
 
   useEffect(() => {
     if (!openControlId) return;
+    if (isCompactHardware) {
+      document.getElementById(`${openControlId}-lesson`)?.focus();
+      return;
+    }
     const dialog = document
       .getElementById(openControlId)
       ?.querySelector<HTMLElement>('[role="dialog"]');
     const destination = dialog?.querySelector<HTMLElement>('a[href], button');
     destination?.focus();
-  }, [openControlId]);
+  }, [isCompactHardware, openControlId]);
 
   useEffect(() => {
     if (!isNarrow || !activeRegion) return;

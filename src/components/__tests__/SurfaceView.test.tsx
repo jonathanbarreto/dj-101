@@ -346,4 +346,37 @@ describe('SurfaceView', () => {
 
     HTMLElement.prototype.scrollTo = originalScrollTo;
   });
+
+  it('restores mobile lesson focus after responsive hydration for a direct FX hash', async () => {
+    const user = userEvent.setup();
+    let narrow = false;
+    const listeners = new Set<() => void>();
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      get matches() { return query === '(max-width: 767px)' && narrow; },
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: (_event: string, listener: () => void) => listeners.add(listener),
+      removeEventListener: (_event: string, listener: () => void) => listeners.delete(listener),
+      dispatchEvent: vi.fn(),
+    }));
+    window.history.replaceState(null, '', '/controller/fx#fx-on-off');
+
+    render(<SurfaceView surface="hardware" sectionId="fx" />);
+    act(() => {
+      narrow = true;
+      listeners.forEach((listener) => listener());
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    const lesson = screen.getByRole('region', {name: 'BEAT FX ON / OFF lesson'});
+    const trigger = screen.getByRole('button', {name: /BEAT FX ON \/ OFF/});
+    await waitFor(() => expect(document.activeElement).toBe(lesson));
+
+    await user.keyboard('{Escape}');
+    expect(window.location.hash).toBe('');
+    expect(screen.queryByRole('region', {name: 'BEAT FX ON / OFF lesson'})).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+  });
 });
