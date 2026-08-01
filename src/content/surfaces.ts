@@ -18,14 +18,16 @@ export const SURFACES: Record<Surface, SurfaceSpec> = {
   },
 };
 
-// Hardware values are placeholders corrected in Task 4.
+// Hardware crops were measured from the 3129x1652 overhead DDJ-1000 master.
+// Rear/front are intentionally full-image placeholders: this top-down product shot
+// does not depict those elevations, so a precise crop would be misleading.
 // rekordbox values were measured from the master image.
 export const SECTIONS: Record<SectionId, SectionSpec> = {
-  'deck-left':  {id:'deck-left',  surface:'hardware', label:'Left deck',  rect:{x:0,    y:0,    w:0.30, h:1},    marker:{x:0.15, y:0.5}},
-  'deck-right': {id:'deck-right', surface:'hardware', label:'Right deck', rect:{x:0.70, y:0,    w:0.30, h:1},    marker:{x:0.85, y:0.5}},
-  'mixer':      {id:'mixer',      surface:'hardware', label:'Mixer',      rect:{x:0.30, y:0,    w:0.40, h:1},    marker:{x:0.50, y:0.5}},
-  'fx':         {id:'fx',         surface:'hardware', label:'Beat FX',    rect:{x:0.56, y:0.25, w:0.14, h:0.6},  marker:{x:0.63, y:0.55}},
-  'browser':    {id:'browser',    surface:'hardware', label:'Browser',    rect:{x:0.22, y:0,    w:0.14, h:0.3},  marker:{x:0.29, y:0.15}},
+  'deck-left':  {id:'deck-left',  surface:'hardware', label:'Left deck',  rect:{x:0.0070,y:0.0220,w:0.3240,h:0.9560}, marker:{x:0.1690,y:0.5000}},
+  'deck-right': {id:'deck-right', surface:'hardware', label:'Right deck', rect:{x:0.6690,y:0.0220,w:0.3240,h:0.9560}, marker:{x:0.8310,y:0.5000}},
+  'mixer':      {id:'mixer',      surface:'hardware', label:'Mixer',      rect:{x:0.3320,y:0.0220,w:0.2960,h:0.9560}, marker:{x:0.4800,y:0.5000}},
+  'fx':         {id:'fx',         surface:'hardware', label:'Beat FX',    rect:{x:0.5720,y:0.3200,w:0.0550,h:0.5820}, marker:{x:0.5995,y:0.6110}},
+  'browser':    {id:'browser',    surface:'hardware', label:'Browser',    rect:{x:0.2670,y:0.1050,w:0.0640,h:0.1200}, marker:{x:0.2990,y:0.1650}},
   'rear':       {id:'rear',       surface:'hardware', label:'Rear panel', rect:{x:0,    y:0,    w:1,    h:1},    marker:{x:0.5,  y:0.05}},
   'front':      {id:'front',      surface:'hardware', label:'Front panel',rect:{x:0,    y:0,    w:1,    h:1},    marker:{x:0.5,  y:0.95}},
   'rb-command':   {id:'rb-command',   surface:'software', label:'Command panel',    rect:{x:0,    y:0,     w:1,    h:0.047}, marker:{x:0.5,  y:0.024}},
