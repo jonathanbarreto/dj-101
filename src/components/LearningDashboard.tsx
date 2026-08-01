@@ -18,7 +18,7 @@ export function LearningDashboard() {
         </Text>
       </Stack>
 
-      <Grid columns={2} gap={4} className={styles.learningGrid}>
+      <Grid columns={2} gap={4} align="start" className={styles.learningGrid}>
         <ClickableCard
           href="/controller"
           label="Learn the controller"
@@ -32,7 +32,6 @@ export function LearningDashboard() {
             width={SURFACES.hardware.naturalWidth}
             height={SURFACES.hardware.naturalHeight}
             priority
-            unoptimized
             sizes="(max-width: 767px) 100vw, 60vw"
           />
           <Stack direction="vertical" gap={2} padding={5}>
@@ -56,7 +55,6 @@ export function LearningDashboard() {
             alt={SURFACES.software.label}
             width={SURFACES.software.naturalWidth}
             height={SURFACES.software.naturalHeight}
-            unoptimized
             sizes="(max-width: 767px) 100vw, 40vw"
           />
           <Stack direction="vertical" gap={2} padding={5}>
