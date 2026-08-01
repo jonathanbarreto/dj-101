@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 15 App Router, React 19, TypeScript, Astryx Core/Neutral 0.2.x, CSS Modules with Astryx tokens, Vitest, Testing Library, agent-browser.
 
-**Design contract:** The audience ranges from first-time DJs to experienced DJs learning this controller. `AppShell` + `Layout` provide the frame; `ClickableCard`, `List`, `TabList`/`TabMenu`, `Popover`, and `Dialog` provide interaction. The signature interaction is the same photographed controller smoothly reframing from map to section to region while orientation remains visible. Mobile opens lessons directly; tablet/desktop use a concise preview before the full lesson. All states must remain usable with keyboard, touch, dark/light themes, and reduced motion.
+**Design contract:** The audience ranges from first-time DJs to experienced DJs learning this controller. `AppShell` + `Layout` provide the frame; `ClickableCard`, `List`, `TabList`, `Popover`, and `Dialog` provide interaction. The signature interaction is the same photographed controller smoothly reframing from map to section to region while orientation remains visible. Mobile opens lessons directly; tablet/desktop use a concise preview before the full lesson. All states must remain usable with keyboard, touch, dark/light themes, and reduced motion.
 
 ---
 
@@ -254,12 +254,12 @@ Use one controlled API containing `surface`, `section`, `activeRegionId`, `regio
 - `View map` targets `/controller` or `/rekordbox`;
 - Resume uses `resumeHref`;
 - deck and rekordbox show all fitting `Tab` values;
-- mixer shows direct tabs for Signal path, CH3, CH1, CH2, CH4 and one `TabMenu` containing Color FX, Outputs, Headphones + sampler, and Mic;
-- selecting any direct or overflow value calls `onRegionChange` and selected overflow text is visible.
+- mixer shows six direct tabs: Signal path, Four channels, Color FX, Outputs, Headphones + sampler, and Mic;
+- selecting any value calls `onRegionChange`; no mixer tab requires horizontal scrolling or an overflow menu.
 
 - [ ] **Step 4: Implement navigation using Astryx components**
 
-Use `PageBreadcrumbs` for the orientation path, `Button` or `Link` for View map/Resume, and `TabList`/`Tab`/`TabMenu` for regions. Do not horizontally scroll the mixer region list. Every region remains keyboard reachable through Astryx’s roving focus/menu behavior.
+Use `PageBreadcrumbs` for the orientation path, `Button` or `Link` for View map/Resume, and `TabList`/`Tab` for the six consolidated mixer regions. Do not horizontally scroll the mixer region list. Every region remains keyboard reachable through Astryx’s roving focus behavior.
 
 - [ ] **Step 5: Verify GREEN and commit**
 
@@ -335,6 +335,9 @@ git commit -m "feat: stabilize controller zoom stage"
 - Modify: `src/components/SurfaceView.tsx`
 - Modify: `src/components/SurfaceView.module.css`
 - Modify: `src/components/__tests__/SurfaceView.test.tsx`
+- Modify: `src/content/hardware/mixer.ts`
+- Modify: `src/content/hardware/mixerRegions.ts`
+- Modify: `src/content/__tests__/mixer-regions.test.ts`
 
 - [ ] **Step 1: Write failing Hotspot and ControlIndex tests**
 
@@ -357,6 +360,8 @@ Assert it renders `ControlPreview`, never the complete lesson, exposes selected 
 
 `ControlIndex` receives controls/selection and `onSelect(controlId, trigger)`; assert every control is visible at mobile/tablet/desktop DOM widths and selection passes the actual initiating button for focus return.
 
+For the mixer, first assert the content model exposes exactly six regions. The `channels` region shows the full four-strip crop but lists one representative CH2 strip plus the CH3 PHONO/LINE selector as the second materially different input case. `getMixerRegionForControl` still resolves every legacy `mixer-ch1-*`, `mixer-ch2-*`, `mixer-ch3-*`, and `mixer-ch4-*` deep-link ID to `channels`, so existing hashes remain valid even when repetitive controls are not duplicated in the visible index. Add a concise `mixerChannelOverview` that accurately distinguishes four simultaneous mixer channels from DECK SELECT's left 1/3 and right 2/4 software-deck layering.
+
 - [ ] **Step 2: Run focused tests and verify RED**
 
 Run: `pnpm exec vitest run src/components/__tests__/Hotspot.test.tsx src/components/__tests__/ControlIndex.test.tsx --pool=threads --maxWorkers=1`
@@ -365,7 +370,7 @@ Expected: FAIL because Hotspot still owns open state and embeds the full lesson;
 
 - [ ] **Step 3: Implement Hotspot and ControlIndex**
 
-Keep Astryx Popover’s automatic flip/slide behavior. Remove the hard-coded `placement="below"`; set a bounded width and preview-only content. Retain 44px targets, printed hardware labels, leader lines, and token motion. Keep the index rendered below the stage at every breakpoint; CSS may make it compact but must never `display:none` at 768px or wider.
+Keep Astryx Popover’s automatic flip/slide behavior. Remove the hard-coded `placement="below"`; set a bounded width and preview-only content. Retain 44px targets, printed hardware labels, leader lines, and token motion. Keep the index rendered below the stage at every breakpoint; CSS may make it compact but must never `display:none` at 768px or wider. In the consolidated Four channels mixer region, render the overview before the representative controls and avoid four copies of equivalent EQ/fader lessons.
 
 - [ ] **Step 4: Replace SurfaceView state tests with the approved state machine**
 
@@ -396,7 +401,7 @@ Run:
 ```bash
 pnpm exec vitest run src/components/__tests__/Hotspot.test.tsx src/components/__tests__/ControlIndex.test.tsx src/components/__tests__/SurfaceView.test.tsx --pool=threads --maxWorkers=1
 pnpm typecheck
-git add src/components/Hotspot.tsx src/components/__tests__/Hotspot.test.tsx src/components/ControlIndex.tsx src/components/__tests__/ControlIndex.test.tsx src/components/SurfaceView.tsx src/components/SurfaceView.module.css src/components/__tests__/SurfaceView.test.tsx
+git add src/components/Hotspot.tsx src/components/__tests__/Hotspot.test.tsx src/components/ControlIndex.tsx src/components/__tests__/ControlIndex.test.tsx src/components/SurfaceView.tsx src/components/SurfaceView.module.css src/components/__tests__/SurfaceView.test.tsx src/content/hardware/mixer.ts src/content/hardware/mixerRegions.ts src/content/__tests__/mixer-regions.test.ts
 git commit -m "feat: coordinate viewport-safe surface lessons"
 ```
 
@@ -451,11 +456,11 @@ Expected: all tests, typecheck, and the 21-route production build pass.
 
 Run `pnpm build`, then `pnpm start --hostname 127.0.0.1 --port 3101`. Use agent-browser at 375, 768, 1024, and 1440px for Home, controller map, left deck, mixer, rekordbox map, and rekordbox player deck.
 
-At each width verify no clipping or horizontal document overflow; stage height stability across all regions; preview/Dialog behavior; every lesson field reachable; map/resume; browser Back; keyboard focus return; Shift state; mixer TabMenu; light/dark themes; and reduced motion.
+At each width verify no clipping or horizontal document overflow; stage height stability across all regions; preview/Dialog behavior; every lesson field reachable; map/resume; browser Back; keyboard focus return; Shift state; the consolidated Four channels lesson; light/dark themes; and reduced motion.
 
 - [ ] **Step 2: Capture and critique screenshots**
 
-Capture Home, controller map, a hotspot preview, a long lesson Dialog, mixer overflow, and the mobile lesson. Compare against the approved spec and Astryx rules. Remove one nonessential visual treatment if the page has redundant decoration. Any defect must first receive a focused failing unit test or an agent-browser reproduction note, then the smallest fix.
+Capture Home, controller map, a hotspot preview, a long lesson Dialog, the Four channels mixer overview, and the mobile lesson. Compare against the approved spec and Astryx rules. Remove one nonessential visual treatment if the page has redundant decoration. Any defect must first receive a focused failing unit test or an agent-browser reproduction note, then the smallest fix.
 
 - [ ] **Step 3: Run two unchanged-code release rounds**
 

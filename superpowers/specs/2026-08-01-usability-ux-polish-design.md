@@ -86,7 +86,7 @@ Transitions animate only image position/scale and selection emphasis. They use A
 
 ### Region navigation
 
-Deck and rekordbox region tabs remain Astryx `TabList` patterns where all choices fit. The mixer must not hide nine regions in an unannounced horizontal strip. It will expose the most common regions directly and place the remainder in Astryx `TabMenu`, with the selected overflow item reflected in the visible label.
+Deck, rekordbox, and mixer region tabs remain Astryx `TabList` patterns where all choices fit. The mixer consolidates the four repetitive CH3/CH1/CH2/CH4 lessons into one **Four channels** region: it explains that the mixer has four simultaneously available physical strips, that DECK SELECT switches the left deck between layers 1/3 and the right deck between 2/4, and that one representative strip teaches the shared TRIM, meter, EQ, COLOR, CUE, fader, and crossfader-assignment controls. The region also preserves the two materially different input-selector cases: LINE-only on channels 1/2 and PHONO/LINE on channels 3/4. Signal path, Color FX, outputs, monitoring/sampler, and mic remain separate regions. This reduced set fits without horizontal scrolling or an overflow menu.
 
 The control index remains available on desktop and tablet as a discoverable alternative to image hotspots. Selecting an index item opens the complete lesson directly.
 
@@ -162,7 +162,7 @@ Each component has one purpose and can be tested without understanding the full 
 - If a stored resume target no longer exists, discard it and show the normal map.
 - If a control is not in the active crop, resolve its owning region before opening its dialog.
 - If the viewport changes while a preview is open, preserve the selected control and move safely to the presentation appropriate for the new breakpoint.
-- If Dialog or TabMenu API names differ in installed Astryx 0.2.0, use the installed package declarations as authoritative; local 0.1.6 source remains behavioral reference only.
+- If Dialog or TabList API names differ in installed Astryx 0.2.0, use the installed package declarations as authoritative; local 0.1.6 source remains behavioral reference only.
 - No loading spinner is required because content and images are local/static; failed images retain meaningful alt text and the control index remains usable.
 
 ## Testing and acceptance
@@ -173,7 +173,7 @@ Each component has one purpose and can be tested without understanding the full 
 - Full lesson Dialog contains every existing lesson field and uses one scroll container.
 - Hotspot, list, direct hash, Escape, explicit close, region change, and responsive change preserve the state/focus contract.
 - View map stores resume state; Resume restores the correct section, region, control, and hash.
-- Mixer overflow uses TabMenu and exposes all nine regions by keyboard.
+- Mixer exposes all six consolidated regions by keyboard without horizontal overflow.
 - Home cards use existing master images only and preserve exact public routes.
 - Reduced motion removes crop animation.
 
