@@ -1,6 +1,6 @@
 'use client';
 
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Popover} from '@astryxdesign/core/Popover';
 import type {Control, Rect} from '@/content/types';
 import {isVisible, toViewport} from '@/lib/geometry';
@@ -14,9 +14,17 @@ export interface HotspotProps {
 }
 
 export function Hotspot({control, rect, isShiftActive}: HotspotProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const visible = isVisible(control.at, rect);
+  const [openControlId, setOpenControlId] = useState<string | null>(null);
+  const isOpen = visible && openControlId === control.id;
 
-  if (!isVisible(control.at, rect)) return null;
+  useEffect(() => {
+    if (openControlId !== null && (!visible || openControlId !== control.id)) {
+      setOpenControlId(null);
+    }
+  }, [control.id, openControlId, visible]);
+
+  if (!visible) return null;
 
   const position = toViewport(control.at, rect);
   const hasShiftBehavior = isShiftActive && control.shift !== undefined;
@@ -32,8 +40,11 @@ export function Hotspot({control, rect, isShiftActive}: HotspotProps) {
       }}
     >
       <Popover
+        key={control.id}
         isOpen={isOpen}
-        onOpenChange={setIsOpen}
+        onOpenChange={(nextIsOpen) => {
+          setOpenControlId(nextIsOpen ? control.id : null);
+        }}
         label={label}
         placement="below"
         width={340}

@@ -1,21 +1,34 @@
-import {describe, expect, it} from 'vitest';
+import {afterAll, beforeAll, describe, expect, it} from 'vitest';
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {Control, Rect} from '@/content/types';
 import {Hotspot} from '../Hotspot';
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: (query: string): MediaQueryList => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false,
-  }),
+const originalMatchMedia = Object.getOwnPropertyDescriptor(window, 'matchMedia');
+
+beforeAll(() => {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    writable: true,
+    value: (query: string): MediaQueryList => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }),
+  });
+});
+
+afterAll(() => {
+  if (originalMatchMedia) {
+    Object.defineProperty(window, 'matchMedia', originalMatchMedia);
+  } else {
+    delete (window as unknown as {matchMedia?: typeof window.matchMedia}).matchMedia;
+  }
 });
 
 const control: Control = {
@@ -84,8 +97,12 @@ describe('Hotspot', () => {
     const user = userEvent.setup();
     render(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
 
-    await user.click(screen.getByRole('button', {name: 'SLIP'}));
+    const trigger = screen.getByRole('button', {name: 'SLIP'});
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
 
+    await user.click(trigger);
+
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
     expect(await screen.findByText(control.primary.summary)).toBeDefined();
   });
 
@@ -93,8 +110,71 @@ describe('Hotspot', () => {
     const user = userEvent.setup();
     render(<Hotspot control={control} rect={FULL} isShiftActive />);
 
-    await user.click(screen.getByRole('button', {name: 'VINYL'}));
+    const trigger = screen.getByRole('button', {name: 'VINYL'});
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
 
+    await user.click(trigger);
+
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
     expect(await screen.findByText(control.shift!.summary)).toBeDefined();
+  });
+
+  it('closes on Escape and returns focus to the trigger', async () => {
+    const user = userEvent.setup();
+    render(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
+    const trigger = screen.getByRole('button', {name: 'SLIP'});
+
+    await user.click(trigger);
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+
+    await user.keyboard('{Escape}');
+
+    expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('resets an open popover after the hotspot leaves and re-enters the crop', async () => {
+    const user = userEvent.setup();
+    const {container, rerender} = render(
+      <Hotspot control={control} rect={FULL} isShiftActive={false} />,
+    );
+    const trigger = screen.getByRole('button', {name: 'SLIP'});
+
+    await user.click(trigger);
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+
+    rerender(
+      <Hotspot
+        control={control}
+        rect={{x: 0.5, y: 0, w: 0.5, h: 1}}
+        isShiftActive={false}
+      />,
+    );
+    expect(container.firstChild).toBeNull();
+
+    rerender(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
+    expect(screen.getByRole('button', {name: 'SLIP'}).getAttribute('aria-expanded'))
+      .toBe('false');
+  });
+
+  it('does not preserve open state when the control identity changes', async () => {
+    const user = userEvent.setup();
+    const {rerender} = render(
+      <Hotspot control={control} rect={FULL} isShiftActive={false} />,
+    );
+    const trigger = screen.getByRole('button', {name: 'SLIP'});
+
+    await user.click(trigger);
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+
+    const nextControl: Control = {
+      ...control,
+      id: 'deck-left-play',
+      label: 'PLAY',
+    };
+    rerender(<Hotspot control={nextControl} rect={FULL} isShiftActive={false} />);
+
+    expect(screen.getByRole('button', {name: 'PLAY'}).getAttribute('aria-expanded'))
+      .toBe('false');
   });
 });
