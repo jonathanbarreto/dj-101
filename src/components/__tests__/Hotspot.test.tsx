@@ -1,5 +1,5 @@
 import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
-import {render, screen, waitFor} from '@testing-library/react';
+import {act, render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {Control, Rect} from '@/content/types';
 import {Hotspot} from '../Hotspot';
@@ -180,6 +180,38 @@ describe('Hotspot', () => {
 
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
     await waitFor(() => expect(document.activeElement).toBe(trigger));
+  });
+
+  it('defers Escape focus restoration until two post-close animation frames', async () => {
+    const user = userEvent.setup();
+    const frames: FrameRequestCallback[] = [];
+    const requestAnimationFrame = vi.spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        frames.push(callback);
+        return frames.length;
+      });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+    render(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
+    const trigger = screen.getByRole('button', {name: 'SLIP'});
+
+    await user.click(trigger);
+    act(() => {
+      const openingFrames = frames.splice(0);
+      openingFrames.forEach((frame) => frame(0));
+    });
+    await user.keyboard('{Escape}');
+
+    expect(requestAnimationFrame).toHaveBeenCalled();
+    act(() => {
+      const firstClosingFrames = frames.splice(0);
+      firstClosingFrames.forEach((frame) => frame(0));
+    });
+    expect(frames.length).toBeGreaterThan(0);
+    act(() => {
+      const secondClosingFrames = frames.splice(0);
+      secondClosingFrames.forEach((frame) => frame(0));
+    });
+    expect(document.activeElement).toBe(trigger);
   });
 
   it('resets an open popover after the hotspot leaves and re-enters the crop', async () => {

@@ -192,6 +192,18 @@ describe('SurfaceView', () => {
     expect(screen.getByText(/orientation only/i)).toBeDefined();
   });
 
+  it('does not describe hidden orientation labels on the narrow software overview', () => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 767px)', media: query, onchange: null,
+      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
+      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }));
+    render(<SurfaceView surface="software" />);
+
+    expect(screen.queryByText(/muted zone names are orientation only/i)).toBeNull();
+    expect(screen.getByText(/player deck is the published rekordbox 7 lesson/i)).toBeDefined();
+  });
+
   it('organizes each hardware deck into three focused image regions', async () => {
     const user = userEvent.setup();
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
@@ -295,6 +307,9 @@ describe('SurfaceView', () => {
 
     await user.keyboard('{Escape}');
     await waitFor(() => expect(trigger.getAttribute('aria-expanded')).toBe('false'));
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
     expect(document.activeElement).toBe(trigger);
   });
 

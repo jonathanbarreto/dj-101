@@ -31,8 +31,8 @@ export const DECK_REGIONS: readonly DeckRegion[] = [
       'tempo-slider', 'quantize', 'slip',
     ),
     rect: {
-      'deck-left': {x: 0, y: 0.08, w: 0.5, h: 0.67},
-      'deck-right': {x: 0.5, y: 0.08, w: 0.5, h: 0.67},
+      'deck-left': {x: 0, y: 0.055, w: 0.5, h: 0.77},
+      'deck-right': {x: 0.5, y: 0.055, w: 0.5, h: 0.77},
     },
   },
   {

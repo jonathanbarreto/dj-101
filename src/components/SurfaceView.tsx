@@ -400,7 +400,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       )}
       {section === undefined && surface === 'software' && unavailableSections.length > 0 && (
         <Text type="supporting">
-          Muted zone names are orientation only; their lesson routes are not published yet.
+          {isNarrow
+            ? 'Player deck is the published rekordbox 7 lesson. More Performance mode zones will be added as their teaching content is completed.'
+            : 'Muted zone names are orientation only; their lesson routes are not published yet.'}
         </Text>
       )}
       {section === undefined && surface === 'hardware' && !isNarrow && (

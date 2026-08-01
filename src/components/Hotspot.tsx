@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Popover} from '@astryxdesign/core/Popover';
 import type {Control, Point, Rect} from '@/content/types';
 import {isVisible, toViewport} from '@/lib/geometry';
@@ -26,21 +26,36 @@ export function Hotspot({
 }: HotspotProps) {
   const visible = isVisible(control.at, rect);
   const [openControlId, setOpenControlId] = useState<string | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const shouldRestoreFocusRef = useRef(false);
   const isControlled = controlledIsOpen !== undefined;
   const isOpen = visible && (isControlled ? controlledIsOpen : openControlId === control.id);
 
   function setOpen(nextIsOpen: boolean) {
-    if (!nextIsOpen) {
-      queueMicrotask(() => {
-        document
-          .getElementById(control.id)
-          ?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]')
-          ?.focus();
-      });
-    }
+    shouldRestoreFocusRef.current = !nextIsOpen;
     if (!isControlled) setOpenControlId(nextIsOpen ? control.id : null);
     onOpenChange?.(nextIsOpen);
   }
+
+  useEffect(() => {
+    if (isOpen || !shouldRestoreFocusRef.current) return;
+
+    let secondFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        shouldRestoreFocusRef.current = false;
+        const trigger = document
+          .getElementById(control.id)
+          ?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]');
+        (trigger ?? triggerRef.current)?.focus();
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      if (secondFrame) window.cancelAnimationFrame(secondFrame);
+    };
+  }, [control.id, isOpen]);
 
   useEffect(() => {
     if (openControlId !== null && (!visible || openControlId !== control.id)) {
@@ -94,7 +109,10 @@ export function Hotspot({
       >
         {(triggerProps) => (
           <HotspotMarker
-            markerRef={triggerProps.ref}
+            markerRef={(node) => {
+              triggerRef.current = node;
+              if (typeof triggerProps.ref === 'function') triggerProps.ref(node);
+            }}
             onClick={triggerProps.onClick}
             aria-haspopup={triggerProps['aria-haspopup']}
             aria-expanded={triggerProps['aria-expanded']}

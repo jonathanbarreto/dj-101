@@ -27,21 +27,23 @@ export function SiteShell({children}: {children: React.ReactNode}) {
   ));
 
   return (
-    <AppShell
-      height="auto"
-      variant="section"
-      contentPadding={0}
-      mobileNav={{breakpoint: 'md'}}
-      topNav={(
-        <TopNav
-          label="Primary navigation"
-          heading={<TopNavHeading heading="dj-101" headingHref="/" />}
-          startContent={navItems}
-        />
-      )}
-    >
-      {children}
+    <>
+      <AppShell
+        height="auto"
+        variant="section"
+        contentPadding={0}
+        mobileNav={{breakpoint: 'md'}}
+        topNav={(
+          <TopNav
+            label="Primary navigation"
+            heading={<TopNavHeading heading="dj-101" headingHref="/" />}
+            startContent={navItems}
+          />
+        )}
+      >
+        {children}
+      </AppShell>
       <SiteFooter />
-    </AppShell>
+    </>
   );
 }

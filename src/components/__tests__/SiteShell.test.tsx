@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {isRouteActive, SiteShell} from '../SiteShell';
@@ -44,6 +44,7 @@ describe('SiteShell', () => {
     expect(screen.getByRole('link', {name: 'Skip to content'}).getAttribute('href'))
       .toBe('#astryx-app-shell-main');
     expect(screen.getByRole('main').textContent).toContain('Lesson content');
+    expect(screen.getByRole('main').contains(screen.getByRole('contentinfo'))).toBe(false);
   });
 
   it('marks product routes active including their nested pages', () => {
@@ -62,7 +63,7 @@ describe('SiteShell', () => {
 
     const drawers = screen.getAllByRole('dialog');
     expect(drawers).toHaveLength(1);
-    const drawerLink = screen.getAllByRole('link', {name: 'Controller'}).at(-1)!;
+    const drawerLink = within(drawers[0]).getByRole('link', {name: 'Controller'});
     drawerLink.addEventListener('click', (event) => event.preventDefault(), {once: true});
     await user.click(drawerLink);
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
