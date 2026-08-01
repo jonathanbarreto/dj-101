@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import {Link} from '@astryxdesign/core/Link';
+import {Stack} from '@astryxdesign/core/Stack';
 import {getControl} from '@/content';
 
 export interface CounterpartLinkProps {
@@ -13,19 +14,17 @@ export function CounterpartLink({ids}: CounterpartLinkProps) {
   if (targets.length === 0) return null;
 
   return (
-    <div>
+    <Stack direction="vertical" gap={1}>
       {targets.map((target) => {
         const base = target.surface === 'software' ? '/rekordbox' : '/controller';
         const location = target.surface === 'software' ? 'on screen' : 'on the controller';
 
         return (
-          <div key={target.id}>
-            <Link href={`${base}/${target.section}#${target.id}`}>
-              See {target.label} {location} →
-            </Link>
-          </div>
+          <Link key={target.id} href={`${base}/${target.section}#${target.id}`}>
+            {`See ${target.label} ${location} →`}
+          </Link>
         );
       })}
-    </div>
+    </Stack>
   );
 }

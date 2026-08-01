@@ -132,6 +132,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-pad-fx-1', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'PAD FX1', shiftLegend: 'PAD FX2', kind: 'button', at: {x: 0.1326, y: 0.6962},
+    counterpart: ['rb-deck-performance-pads'],
     primary: manual(
       'Puts the pads into the first bank of Pad FX',
       'PAD FX1 assigns the performance pads to the first Pad FX bank. Pressing or holding a pad applies its assigned effect according to that effect’s setting.',
@@ -147,6 +148,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-beat-jump', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'BEAT JUMP', shiftLegend: 'BEAT LOOP', kind: 'button', at: {x: 0.1646, y: 0.6962},
+    counterpart: ['rb-deck-performance-pads'],
     primary: manual(
       'Puts the pads into beat-jump mode',
       'BEAT JUMP assigns pads to move the playback position forward or backward by the configured number of beats while the track keeps playing.',
@@ -162,6 +164,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-sampler', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'SAMPLER', shiftLegend: 'KEY SHIFT', kind: 'button', at: {x: 0.1976, y: 0.6962},
+    counterpart: ['rb-deck-performance-pads'],
     primary: manual(
       'Puts the pads into sampler mode',
       'SAMPLER assigns the pads to trigger the loaded rekordbox sampler slots, independent of the deck track.',
@@ -203,6 +206,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-key-reset', ref: 49, surface: 'hardware', section: 'deck-left',
     label: 'KEY RESET', kind: 'button', at: {x: 0.2795, y: 0.8891},
+    counterpart: ['rb-deck-master-tempo'],
     primary: manual(
       'Returns the track to its original key',
       'KEY RESET cancels the current key-shift amount and restores the track’s analysed original key.',
@@ -287,7 +291,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-loop-in', ref: 38, surface: 'hardware', section: 'deck-left',
     label: 'LOOP IN · 1/2X', shiftLegend: 'IN ADJUST', kind: 'button', at: {x: 0.0247, y: 0.0725},
-    counterpart: ['rb-deck-loop-length', 'rb-deck-loop-mode'],
+    counterpart: ['rb-deck-loop-length'],
     primary: manual(
       'Sets the loop start or halves an active loop',
       'LOOP IN sets a loop-in point. While a loop is active, it halves the loop length, and the 1/2X legend describes that shortening action.',
@@ -302,7 +306,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-loop-out', ref: 39, surface: 'hardware', section: 'deck-left',
     label: 'LOOP OUT · 2X', shiftLegend: 'OUT ADJUST/RELOOP', kind: 'button', at: {x: 0.0595, y: 0.0725},
-    counterpart: ['rb-deck-loop-length', 'rb-deck-loop-mode'],
+    counterpart: ['rb-deck-loop-length'],
     primary: manual(
       'Sets the loop end and doubles an active loop',
       'LOOP OUT sets the loop-out point and starts the loop. While looping, it doubles the loop length, following the 2X legend.',
@@ -317,7 +321,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-loop-exit', ref: 40, surface: 'hardware', section: 'deck-left',
     label: '4 BEAT LOOP / EXIT', shiftLegend: 'ACTIVE LOOP', kind: 'button', at: {x: 0.1017, y: 0.0784},
-    counterpart: ['rb-deck-auto-loop', 'rb-deck-loop-mode'],
+    counterpart: ['rb-deck-auto-loop'],
     primary: manual(
       'Creates a four-beat loop or exits the current loop',
       'Press 4 BEAT LOOP / EXIT to create a four-beat automatic loop. When a loop is active, pressing it exits and resumes normal playback.',

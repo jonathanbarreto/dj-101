@@ -1,4 +1,5 @@
 import {act, render, screen} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import * as content from '@/content';
 import type {Control} from '@/content/types';
@@ -42,6 +43,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  window.history.replaceState(null, '', '/');
   animationFrames = [];
   window.requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
     animationFrames.push(callback);
@@ -104,5 +106,59 @@ describe('SurfaceView', () => {
     unmount();
 
     expect(window.cancelAnimationFrame).toHaveBeenCalledWith(1);
+  });
+
+  it('uses an accessible Astryx region selector and filters software markers', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    expect(screen.getByRole('navigation', {name: 'Player deck region'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'ARTWORK'})).toBeDefined();
+    expect(screen.queryByRole('button', {name: 'SLIP'})).toBeNull();
+
+    await user.click(screen.getByRole('button', {name: 'Jog'}));
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    expect(screen.getByRole('button', {name: 'SLIP'})).toBeDefined();
+    expect(screen.getByText('Controls in Jog')).toBeDefined();
+    expect(screen.getByRole('button', {name: /^Open SLIP lesson/})).toBeDefined();
+  });
+
+  it('selects, focuses, and opens a valid hash destination', () => {
+    window.history.replaceState(null, '', '/rekordbox/rb-deck#rb-deck-slip');
+    render(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    const trigger = screen.getByRole('button', {name: 'SLIP'});
+    expect(screen.getByRole('button', {name: 'Jog'}).getAttribute('aria-current')).toBe('page');
+    expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('opens an indexed control and writes a stable hash without navigation loops', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    await user.click(screen.getByRole('button', {name: /^Open ARTWORK lesson/}));
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    expect(window.location.hash).toBe('#rb-deck-artwork');
+    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('ignores an invalid hash and leaves the default region usable', () => {
+    window.history.replaceState(null, '', '/rekordbox/rb-deck#not-a-control');
+    render(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    expect(screen.getByRole('button', {name: 'Info'}).getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('button', {name: 'ARTWORK'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
   });
 });

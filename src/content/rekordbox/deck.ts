@@ -115,7 +115,7 @@ export const rbDeckControls: Control[] = [
     label: 'MASTER', kind: 'button', at: {x: 0.4484, y: 0.3066},
     primary: rekordbox(
       'Designates the timing reference for synced decks',
-      'MASTER makes this deck the master player for Beat Sync. Other synced decks follow its tempo and grid until the master assignment changes.',
+      'MASTER makes this deck the master player for Beat Sync. On the DDJ-1000, hold SHIFT and press BEAT SYNC to select it; other synced decks then follow this deck’s tempo and grid.',
       'Use the highlighted on-screen state to verify which deck is steering the system before changing tempo. Moving the wrong deck’s fader while it is master can make every synced deck follow unexpectedly.',
     ),
     // The hardware schema links controls, not individual primary/SHIFT actions.
@@ -157,7 +157,7 @@ export const rbDeckControls: Control[] = [
       'Separates and mutes musical parts of the loaded track',
       'When the STEMS function is enabled, the panel displays MUTE or SOLO according to the ACTIVE STEM setting. In MUTE mode, each Stem button outputs its part when on and mutes it when off; SOLO mode selects all parts or one part to output.',
       'Use the screen to confirm which parts remain before opening a channel fader. Removing a vocal can create space for an acapella, while keeping drums preserves timing through a transition that would otherwise lose its rhythmic anchor.',
-      {gotcha: 'STEMS must be enabled in Preferences. Availability and separation quality depend on the installed rekordbox version, settings, and source material.'},
+      {gotcha: 'Connecting the DDJ-1000 unlocks STEMS without a paid plan. Enable Preferences → Extensions → STEMS; separation quality still varies with the source material.'},
     ),
   },
   {
@@ -188,7 +188,10 @@ export const rbDeckControls: Control[] = [
       'Read the labels and colors before reaching for the hardware pads. The screen reveals cue names, times, and empty slots that the unlabelled rubber grid cannot, making an unfamiliar track far safer to perform.',
       {tips: ['The on-screen mode menu also exposes rekordbox modes that may require Pad Editor mapping on the DDJ-1000.']},
     ),
-    counterpart: ['deck-left-hot-cue', 'deck-left-pad-grid'],
+    counterpart: [
+      'deck-left-hot-cue', 'deck-left-pad-fx-1', 'deck-left-beat-jump',
+      'deck-left-sampler', 'deck-left-pad-grid',
+    ],
   },
   {
     id: 'rb-deck-auto-loop', surface: 'software', section: 'rb-deck',
@@ -215,10 +218,9 @@ export const rbDeckControls: Control[] = [
     label: 'AU / MA LOOP MODE', kind: 'switch', at: {x: 0.3394, y: 0.4907},
     primary: rekordbox(
       'Switches between automatic and manual loop controls',
-      'AU presents a beat-counted Auto Beat Loop. MA presents controls for real-time loop-in, loop-out, exit, and reloop operations.',
-      'Choose MA when a live recording needs a loop boundary placed by ear; choose AU when a grid-aligned drum phrase should repeat predictably. The screen tells you which control set the hardware loop buttons are influencing.',
+      'AU and MA switch the controls shown in rekordbox’s on-screen JOG panel. AU presents Auto Beat Loop; MA presents mouse controls for real-time loop-in, loop-out, exit, and reloop. This view switch does not remap the DDJ-1000 loop buttons.',
+      'Choose MA when placing a loop boundary with the mouse by ear, or AU for a grid-counted loop. Treat it as an on-screen workspace choice rather than a new hardware layer.',
     ),
-    counterpart: ['deck-left-loop-in', 'deck-left-loop-out', 'deck-left-loop-exit'],
   },
   {
     id: 'rb-deck-dvs-mode', surface: 'software', section: 'rb-deck',
@@ -292,6 +294,6 @@ export const rbDeckControls: Control[] = [
       'MASTER TEMPO changes playback speed without changing pitch. If the track key has been shifted, this control becomes KEY RESET so the live key can be restored.',
       'Watch this state before making a large BPM move on a vocal track. The screen tells you whether the singer’s key will stay fixed and exposes the KEY RESET state that a hardware label cannot change dynamically.',
     ),
-    counterpart: ['deck-left-master-tempo'],
+    counterpart: ['deck-left-master-tempo', 'deck-left-key-reset'],
   },
 ];

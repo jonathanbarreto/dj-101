@@ -50,6 +50,9 @@ describe('rekordbox 7 player deck content', () => {
   it('marks DVS as subscription content while keeping stems available', () => {
     expect(rbDeckControls.filter((control) => control.primary.tier === 'subscription').map((control) => control.id))
       .toEqual(['rb-deck-dvs-mode']);
+    const stems = rbDeckControls.find((control) => control.id === 'rb-deck-stems');
+    expect(stems?.primary.gotcha).toMatch(/DDJ-1000.*without a paid plan/i);
+    expect(stems?.primary.gotcha).toContain('Preferences → Extensions → STEMS');
   });
 
   it('describes ACTIVE STEM controls without treating MUTE as a stem button', () => {
@@ -80,8 +83,28 @@ describe('rekordbox 7 player deck content', () => {
     expect(rbDeckControls.find((control) => control.id === 'rb-deck-performance-pads')?.counterpart)
       .toEqual([
         'deck-left-hot-cue',
+        'deck-left-pad-fx-1',
+        'deck-left-beat-jump',
+        'deck-left-sampler',
         'deck-left-pad-grid',
       ]);
+  });
+
+  it('does not claim AU/MA remaps the controller loop buttons', () => {
+    const loopMode = rbDeckControls.find((control) => control.id === 'rb-deck-loop-mode');
+    expect(loopMode?.counterpart).toBeUndefined();
+    expect(loopMode?.primary.detail).toMatch(/on-screen JOG panel/i);
+    expect(loopMode?.primary.why).not.toMatch(/hardware loop buttons/i);
+  });
+
+  it('makes dynamic MASTER and KEY RESET hardware paths explicit', () => {
+    const master = rbDeckControls.find((control) => control.id === 'rb-deck-master');
+    const masterTempo = rbDeckControls.find((control) => control.id === 'rb-deck-master-tempo');
+    const keyReset = deckControls.find((control) => control.id === 'deck-left-key-reset');
+
+    expect(master?.primary.detail).toMatch(/hold SHIFT.*BEAT SYNC/i);
+    expect(masterTempo?.counterpart).toContain('deck-left-key-reset');
+    expect(keyReset?.counterpart).toContain('rb-deck-master-tempo');
   });
 });
 

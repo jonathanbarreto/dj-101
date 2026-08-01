@@ -1,4 +1,4 @@
-import {afterAll, beforeAll, describe, expect, it} from 'vitest';
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
 import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type {Control, Rect} from '@/content/types';
@@ -107,6 +107,37 @@ describe('Hotspot', () => {
 
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
     expect(await screen.findByText(control.primary.summary)).toBeDefined();
+    expect(screen.getByRole('dialog').parentElement?.style.getPropertyValue('--x-width')).toBe(
+      'min(340px, calc(100vw - 2 * var(--spacing-3)))',
+    );
+  });
+
+  it('supports section-owned controlled open state', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    const {rerender} = render(
+      <Hotspot
+        control={control}
+        rect={FULL}
+        isShiftActive={false}
+        isOpen={false}
+        onOpenChange={onOpenChange}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', {name: 'SLIP'}));
+    expect(onOpenChange).toHaveBeenCalledWith(true);
+
+    rerender(
+      <Hotspot
+        control={control}
+        rect={FULL}
+        isShiftActive={false}
+        isOpen
+        onOpenChange={onOpenChange}
+      />,
+    );
+    expect(screen.getByRole('button', {name: 'SLIP'}).getAttribute('aria-expanded')).toBe('true');
   });
 
   it('opens the shift behavior from the shift trigger', async () => {

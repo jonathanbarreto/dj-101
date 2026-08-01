@@ -1,0 +1,39 @@
+.regionNav {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.regionNav :global(button) {
+  min-block-size: var(--spacing-11);
+}
+
+.overviewLink {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-container);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-med);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.controlIndex {
+  display: block;
+}
+
+.controlIndexItem {
+  min-height: 44px;
+}
+
+.controlIndexItem :global(button) {
+  min-block-size: var(--spacing-11);
+}
+
+@media (min-width: 768px) {
+  .controlIndex {
+    display: none;
+  }
+}
