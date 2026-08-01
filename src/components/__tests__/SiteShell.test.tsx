@@ -28,15 +28,23 @@ beforeEach(() => {
     unobserve() {}
     disconnect() {}
   };
-  HTMLDialogElement.prototype.showModal = function showModal() {
-    this.setAttribute('open', '');
-  };
-  HTMLDialogElement.prototype.close = function close() {
-    this.removeAttribute('open');
-  };
 });
 
 describe('SiteShell', () => {
+  it('uses the shared dialog environment', () => {
+    const dialog = document.createElement('dialog');
+    const onClose = vi.fn();
+    dialog.addEventListener('close', onClose);
+
+    dialog.showModal();
+    expect(dialog.open).toBe(true);
+
+    dialog.close('dismissed');
+    expect(dialog.open).toBe(false);
+    expect(dialog.returnValue).toBe('dismissed');
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
   it('owns the only main landmark and provides a working skip link', () => {
     render(<SiteShell><div>Lesson content</div></SiteShell>);
 
