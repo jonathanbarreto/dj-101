@@ -14,6 +14,7 @@ export interface StageProps {
 export function Stage({surface, rect, children}: StageProps) {
   const spec = SURFACES[surface];
   const crop = cropStyle(rect);
+  const sizes = `${Math.ceil(100 / rect.w)}vw`;
 
   return (
     <div style={{
@@ -28,7 +29,7 @@ export function Stage({surface, rect, children}: StageProps) {
         width={spec.naturalWidth}
         height={spec.naturalHeight}
         priority
-        sizes="100vw"
+        sizes={sizes}
         style={{
           position: 'absolute', maxWidth: 'none', ...crop,
           transition:

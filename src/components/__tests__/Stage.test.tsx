@@ -16,7 +16,13 @@ describe('Stage', () => {
     expect(img.style.left).toBe('-100%');
   });
 
-  it('renders children above the image', () => {
+  it('uses the crop width to request an appropriately sized image', () => {
+    render(<Stage surface="hardware" rect={{x: 0.5, y: 0, w: 0.5, h: 1}} />);
+    const img = screen.getByRole('img', {name: /DDJ-1000/i});
+    expect(img.getAttribute('sizes')).toBe('200vw');
+  });
+
+  it('renders children', () => {
     render(
       <Stage surface="hardware" rect={{x: 0, y: 0, w: 1, h: 1}}>
         <span data-testid="marker" />
