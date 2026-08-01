@@ -1,6 +1,7 @@
 import type {Control} from './types';
+import {deckControls} from './hardware/deck';
 
-const modules: Control[][] = [];
+const modules: Control[][] = [deckControls];
 
 export const ALL_CONTROLS: Control[] = modules.flat();
 
