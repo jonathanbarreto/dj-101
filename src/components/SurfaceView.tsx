@@ -169,7 +169,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   }, [activateControl, section]);
 
   useEffect(() => {
-    if (!selectedControlId || overlayMode !== 'preview' || isNarrow) return;
+    if (!selectedControlId || overlayMode !== 'preview' || !isNarrow) return;
     setOverlayMode('lesson');
   }, [isNarrow, overlayMode, selectedControlId]);
 
@@ -332,7 +332,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 onPreviewOpenChange={(nextIsOpen, trigger) => {
                   if (nextIsOpen) {
                     selectControl(control.id, trigger ?? null, 'preview');
-                  } else {
+                  } else if (overlayMode === 'preview') {
                     closeOverlay(control.id);
                   }
                 }}

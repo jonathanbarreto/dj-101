@@ -27,9 +27,13 @@ describe('SurfaceView lesson coordination', () => {
   it('opens a desktop hotspot as a preview, then promotes it to the one full dialog', async () => {
     const user = userEvent.setup();
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-    await user.click(screen.getByRole('button', {name: 'LOOP IN · 1/2X'}));
+    const hotspot = screen.getByRole('button', {name: 'LOOP IN · 1/2X'});
+    await user.click(hotspot);
+    expect(window.location.hash).toBe('#deck-left-loop-in');
+    expect(hotspot.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('dialog', {name: 'LOOP IN · 1/2X'}).getAttribute('hidden')).toBeNull();
     expect(screen.getAllByRole('button', {name: 'Read full lesson'}).length).toBeGreaterThan(0);
-    expect(document.querySelectorAll('dialog')).toHaveLength(0);
+    expect(document.querySelector('dialog[open]')).toBeNull();
 
     await user.click(screen.getAllByRole('button', {name: 'Read full lesson'})[0]);
     expect(document.querySelectorAll('dialog')).toHaveLength(1);

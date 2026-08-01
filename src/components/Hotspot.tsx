@@ -94,7 +94,9 @@ export function Hotspot({
               triggerRef.current = node;
               if (typeof triggerProps.ref === 'function') triggerProps.ref(node);
             }}
-            onClick={triggerProps.onClick}
+            onClick={() => {
+              onPreviewOpenChange?.(true, triggerRef.current);
+            }}
             aria-haspopup={triggerProps['aria-haspopup']}
             aria-expanded={triggerProps['aria-expanded']}
             aria-controls={triggerProps['aria-controls']}

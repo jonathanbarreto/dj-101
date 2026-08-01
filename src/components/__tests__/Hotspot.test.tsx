@@ -31,6 +31,14 @@ describe('Hotspot', () => {
     expect(onReadLesson).toHaveBeenCalledWith(expect.any(HTMLButtonElement));
   });
 
+  it('reports opening from the marker click to its parent', async () => {
+    const user = userEvent.setup();
+    const onPreviewOpenChange = vi.fn();
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected={false} isPreviewOpen={false} onPreviewOpenChange={onPreviewOpenChange} onReadLesson={() => {}} />);
+    await user.click(screen.getByRole('button', {name: 'SLIP'}));
+    expect(onPreviewOpenChange).toHaveBeenCalledWith(true, expect.any(HTMLButtonElement));
+  });
+
   it('uses bounded width and allows Astryx to choose flip placement', () => {
     render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={() => {}} onReadLesson={() => {}} />);
     expect(screen.getByRole('dialog').parentElement?.style.getPropertyValue('--x-width'))

@@ -9,6 +9,9 @@ describe('DDJ-1000 four-channel mixer content', () => {
   it('summarizes the four physical strips and deck-select mapping once', () => {
     expect(mixerChannelOverview).toMatch(/four simultaneous physical channel strips/i);
     expect(mixerChannelOverview).toMatch(/left.*1\/3.*right.*2\/4/i);
+    expect(mixerChannelOverview).toContain(
+      'Channels 1 and 2 have LINE-only input selectors, while channels 3 and 4 offer PHONO/LINE.',
+    );
   });
   it('builds ten controls for each strip in physical 3 · 1 · 2 · 4 order', () => {
     expect(MIXER_CHANNEL_ORDER).toEqual([3, 1, 2, 4]);
