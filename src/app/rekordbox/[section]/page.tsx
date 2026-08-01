@@ -16,7 +16,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({params}: {params: Promise<{section: string}>}): Promise<Metadata> {
   const {section: requestedSection} = await params;
-  const section = SECTIONS[requestedSection as SectionId];
+  const section = Object.hasOwn(SECTIONS, requestedSection)
+    ? SECTIONS[requestedSection as SectionId]
+    : undefined;
   return section?.surface === 'software'
     ? {
         title: `${section.label} in rekordbox 7`,
@@ -32,7 +34,9 @@ export default async function RekordboxSectionPage({
   params: Promise<{section: string}>;
 }) {
   const {section: requestedSection} = await params;
-  const section = SECTIONS[requestedSection as SectionId];
+  const section = Object.hasOwn(SECTIONS, requestedSection)
+    ? SECTIONS[requestedSection as SectionId]
+    : undefined;
 
   if (
     section === undefined

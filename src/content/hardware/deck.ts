@@ -183,9 +183,12 @@ export const deckControls: Control[] = [
     ),
     shift: manual(
       'Changes the sampler bank',
-      'Holding SHIFT while using PAGE moves between rekordbox sampler banks rather than changing the current pad-mode page.',
+      'Holding SHIFT while using PAGE moves between rekordbox sampler banks only while the pads are in Sampler mode.',
       'Separate spoken tags from drum one-shots into different sampler banks, then switch banks before the transition so you do not fire the wrong sound over a quiet vocal.',
-      {source: 'rekordbox7'},
+      {
+        gotcha: 'Outside Sampler mode, do not treat SHIFT + PAGE as a global sampler-bank command; select Sampler mode before changing banks.',
+        source: 'rekordbox7',
+      },
     ),
   },
   {
@@ -222,12 +225,17 @@ export const deckControls: Control[] = [
   },
   {
     id: 'deck-left-cue', ref: 33, surface: 'hardware', section: 'deck-left',
-    label: 'CUE', kind: 'button', at: {x: 0.0447, y: 0.7690},
+    label: 'CUE', shiftLegend: 'JUMP TO TRACK START', kind: 'button', at: {x: 0.0447, y: 0.7690},
     counterpart: ['rb-deck-cue'],
     primary: manual(
       'Sets, recalls, and previews the cue point',
       'While paused, press CUE to set the cue at the current position. While playing, press CUE to back-cue to that point and pause. While paused at the cue, hold CUE to play in Cue Sampler mode; release it to stop and return to the cue.',
       'Tap and hold CUE in headphones to audition the first kick of an incoming track repeatedly while you align it to the master; release it until you are ready to launch for real.',
+    ),
+    shift: manual(
+      'Jumps to the beginning of the track',
+      'Holding SHIFT and pressing CUE jumps to the beginning of the track.',
+      'Use it when you have searched deep into a track and need to return directly to its start before preparing a fresh cue, without scrubbing backward through the waveform.',
     ),
   },
   {

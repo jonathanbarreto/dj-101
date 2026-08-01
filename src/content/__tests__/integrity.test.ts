@@ -43,6 +43,7 @@ describe('DDJ-1000 left deck content', () => {
   it('documents every printed second-layer control with its rekordbox behavior', () => {
     const expectedShiftLegends: Record<string, string> = {
       'deck-left-search': 'CUE/LOOP CALL',
+      'deck-left-cue': 'JUMP TO TRACK START',
       'deck-left-memory': 'DELETE',
       'deck-left-slip-reverse': 'REVERSE',
       'deck-left-loop-in': 'IN ADJUST',
@@ -88,8 +89,20 @@ describe('DDJ-1000 left deck content', () => {
     expect(cue.primary.detail).toMatch(/paused.*sets? (?:the )?cue/i);
     expect(cue.primary.detail).toMatch(/playing.*back-cue.*paus/i);
     expect(cue.primary.detail).toMatch(/at (?:the )?cue.*hold.*Cue Sampler.*release.*returns? to (?:the )?cue/i);
+    expect(cue.shiftLegend).toBe('JUMP TO TRACK START');
+    expect(cue.shift?.detail).toMatch(/holding SHIFT.*pressing CUE.*(?:beginning|track start)/i);
+    expect(cue.shift?.detail).not.toMatch(/play|pause|stop/i);
+    const rightCue = ALL_CONTROLS.find((control) => control.id === 'deck-right-cue')!;
+    expect(rightCue.shiftLegend).toBe(cue.shiftLegend);
+    expect(rightCue.shift).toEqual(cue.shift);
     expect(deckControls.map((control) => Object.values(control.primary).join(' ')).join(' '))
       .not.toMatch(/quantified/i);
+  });
+
+  it('limits SHIFT plus PAGE sampler-bank changes to Sampler mode', () => {
+    const page = deckControls.find((control) => control.id === 'deck-left-page')!;
+    expect(page.shift?.detail).toMatch(/only.*Sampler mode|Sampler mode only/i);
+    expect(page.shift?.gotcha).toMatch(/(?:outside|other).*Sampler mode|Sampler mode.*(?:outside|other)/i);
   });
 
   it('keeps deck explanations specific enough to teach a live decision', () => {

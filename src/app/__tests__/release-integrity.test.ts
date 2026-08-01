@@ -10,6 +10,7 @@ import {generateMetadata as controllerSectionMetadata} from '../controller/[sect
 import ControllerSectionPage from '../controller/[section]/page';
 import {metadata as rekordboxMetadata} from '../rekordbox/page';
 import {generateMetadata as rekordboxSectionMetadata} from '../rekordbox/[section]/page';
+import RekordboxSectionPage from '../rekordbox/[section]/page';
 import {generateMetadata as referenceMetadata} from '../reference/[topic]/page';
 import {generateStaticParams as controllerParams} from '../controller/[section]/page';
 import {generateStaticParams as rekordboxParams} from '../rekordbox/[section]/page';
@@ -108,6 +109,15 @@ describe('production release integrity', () => {
       await expect(controllerSectionMetadata({params: Promise.resolve({section})}))
         .resolves.toEqual({});
       await expect(ControllerSectionPage({params: Promise.resolve({section})}))
+        .rejects.toMatchObject({digest: 'NEXT_HTTP_ERROR_FALLBACK;404'});
+    }
+  });
+
+  it('rejects inherited and prototype-like rekordbox route keys', async () => {
+    for (const section of ['toString', 'constructor', '__proto__']) {
+      await expect(rekordboxSectionMetadata({params: Promise.resolve({section})}))
+        .resolves.toEqual({});
+      await expect(RekordboxSectionPage({params: Promise.resolve({section})}))
         .rejects.toMatchObject({digest: 'NEXT_HTTP_ERROR_FALLBACK;404'});
     }
   });
