@@ -37,6 +37,9 @@ export function Hotspot({control, rect, isShiftActive}: HotspotProps) {
         position: 'absolute',
         left: `${position.x * 100}%`,
         top: `${position.y * 100}%`,
+        transition:
+          'left var(--duration-medium) var(--ease-standard), ' +
+          'top var(--duration-medium) var(--ease-standard)',
       }}
     >
       <Popover

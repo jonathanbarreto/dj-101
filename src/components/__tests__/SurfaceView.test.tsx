@@ -82,6 +82,9 @@ describe('SurfaceView', () => {
 
     expect(controlsSpy).toHaveBeenCalledWith('deck-left');
     expect(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes')).toBe('100vw');
+    expect(parseFloat(
+      screen.getByRole('button', {name: 'Test control'}).parentElement?.style.left ?? '',
+    )).toBeCloseTo(10);
     expect(animationFrames).toHaveLength(1);
 
     act(() => animationFrames[0](0));

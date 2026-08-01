@@ -20,7 +20,6 @@ export interface SurfaceViewProps {
 function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const {isShiftActive} = useShift();
   const section = sectionId === undefined ? undefined : SECTIONS[sectionId];
-  const targetRect = section?.rect ?? FULL;
   const [crop, setCrop] = useState<{sectionId?: SectionId; rect: Rect}>({
     sectionId,
     rect: FULL,
@@ -83,7 +82,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               <Hotspot
                 key={control.id}
                 control={control}
-                rect={targetRect}
+                rect={stageRect}
                 isShiftActive={isShiftActive}
               />
             ))}

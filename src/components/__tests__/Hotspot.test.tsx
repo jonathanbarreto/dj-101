@@ -73,6 +73,9 @@ describe('Hotspot', () => {
 
     const trigger = screen.getByRole('button', {name: 'SLIP'});
     expect(trigger.parentElement?.style.left).toBe('20%');
+    expect(trigger.parentElement?.style.transition).toBe(
+      'left var(--duration-medium) var(--ease-standard), top var(--duration-medium) var(--ease-standard)',
+    );
   });
 
   it('does not render a marker outside the crop', () => {
