@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {notFound} from 'next/navigation';
 import Home from '../page';
@@ -86,7 +86,18 @@ describe('reference routes', () => {
 
   it('makes the reference library discoverable from home', () => {
     render(<Home />);
-    expect(screen.getByRole('link', {name: /Open the reference library/}).getAttribute('href'))
-      .toBe('/reference/beat-fx');
+
+    const referenceLibrary = screen.getByRole('list', {name: 'Reference library'});
+    const links = within(referenceLibrary).getAllByRole('link');
+
+    expect(links).toHaveLength(3);
+    expect(links.map((link) => ({
+      name: link.textContent,
+      href: link.getAttribute('href'),
+    }))).toEqual([
+      {name: 'Beat FX', href: '/reference/beat-fx'},
+      {name: 'Sound Color FX', href: '/reference/sound-color-fx'},
+      {name: 'DDJ-1000 specifications', href: '/reference/specs'},
+    ]);
   });
 });
