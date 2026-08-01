@@ -12,8 +12,8 @@ export const SURFACES: Record<Surface, SurfaceSpec> = {
   software: {
     id: 'software',
     image: '/images/rekordbox-master.avif',
-    naturalWidth: 2880,
-    naturalHeight: 1800,
+    naturalWidth: 1200,
+    naturalHeight: 634,
     label: 'rekordbox 7 — Performance mode',
   },
 };
@@ -21,7 +21,7 @@ export const SURFACES: Record<Surface, SurfaceSpec> = {
 // Hardware crops were measured from the 3129x1652 overhead DDJ-1000 master.
 // Rear/front are intentionally full-image placeholders: this top-down product shot
 // does not depict those elevations, so a precise crop would be misleading.
-// rekordbox values were measured from the master image.
+// rekordbox values were measured from the clean 1200x634 Performance-mode master.
 export const SECTIONS: Record<SectionId, SectionSpec> = {
   'deck-left':  {id:'deck-left',  surface:'hardware', label:'Left deck',  rect:{x:0.0070,y:0.0220,w:0.3240,h:0.9560}, marker:{x:0.1690,y:0.5000}},
   'deck-right': {id:'deck-right', surface:'hardware', label:'Right deck', rect:{x:0.6290,y:0.0220,w:0.3700,h:0.9560}, marker:{x:0.8140,y:0.5000}},

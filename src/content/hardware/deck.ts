@@ -19,6 +19,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-jog-dial', ref: 43, surface: 'hardware', section: 'deck-left',
     label: 'JOG DIAL', shiftLegend: 'GRID ADJUST', kind: 'jog', at: {x: 0.1115, y: 0.4392},
+    counterpart: ['rb-deck-jog-tempo'],
     primary: manual(
       'Scratches from the top and bends pitch from the rim',
       'With VINYL mode on, touching the jog top stops the track and lets you move it like a record. Turning the outer ring bends pitch; with VINYL off, the top also pitch-bends. The centre display shows deck and playback information.',
@@ -34,6 +35,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-quantize', ref: 41, surface: 'hardware', section: 'deck-left',
     label: 'QUANTIZE', shiftLegend: 'WAKE UP', kind: 'button', at: {x: 0.2176, y: 0.0794},
+    counterpart: ['rb-deck-quantize'],
     primary: manual(
       'Snaps performance actions to the beat grid',
       'Quantize aligns actions such as setting or triggering hot cues and loops to the nearest beat in the rekordbox beat grid rather than firing them at the exact instant you press.',
@@ -48,6 +50,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-slip', ref: 42, surface: 'hardware', section: 'deck-left',
     label: 'SLIP', shiftLegend: 'VINYL', kind: 'button', at: {x: 0.2475, y: 0.0794},
+    counterpart: ['rb-deck-slip'],
     primary: manual(
       'Keeps the track running underneath your performance move',
       'With slip on, playback continues silently while you scratch, loop, reverse, or trigger hot cues. When the move ends, audio jumps to the point the track would have reached if you had done nothing.',
@@ -73,6 +76,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-beat-sync', ref: 45, surface: 'hardware', section: 'deck-left',
     label: 'BEAT SYNC', shiftLegend: 'MASTER', kind: 'button', at: {x: 0.3066, y: 0.5692},
+    counterpart: ['rb-deck-beat-sync', 'rb-deck-master'],
     primary: manual(
       'Matches this deck to the current master deck',
       'BEAT SYNC synchronizes this deck’s tempo and beat grid to the master deck. It relies on the track analysis and beat grids in rekordbox being correct.',
@@ -87,6 +91,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-master-tempo', ref: 47, surface: 'hardware', section: 'deck-left',
     label: 'MASTER TEMPO', shiftLegend: 'TEMPO RANGE', kind: 'button', at: {x: 0.2795, y: 0.7493},
+    counterpart: ['rb-deck-master-tempo'],
     primary: manual(
       'Locks musical key while tempo changes',
       'MASTER TEMPO keeps the track key from changing as the tempo slider moves. It is rekordbox key lock, so a tempo change need not make vocals sound higher or lower.',
@@ -101,6 +106,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-tempo-slider', ref: 46, surface: 'hardware', section: 'deck-left',
     label: 'TEMPO', kind: 'fader', at: {x: 0.2977, y: 0.7991},
+    counterpart: ['rb-deck-jog-tempo'],
     primary: manual(
       'Changes playback speed with a full-length pitch fader',
       'The 100 mm TEMPO slider changes the selected deck’s playback speed within the current tempo range. Its centre position is the track’s analysed BPM.',
@@ -110,6 +116,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-hot-cue', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'HOT CUE', shiftLegend: 'KEYBOARD', kind: 'button', at: {x: 0.1017, y: 0.6962},
+    counterpart: ['rb-deck-performance-pads'],
     primary: manual(
       'Puts the pads into hot-cue mode',
       'HOT CUE makes the performance pads set and recall hot cues. Use PAGE to reach the second bank, giving the deck up to sixteen pad-addressable hot cues.',
@@ -185,6 +192,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-key-sync', ref: 48, surface: 'hardware', section: 'deck-left',
     label: 'KEY SYNC', kind: 'button', at: {x: 0.2795, y: 0.8291},
+    counterpart: ['rb-deck-key-sync'],
     primary: manual(
       'Moves this deck toward a compatible musical key',
       'KEY SYNC changes the selected deck’s key to match the source deck or a compatible dominant or subdominant key, using rekordbox key analysis and key-shift processing.',
@@ -205,6 +213,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-play-pause', ref: 32, surface: 'hardware', section: 'deck-left',
     label: 'PLAY/PAUSE', kind: 'button', at: {x: 0.0447, y: 0.8891},
+    counterpart: ['rb-deck-play-pause'],
     primary: manual(
       'Starts or pauses the selected deck',
       'PLAY/PAUSE toggles playback for the deck selected on this side of the controller.',
@@ -214,6 +223,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-cue', ref: 33, surface: 'hardware', section: 'deck-left',
     label: 'CUE', kind: 'button', at: {x: 0.0447, y: 0.7690},
+    counterpart: ['rb-deck-cue'],
     primary: manual(
       'Sets, recalls, and previews the cue point',
       'CUE sets a cue point when stopped; when a cue exists it returns there. Holding CUE from pause plays temporarily, and releasing it returns to the cue point.',
@@ -277,6 +287,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-loop-in', ref: 38, surface: 'hardware', section: 'deck-left',
     label: 'LOOP IN · 1/2X', shiftLegend: 'IN ADJUST', kind: 'button', at: {x: 0.0247, y: 0.0725},
+    counterpart: ['rb-deck-loop-length', 'rb-deck-loop-mode'],
     primary: manual(
       'Sets the loop start or halves an active loop',
       'LOOP IN sets a loop-in point. While a loop is active, it halves the loop length, and the 1/2X legend describes that shortening action.',
@@ -291,6 +302,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-loop-out', ref: 39, surface: 'hardware', section: 'deck-left',
     label: 'LOOP OUT · 2X', shiftLegend: 'OUT ADJUST/RELOOP', kind: 'button', at: {x: 0.0595, y: 0.0725},
+    counterpart: ['rb-deck-loop-length', 'rb-deck-loop-mode'],
     primary: manual(
       'Sets the loop end and doubles an active loop',
       'LOOP OUT sets the loop-out point and starts the loop. While looping, it doubles the loop length, following the 2X legend.',
@@ -305,6 +317,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-loop-exit', ref: 40, surface: 'hardware', section: 'deck-left',
     label: '4 BEAT LOOP / EXIT', shiftLegend: 'ACTIVE LOOP', kind: 'button', at: {x: 0.1017, y: 0.0784},
+    counterpart: ['rb-deck-auto-loop', 'rb-deck-loop-mode'],
     primary: manual(
       'Creates a four-beat loop or exits the current loop',
       'Press 4 BEAT LOOP / EXIT to create a four-beat automatic loop. When a loop is active, pressing it exits and resumes normal playback.',
@@ -320,6 +333,7 @@ export const deckControls: Control[] = [
   {
     id: 'deck-left-pad-grid', ref: 52, surface: 'hardware', section: 'deck-left',
     label: 'PERFORMANCE PADS', kind: 'pad', at: {x: 0.1547, y: 0.8143},
+    counterpart: ['rb-deck-performance-pads'],
     primary: manual(
       'Triggers the eight actions selected by the current pad mode',
       'The eight performance pads execute the assignments from the active pad mode: Hot Cue, Pad FX, Beat Jump, Sampler, or one of the SHIFT-selected modes. Their action depends on the mode button, not on a separate grey function printed on the pad grid.',

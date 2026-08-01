@@ -1,7 +1,8 @@
 import type {Control} from './types';
 import {deckControls} from './hardware/deck';
+import {rbDeckControls} from './rekordbox/deck';
 
-const modules: Control[][] = [deckControls];
+const modules: Control[][] = [deckControls, rbDeckControls];
 
 export const ALL_CONTROLS: Control[] = modules.flat();
 
