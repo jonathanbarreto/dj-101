@@ -78,8 +78,7 @@ describe('resume state', () => {
       expect(() => saveResumeTarget(validTarget)).not.toThrow();
       expect(readResumeTarget('hardware')).toBeNull();
     } finally {
-      if (descriptor) Object.defineProperty(window, 'sessionStorage', descriptor);
-      else delete (window as Partial<Window>).sessionStorage;
+      Object.defineProperty(window, 'sessionStorage', descriptor!);
     }
   });
 

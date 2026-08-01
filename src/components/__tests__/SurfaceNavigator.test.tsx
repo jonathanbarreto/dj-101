@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import {SECTIONS} from '@/content';
@@ -30,10 +30,11 @@ describe('SurfaceNavigator', () => {
       />,
     );
 
-    expect(screen.getByText(/Full controller map/)).toBeDefined();
-    expect(screen.getByText(/Mixer/)).toBeDefined();
-    expect(screen.getByText(/Signal path/)).toBeDefined();
-    expect(screen.getByText(/HEADPHONES MIXING/)).toBeDefined();
+    const orientation = screen.getByRole('navigation', {name: 'Surface orientation'});
+    expect(within(orientation).getByText('Full controller map')).toBeDefined();
+    expect(within(orientation).getByText('Mixer')).toBeDefined();
+    expect(within(orientation).getByText('Signal path')).toBeDefined();
+    expect(within(orientation).getByText('HEADPHONES MIXING')).toBeDefined();
     expect(screen.getByRole('link', {name: 'View map'}).getAttribute('href')).toBe('/controller');
     expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href'))
       .toBe('/rekordbox/rb-deck#rb-deck-slip');
