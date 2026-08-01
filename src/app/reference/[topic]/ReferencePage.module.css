@@ -23,8 +23,16 @@
   min-width: 0;
 }
 
+.scrollHint {
+  display: none;
+}
+
 @media (max-width: 40rem) {
   .page {
     padding: var(--spacing-3);
+  }
+
+  .scrollHint {
+    display: block;
   }
 }

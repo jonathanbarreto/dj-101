@@ -40,6 +40,15 @@ describe('reference routes', () => {
     expect(screen.getByRole('columnheader', {name: 'What it does'})).toBeDefined();
     expect(screen.getByRole('columnheader', {name: 'LEVEL / DEPTH'})).toBeDefined();
     expect(screen.getAllByRole('row')).toHaveLength(15);
+
+    const activeLink = screen.getByRole('link', {name: 'Beat FX'});
+    expect(activeLink.getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('link', {name: 'Sound Color FX'}).getAttribute('aria-current'))
+      .toBeNull();
+
+    const scrollHint = screen.getByRole('note');
+    expect(scrollHint.textContent).toMatch(/swipe the table sideways/i);
+    expect(screen.getByRole('table').getAttribute('aria-describedby')).toBe(scrollHint.id);
   });
 
   it('renders Sound Color FX and specifications as semantic tables', async () => {

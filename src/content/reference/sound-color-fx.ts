@@ -31,7 +31,7 @@ export const soundColorFx: SoundColorFx[] = [
   {
     name: 'NOISE',
     description:
-      'Mixes internally generated white noise into the channel through a filter. COLOR sweeps the filter cutoff; the separate PARAMETER control sets the noise level, so level and tone can be shaped independently.',
+      'Mixes internally generated white noise into the channel through a filter. COLOR changes the filter cutoff, while the channel TRIM adjusts the noise volume, so use TRIM carefully before building a sweep.',
     turnLeft:
       'Moves the noise filter toward a lower cutoff for a darker, descending sweep.',
     center: 'Effect off—no internally generated noise is mixed into the channel.',

@@ -77,21 +77,21 @@ export const beatFx: BeatFx[] = [
   {
     name: 'PITCH',
     description:
-      'Shifts the effect sound above or below the source pitch by the amount selected with the BEAT controls. Use a small interval for a tonal lift or drop; extreme values are a deliberate transition effect, not a substitute for harmonic key matching.',
+      'The BEAT buttons set the effect pitch from −50% through +100%. Use a modest change for a short tonal lift or drop; extreme values are a deliberate transition effect, not a substitute for harmonic key matching.',
     levelDepth:
-      'Sets the balance between the original dry signal and the pitch-shifted effect; BEAT sets the pitch amount.',
+      'Also changes the effect pitch; turning LEVEL/DEPTH fully counterclockwise returns it to the original pitch.',
   },
   {
     name: 'SLIP ROLL',
     description:
-      'Captures a short slice and repeats it at the selected beat fraction while playback continues underneath on the track timeline in silence. Switch the effect off and playback returns to the position the track has reached, keeping the phrase on schedule.',
+      'Captures the input and repeats it at the selected beat fraction. SLIP ROLL re-records the current input whenever the effect time changes, so changing the fraction brings fresh audio into the stutter instead of preserving the first captured slice.',
     levelDepth:
       'Sets the balance between the original dry signal and the repeated slip-roll sound.',
   },
   {
     name: 'ROLL',
     description:
-      'Captures the sound at the moment the effect is engaged and repeats that slice at the selected beat fraction. Unlike SLIP ROLL, the track does not continue underneath, so releasing it does not jump ahead to the advanced timeline position.',
+      'Captures the input when the effect is engaged and repeats it at the selected beat fraction. ROLL retains the original captured input when the length changes, making it the steadier choice when you want to reshape one recognizable hit rather than feed new audio into the loop.',
     levelDepth:
       'Sets the balance between the original dry signal and the repeated roll sound.',
   },

@@ -11,9 +11,9 @@ export default function Home() {
           An interactive guide to the Pioneer DDJ-1000 and rekordbox 7 — what every control does, and when to reach for it.
         </Text>
         <Stack direction="horizontal" gap={3} xstyle={undefined}>
-          <Link href="/controller">The controller →</Link>
-          <Link href="/rekordbox">rekordbox 7 →</Link>
-          <Link href="/reference/beat-fx">Reference library →</Link>
+          <Link href="/controller" isStandalone>The controller →</Link>
+          <Link href="/rekordbox" isStandalone>rekordbox 7 →</Link>
+          <Link href="/reference/beat-fx" isStandalone>Reference library →</Link>
         </Stack>
       </Stack>
     </main>

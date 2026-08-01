@@ -38,14 +38,28 @@ describe('Beat FX reference', () => {
       .toMatch(/odd.+center.+even/i);
     expect(beatFx.find((effect) => effect.name === 'TRANS')?.levelDepth)
       .toMatch(/duty ratio.+balance/i);
-    expect(beatFx.find((effect) => effect.name === 'SLIP ROLL')?.description)
-      .toMatch(/continues underneath.+timeline/i);
-    expect(beatFx.find((effect) => effect.name === 'ROLL')?.description)
-      .toMatch(/does not continue underneath/i);
     for (const name of ['MOBIUS (SAW)', 'MOBIUS (TRI)']) {
       expect(beatFx.find((effect) => effect.name === name)?.description)
         .toMatch(/track stopped.+Shepard/i);
     }
+  });
+
+  it('pins the manual behavior of PITCH and rejects a wet/dry interpretation', () => {
+    const pitch = beatFx.find((effect) => effect.name === 'PITCH')!;
+
+    expect(pitch.description).toMatch(/BEAT.+−50%.+\+100%/i);
+    expect(pitch.levelDepth).toMatch(/pitch.+fully counterclockwise.+original/i);
+    expect(pitch.levelDepth).not.toMatch(/balance|dry|wet/i);
+  });
+
+  it('distinguishes SLIP ROLL and ROLL by what happens when effect time changes', () => {
+    const slipRoll = beatFx.find((effect) => effect.name === 'SLIP ROLL')!;
+    const roll = beatFx.find((effect) => effect.name === 'ROLL')!;
+
+    expect(slipRoll.description).toMatch(/re-records.+current input.+effect time changes/i);
+    expect(roll.description).toMatch(/retains.+original captured input.+length changes/i);
+    expect(`${slipRoll.description} ${roll.description}`)
+      .not.toMatch(/continues underneath|track timeline|jump ahead/i);
   });
 });
 
@@ -73,6 +87,15 @@ describe('Sound Color FX reference', () => {
       .toMatch(/low-pass/i);
     expect(soundColorFx.find((effect) => effect.name === 'FILTER')?.turnRight)
       .toMatch(/high-pass/i);
+  });
+
+  it('uses channel TRIM—not a nonexistent PARAMETER control—for NOISE volume', () => {
+    const noise = soundColorFx.find((effect) => effect.name === 'NOISE')!;
+    const copy = Object.values(noise).join(' ');
+
+    expect(copy).toMatch(/COLOR.+filter cutoff/i);
+    expect(copy).toMatch(/channel TRIM.+noise volume/i);
+    expect(copy).not.toMatch(/PARAMETER/i);
   });
 });
 

@@ -72,14 +72,37 @@ export function generateStaticParams() {
   return TOPICS.map((topic) => ({topic}));
 }
 
-function ReferenceNav() {
+function ReferenceNav({topic}: {topic: ReferenceTopic}) {
   return (
     <Stack direction="horizontal" gap={3} wrap="wrap" as="nav">
-      <Link href="/">Home</Link>
-      <Link href="/reference/beat-fx">Beat FX</Link>
-      <Link href="/reference/sound-color-fx">Sound Color FX</Link>
-      <Link href="/reference/specs">Specifications</Link>
+      <Link href="/" isStandalone>Home</Link>
+      <Link
+        href="/reference/beat-fx"
+        isStandalone
+        aria-current={topic === 'beat-fx' ? 'page' : undefined}>
+        Beat FX
+      </Link>
+      <Link
+        href="/reference/sound-color-fx"
+        isStandalone
+        aria-current={topic === 'sound-color-fx' ? 'page' : undefined}>
+        Sound Color FX
+      </Link>
+      <Link
+        href="/reference/specs"
+        isStandalone
+        aria-current={topic === 'specs' ? 'page' : undefined}>
+        Specifications
+      </Link>
     </Stack>
+  );
+}
+
+function TableScrollHint({id}: {id: string}) {
+  return (
+    <Text id={id} role="note" type="supporting" className={styles.scrollHint}>
+      Swipe the table sideways to compare every column.
+    </Text>
   );
 }
 
@@ -122,6 +145,7 @@ function BeatFxReference() {
             on this controller” identifies the four effects introduced with the
             DDJ-1000; it is not a claim about later Pioneer DJ hardware.
           </Text>
+          <TableScrollHint id="beat-fx-scroll-hint" />
           <Table
             data={rows}
             columns={beatFxColumns}
@@ -131,6 +155,7 @@ function BeatFxReference() {
             verticalAlign="top"
             textOverflow="wrap"
             isStriped
+            aria-describedby="beat-fx-scroll-hint"
           />
         </Stack>
       </section>
@@ -151,9 +176,10 @@ function SoundColorFxReference() {
           <Heading level={2} id="color-fx-table-heading">COLOR knob directions</Heading>
           <Text as="p">
             Read left, center, and right as a physical sweep across the knob. For
-            NOISE, the COLOR knob moves the filter while PARAMETER controls the
-            generated noise level.
+            NOISE, the COLOR knob moves the filter while that channel’s TRIM
+            adjusts the generated noise level.
           </Text>
+          <TableScrollHint id="sound-color-fx-scroll-hint" />
           <Table
             data={soundColorFx}
             columns={soundColorFxColumns}
@@ -163,6 +189,7 @@ function SoundColorFxReference() {
             verticalAlign="top"
             textOverflow="wrap"
             isStriped
+            aria-describedby="sound-color-fx-scroll-hint"
           />
         </Stack>
       </section>
@@ -194,6 +221,9 @@ function SpecificationsReference() {
               id={`spec-${group.title.toLowerCase().replaceAll(' ', '-')}`}>
               {group.title}
             </Heading>
+            <TableScrollHint
+              id={`spec-${group.title.toLowerCase().replaceAll(' ', '-')}-scroll-hint`}
+            />
             <Table
               data={group.rows}
               columns={specificationColumns}
@@ -202,6 +232,7 @@ function SpecificationsReference() {
               dividers="rows"
               verticalAlign="top"
               textOverflow="wrap"
+              aria-describedby={`spec-${group.title.toLowerCase().replaceAll(' ', '-')}-scroll-hint`}
             />
           </Stack>
         </section>
@@ -213,6 +244,7 @@ function SpecificationsReference() {
             “Sets” follows the manual: one stereo RCA pair counts as one set.
             USB A/B labels on the panel are two USB-B computer terminals.
           </Text>
+          <TableScrollHint id="spec-connections-scroll-hint" />
           <Table
             data={[...specifications.io]}
             columns={ioColumns}
@@ -221,6 +253,7 @@ function SpecificationsReference() {
             dividers="rows"
             verticalAlign="top"
             textOverflow="wrap"
+            aria-describedby="spec-connections-scroll-hint"
           />
         </Stack>
       </section>
@@ -239,7 +272,7 @@ export default async function ReferencePage({
   return (
     <main className={styles.page}>
       <Stack direction="vertical" gap={6}>
-        <ReferenceNav />
+        <ReferenceNav topic={topic} />
         {topic === 'beat-fx' ? <BeatFxReference /> : null}
         {topic === 'sound-color-fx' ? <SoundColorFxReference /> : null}
         {topic === 'specs' ? <SpecificationsReference /> : null}
