@@ -8,10 +8,15 @@ export function toViewport(point: Point, rect: Rect): Point {
   };
 }
 
-/** Points outside the crop retain outside-0..1 mapping and are not visible. */
+/**
+ * Compares in master space so decimal crop boundaries do not drift past 1
+ * during normalization; this matches the content integrity predicate.
+ */
 export function isVisible(point: Point, rect: Rect): boolean {
-  const v = toViewport(point, rect);
-  return v.x >= 0 && v.x <= 1 && v.y >= 0 && v.y <= 1;
+  return point.x >= rect.x
+    && point.x <= rect.x + rect.w
+    && point.y >= rect.y
+    && point.y <= rect.y + rect.h;
 }
 
 /** Positions the master image so this crop fills the viewport. */
