@@ -121,6 +121,7 @@ describe('Hotspot', () => {
     await user.click(trigger);
 
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('heading', {level: 2, name: 'SLIP'})).toBeDefined();
     expect(await screen.findByText(control.primary.summary)).toBeDefined();
     expect(screen.getByRole('dialog').parentElement?.style.getPropertyValue('--x-width')).toBe(
       'min(340px, calc(100vw - 2 * var(--spacing-3)))',
@@ -165,6 +166,7 @@ describe('Hotspot', () => {
     await user.click(trigger);
 
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('heading', {level: 2, name: 'VINYL'})).toBeDefined();
     expect(await screen.findByText(control.shift!.summary)).toBeDefined();
   });
 

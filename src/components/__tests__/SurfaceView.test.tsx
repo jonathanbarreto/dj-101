@@ -411,10 +411,27 @@ describe('SurfaceView', () => {
     await user.click(screen.getByRole('button', {name: /^Test control /}));
     const image = screen.getByRole('img', {name: /DDJ-1000/i});
     const lesson = screen.getByRole('region', {name: 'Test control lesson'});
+    expect(screen.getByRole('heading', {level: 2, name: 'Test control'})).toBeDefined();
     const indexHeading = screen.getByText(/Controls in Loop \/ transport/);
     expect(image.compareDocumentPosition(lesson) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(lesson.compareDocumentPosition(indexHeading) & Node.DOCUMENT_POSITION_FOLLOWING)
       .toBeTruthy();
+  });
+
+  it('shows the active Shift title in a selected narrow lesson', async () => {
+    const user = userEvent.setup();
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 767px)', media: query, onchange: null,
+      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
+      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }));
+    vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
+    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+
+    await user.click(screen.getByRole('switch', {name: /shift/i}));
+    await user.click(screen.getByRole('button', {name: /^Test shift /}));
+
+    expect(screen.getByRole('heading', {level: 2, name: 'Test shift'})).toBeDefined();
   });
 
   it('hides narrow rekordbox photo hotspots and opens lessons from the list', async () => {

@@ -38,7 +38,7 @@ import {
 } from '@/content/rekordbox/deckRegions';
 import type {Control, Rect, SectionId, Surface} from '@/content/types';
 import {Hotspot} from './Hotspot';
-import {ControlLesson} from './ControlLesson';
+import {ControlLessonPanel} from './ControlLesson';
 import {ShiftProvider, useShift} from './ShiftContext';
 import {ShiftToggle} from './ShiftToggle';
 import {Stage} from './Stage';
@@ -388,7 +388,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               onClick={() => closeCompactLesson(openCompactControl.id)}
             />
           </div>
-          <ControlLesson control={openCompactControl} isShiftActive={isShiftActive} />
+          <ControlLessonPanel control={openCompactControl} isShiftActive={isShiftActive} />
         </div>
       )}
       {section === undefined && isNarrow && (

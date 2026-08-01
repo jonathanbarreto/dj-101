@@ -2,7 +2,7 @@ import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import type {Control} from '@/content/types';
-import {ControlPreview} from '../ControlPreview';
+import {ControlPreview, getPhysicalAction} from '../ControlPreview';
 
 const control: Control = {
   id: 'fx-selector',
@@ -31,6 +31,40 @@ const control: Control = {
 };
 
 describe('ControlPreview', () => {
+  it.each([
+    ['blockquote', '> Push **PLAY** once. Ignore this.', 'Push PLAY once.'],
+    [
+      'multiple list items',
+      '- Hold SHIFT\n1. press **PLAY**.',
+      'Hold SHIFT press PLAY.',
+    ],
+    [
+      'balanced link destination',
+      'Choose [Echo](https://example.com/fx_(echo)). Ignore this.',
+      'Choose Echo.',
+    ],
+    ['backslash escapes', String.raw`Turn the \[bracket\] control.`, 'Turn the [bracket] control.'],
+    ['heading followed by prose', '## Gesture\nPress CUE. Ignore this.', 'Press CUE.'],
+    ['fenced code followed by prose', '```ts\npress(fake)\n```\nPress CUE. Ignore this.', 'Press CUE.'],
+    [
+      'blockquote fenced code followed by prose',
+      '> ```ts\n> press(fake)\n> ```\n> Press CUE. Ignore this.',
+      'Press CUE.',
+    ],
+    [
+      'image label and balanced destination',
+      'Match ![the **waveform**](https://example.com/image_(2).png). Ignore this.',
+      'Match the waveform.',
+    ],
+    [
+      'HTML and angle autolink',
+      'Press <kbd>SHIFT</kbd>, then visit <https://example.com>. Ignore this.',
+      'Press SHIFT, then visit https://example.com.',
+    ],
+  ])('extracts content-preserving plain text from %s Markdown', (_name, detail, expected) => {
+    expect(getPhysicalAction(detail)).toBe(expected);
+  });
+
   it('shows only the glanceable primary preview and a clamped physical action', () => {
     const {container} = render(
       <ControlPreview

@@ -1,3 +1,5 @@
+import {installCssEscape} from './cssEscape';
+
 HTMLDialogElement.prototype.showModal = function showModal() {
   this.setAttribute('open', '');
 };
@@ -23,10 +25,4 @@ window.matchMedia = (query: string) => ({
 
 window.scrollTo = () => {};
 
-Object.defineProperty(globalThis, 'CSS', {
-  configurable: true,
-  value: {
-    escape: (value: string) => String(value)
-      .replace(/[^a-zA-Z0-9_-]/g, (character) => `\\${character}`),
-  },
-});
+installCssEscape(globalThis);

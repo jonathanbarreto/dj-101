@@ -4,7 +4,7 @@ import {Badge} from '@astryxdesign/core/Badge';
 import {Link} from '@astryxdesign/core/Link';
 import {Markdown} from '@astryxdesign/core/Markdown';
 import {Stack} from '@astryxdesign/core/Stack';
-import {Text} from '@astryxdesign/core/Text';
+import {Heading, Text} from '@astryxdesign/core/Text';
 import type {Behavior, Control, SourceTag} from '@/content/types';
 import {CounterpartLink} from './CounterpartLink';
 
@@ -98,6 +98,17 @@ export function ControlLesson({control, isShiftActive}: ControlLessonProps) {
           ))}
         </Stack>
       )}
+    </Stack>
+  );
+}
+
+export function ControlLessonPanel({control, isShiftActive}: ControlLessonProps) {
+  const {label} = getActiveControlBehavior(control, isShiftActive);
+
+  return (
+    <Stack direction="vertical" gap={3}>
+      <Heading level={2}>{label}</Heading>
+      <ControlLesson control={control} isShiftActive={isShiftActive} />
     </Stack>
   );
 }
