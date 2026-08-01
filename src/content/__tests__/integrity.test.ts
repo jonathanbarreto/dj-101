@@ -63,9 +63,9 @@ describe('content integrity', () => {
     for (const control of ALL_CONTROLS) {
       for (const [name, behavior] of [['primary', control.primary], ['shift', control.shift]] as const) {
         if (!behavior) continue;
-        expect(behavior.summary, `${control.id} ${name} summary`).not.toHaveLength(0);
-        expect(behavior.detail.length, `${control.id} ${name} detail`).toBeGreaterThan(20);
-        expect(behavior.why.length, `${control.id} ${name} why`).toBeGreaterThan(20);
+        expect(behavior.summary.trim(), `${control.id} ${name} summary`).not.toHaveLength(0);
+        expect(behavior.detail.trim().length, `${control.id} ${name} detail`).toBeGreaterThan(20);
+        expect(behavior.why.trim().length, `${control.id} ${name} why`).toBeGreaterThan(20);
       }
     }
   });
@@ -79,10 +79,23 @@ describe('content integrity', () => {
   });
 
   it('keeps every section rect on an existing surface and inside image bounds', () => {
-    for (const section of Object.values(SECTIONS)) {
+    for (const [id, section] of Object.entries(SECTIONS)) {
+      expect(section.id, `${id} section id`).toBe(id);
       expect(SURFACES[section.surface], `${section.id} surface ${section.surface}`).toBeDefined();
+      expect(section.rect.x, `${section.id} rect x`).toBeGreaterThanOrEqual(0);
+      expect(section.rect.y, `${section.id} rect y`).toBeGreaterThanOrEqual(0);
+      expect(section.rect.w, `${section.id} rect width`).toBeGreaterThan(0);
+      expect(section.rect.h, `${section.id} rect height`).toBeGreaterThan(0);
       expect(section.rect.x + section.rect.w, `${section.id} rect right`).toBeLessThanOrEqual(1.0001);
       expect(section.rect.y + section.rect.h, `${section.id} rect bottom`).toBeLessThanOrEqual(1.0001);
+      expect(section.marker.x, `${section.id} marker x`).toBeGreaterThanOrEqual(0);
+      expect(section.marker.x, `${section.id} marker x`).toBeLessThanOrEqual(1);
+      expect(section.marker.y, `${section.id} marker y`).toBeGreaterThanOrEqual(0);
+      expect(section.marker.y, `${section.id} marker y`).toBeLessThanOrEqual(1);
+    }
+
+    for (const [id, surface] of Object.entries(SURFACES)) {
+      expect(surface.id, `${id} surface id`).toBe(id);
     }
   });
 });
