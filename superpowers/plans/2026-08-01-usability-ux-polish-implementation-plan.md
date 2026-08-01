@@ -28,7 +28,8 @@ Create a test that renders `PageFrame`, asserts exactly one element with `data-t
 ```tsx
 it('uses one auto-height Astryx page layout without adding a second main landmark', () => {
   render(<PageFrame><p>Lesson content</p></PageFrame>);
-  expect(screen.getByTestId('page-frame')).toHaveAttribute('data-layout-height', 'auto');
+  expect(screen.getByText('Lesson content').closest('.astryx-layout'))
+    .toHaveAttribute('data-height', 'auto');
   expect(screen.getByText('Lesson content')).toBeVisible();
   expect(screen.queryByRole('main')).not.toBeInTheDocument();
 });
@@ -38,7 +39,7 @@ it('uses one auto-height Astryx page layout without adding a second main landmar
 
 Run: `pnpm exec vitest run src/components/__tests__/PageFrame.test.tsx --pool=threads --maxWorkers=1`
 
-Expected: FAIL because `PageFrame` is still a CSS-only `div` and has no layout-height contract.
+Expected: FAIL because `PageFrame` is still a CSS-only `div` and has no Astryx layout root.
 
 - [ ] **Step 3: Add a shared native Dialog shim**
 
@@ -64,7 +65,7 @@ Use imports from `@astryxdesign/core/Layout` and this composition:
   contentWidth="1440px"
   content={
     <LayoutContent isScrollable={false} role={role} padding={0}>
-      <div className={styles.frame} data-testid="page-frame" data-layout-height="auto">
+      <div className={styles.frame} data-testid="page-frame">
         {children}
       </div>
     </LayoutContent>
