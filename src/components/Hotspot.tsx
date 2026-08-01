@@ -4,7 +4,7 @@ import {useEffect, useRef, useState} from 'react';
 import {Popover} from '@astryxdesign/core/Popover';
 import type {Control, Point, Rect} from '@/content/types';
 import {isVisible, toViewport} from '@/lib/geometry';
-import {ControlPopover} from './ControlPopover';
+import {ControlLesson} from './ControlLesson';
 import {HotspotMarker} from './HotspotMarker';
 
 export interface HotspotProps {
@@ -105,7 +105,7 @@ export function Hotspot({
         label={label}
         placement="below"
         width="min(340px, calc(100vw - 2 * var(--spacing-3)))"
-        content={<ControlPopover control={control} isShiftActive={isShiftActive} />}
+        content={<ControlLesson control={control} isShiftActive={isShiftActive} />}
       >
         {(triggerProps) => (
           <HotspotMarker
