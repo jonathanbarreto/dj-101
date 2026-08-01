@@ -9,9 +9,11 @@ const manual = (summary: string, detail: string, why: string, extras: Partial<Be
 });
 
 /**
- * The left physical deck is numbered 32–55 in the DDJ-1000 layout. These
- * controls behave the same on the right deck; documenting one deck avoids
- * repeating a second, identical lesson.
+ * The left physical deck is numbered 32–55 in the DDJ-1000 layout. Browser
+ * controls such as the rotary selector, BACK, and VIEW sit outside this
+ * numbered deck range and are intentionally documented with the Browser area.
+ * These controls behave the same on the right deck; documenting one deck
+ * avoids repeating a second, identical lesson.
  */
 export const deckControls: Control[] = [
   {
@@ -278,7 +280,7 @@ export const deckControls: Control[] = [
     label: 'SLIP REVERSE', shiftLegend: 'REVERSE', kind: 'button', at: {x: 0.0317, y: 0.1493},
     primary: manual(
       'Reverses momentarily while the track advances underneath',
-      'Hold SLIP REVERSE to play backward momentarily with slip behavior: the underlying track position continues to advance, and releasing returns to the position it would have reached.',
+      'Hold SLIP REVERSE to play backward momentarily with slip behavior: the underlying track position continues to advance, and releasing returns to the position it would have reached. Pioneer automatically cancels the move after eight beats even if you keep holding the button.',
       'Hold it for a one-beat reverse burst before a drop, then release on the downbeat. Slip keeps the arrangement moving so the drop arrives on time instead of late and disorienting.',
     ),
     shift: manual(
@@ -311,7 +313,7 @@ export const deckControls: Control[] = [
     ),
     shift: manual(
       'Fine-adjusts the loop end or reloops a saved loop',
-      'Holding SHIFT and pressing LOOP OUT enters OUT ADJUST for jog correction of the loop end; it also provides reloop behavior for a previously active loop.',
+      'Holding SHIFT and pressing LOOP OUT reloops when no loop is active. When a loop is active, it enters OUT ADJUST so the jog can correct the loop end precisely.',
       'Recall a previously used loop to extend a percussion break when the next deck is not ready, but listen for a clean endpoint before reopening it on a vocal or melodic phrase.',
     ),
   },

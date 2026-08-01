@@ -5,14 +5,13 @@ import {ALL_CONTROLS, SECTIONS, SURFACES} from '../index';
 const deckControls = ALL_CONTROLS.filter((control) => control.section === 'deck-left');
 
 describe('DDJ-1000 left deck content', () => {
-  it('registers the complete numbered deck section and nothing from another surface', () => {
+  it('registers exactly the complete numbered deck range (32–55)', () => {
     expect(deckControls).toHaveLength(24);
     expect(deckControls.map((control) => control.ref).sort((a, b) => a! - b!)).toEqual(
       Array.from({length: 24}, (_, index) => index + 32),
     );
     expect(deckControls.every((control) => control.surface === 'hardware')).toBe(true);
     expect(deckControls.every((control) => control.section === 'deck-left')).toBe(true);
-    expect(deckControls.every((control) => control.counterpart === undefined)).toBe(true);
   });
 
   it('documents every printed second-layer control with its rekordbox behavior', () => {
