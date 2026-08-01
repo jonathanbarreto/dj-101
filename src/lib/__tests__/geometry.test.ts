@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {toViewport, isVisible, cropAspectRatio, cropStyle} from '../geometry';
+import {toViewport, isVisible, cropAspectRatio, cropCanvasStyle, cropStyle} from '../geometry';
 
 const FULL = {x: 0, y: 0, w: 1, h: 1};
 const RIGHT_HALF = {x: 0.5, y: 0, w: 0.5, h: 1};
@@ -61,5 +61,18 @@ describe('cropStyle', () => {
 describe('cropAspectRatio', () => {
   it('returns the cropped image pixel aspect ratio', () => {
     expect(cropAspectRatio({x: 0, y: 0, w: 0.5, h: 0.25}, 1920, 1080)).toBe(32 / 9);
+  });
+});
+
+describe('cropCanvasStyle', () => {
+  const naturalWidth = 1920;
+  const naturalHeight = 1080;
+
+  it.each([
+    ['full image', FULL, 16 / 9],
+    ['right section', RIGHT_HALF, 8 / 9],
+    ['tall section', {x: 0, y: 0.25, w: 1, h: 0.5}, 32 / 9],
+  ])('preserves the natural master-image geometry for a %s crop', (_name, rect, expectedAspectRatio) => {
+    expect(cropCanvasStyle(rect, naturalWidth, naturalHeight).aspectRatio).toBe(expectedAspectRatio);
   });
 });

@@ -41,3 +41,17 @@ export function cropAspectRatio(
 ): number {
   return (rect.w * naturalWidth) / (rect.h * naturalHeight);
 }
+
+/** Styles a crop canvas at its undistorted master-image aspect ratio. */
+export function cropCanvasStyle(
+  rect: Rect,
+  naturalWidth: number,
+  naturalHeight: number,
+): {aspectRatio: number; '--crop-aspect-ratio': string} {
+  const aspectRatio = cropAspectRatio(rect, naturalWidth, naturalHeight);
+
+  return {
+    aspectRatio,
+    '--crop-aspect-ratio': String(aspectRatio),
+  };
+}

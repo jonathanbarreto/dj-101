@@ -30,4 +30,30 @@ describe('Stage', () => {
     );
     expect(screen.getByTestId('marker')).toBeDefined();
   });
+
+  it('keeps the outer viewport budget stable while the inner crop canvas changes shape', () => {
+    const {rerender} = render(
+      <Stage surface="hardware" rect={{x: 0, y: 0, w: 1, h: 1}}>
+        <span data-testid="marker" />
+      </Stage>,
+    );
+    const stage = screen.getByTestId('stage');
+    const initialStyle = stage.getAttribute('style');
+    const canvas = screen.getByTestId('stage-canvas');
+
+    expect(stage.getAttribute('data-stable-stage')).toBe('true');
+    expect(canvas.style.aspectRatio).toBe(String(3129 / 1652));
+    expect(canvas.contains(screen.getByTestId('marker'))).toBe(true);
+    expect(canvas.querySelectorAll('img')).toHaveLength(1);
+
+    rerender(
+      <Stage surface="hardware" rect={{x: 0.5, y: 0, w: 0.5, h: 1}}>
+        <span data-testid="marker" />
+      </Stage>,
+    );
+
+    expect(stage.getAttribute('style')).toBe(initialStyle);
+    expect(screen.getByTestId('stage-canvas').style.aspectRatio).toBe(String(3129 / (2 * 1652)));
+    expect(stage.querySelectorAll('img')).toHaveLength(1);
+  });
 });

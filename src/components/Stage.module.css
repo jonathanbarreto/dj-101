@@ -1,0 +1,53 @@
+.stage {
+  display: grid;
+  position: relative;
+  inline-size: 100%;
+  min-block-size: clamp(20rem, 56dvh, 46rem);
+  place-items: center;
+  overflow: hidden;
+  container-type: size;
+  border-radius: var(--radius-container);
+}
+
+.canvas {
+  position: relative;
+  inline-size: min(100cqi, calc(100cqb * var(--crop-aspect-ratio)));
+  block-size: min(100cqb, calc(100cqi / var(--crop-aspect-ratio)));
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.image {
+  transition:
+    width var(--duration-medium) var(--ease-standard),
+    height var(--duration-medium) var(--ease-standard),
+    left var(--duration-medium) var(--ease-standard),
+    top var(--duration-medium) var(--ease-standard);
+}
+
+.hotspots {
+  position: absolute;
+  inset: 0;
+}
+
+.hotspots > * {
+  pointer-events: auto;
+  transition:
+    left var(--duration-medium) var(--ease-standard),
+    top var(--duration-medium) var(--ease-standard);
+}
+
+@media (max-width: 47.99rem) {
+  .stage {
+    min-block-size: clamp(16rem, 44dvh, 28rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image,
+  .hotspots > * {
+    transition: none;
+  }
+}
