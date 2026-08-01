@@ -2,6 +2,7 @@
   display: grid;
   position: relative;
   inline-size: 100%;
+  block-size: clamp(20rem, 56dvh, 46rem);
   min-block-size: clamp(20rem, 56dvh, 46rem);
   place-items: center;
   overflow: hidden;
@@ -41,6 +42,7 @@
 
 @media (max-width: 47.99rem) {
   .stage {
+    block-size: clamp(16rem, 44dvh, 28rem);
     min-block-size: clamp(16rem, 44dvh, 28rem);
   }
 }

@@ -1,5 +1,6 @@
 import {describe, it, expect} from 'vitest';
 import {render, screen} from '@testing-library/react';
+import {readFileSync} from 'node:fs';
 import {Stage} from '../Stage';
 
 describe('Stage', () => {
@@ -55,5 +56,10 @@ describe('Stage', () => {
     expect(stage.getAttribute('style')).toBe(initialStyle);
     expect(screen.getByTestId('stage-canvas').style.aspectRatio).toBe(String(3129 / (2 * 1652)));
     expect(stage.querySelectorAll('img')).toHaveLength(1);
+  });
+
+  it('gives the size-contained stage a definite block size for its crop canvas', () => {
+    const css = readFileSync(`${process.cwd()}/src/components/Stage.module.css`, 'utf8');
+    expect(css).toMatch(/\.stage\s*\{[\s\S]*\n\s+block-size:\s*clamp\(20rem, 56dvh, 46rem\)/);
   });
 });
