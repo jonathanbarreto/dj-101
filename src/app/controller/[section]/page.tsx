@@ -65,13 +65,15 @@ export default async function ControllerSectionPage({
   return (
     <PageFrame>
       <Stack direction="vertical" gap={4} xstyle={undefined}>
-        <PageBreadcrumbs items={[
-          {label: 'dj-101', href: '/'},
-          {label: 'Controller', href: '/controller'},
-          {label: connectionPanel?.label ?? section!.label},
-        ]} />
         {connectionPanel ? (
-          <ConnectionLessons panel={connectionPanel.id} />
+          <>
+            <PageBreadcrumbs items={[
+              {label: 'dj-101', href: '/'},
+              {label: 'Controller', href: '/controller'},
+              {label: connectionPanel.label},
+            ]} />
+            <ConnectionLessons panel={connectionPanel.id} />
+          </>
         ) : (
           <>
             <Text as="h1" type="display-1">{section!.label}</Text>

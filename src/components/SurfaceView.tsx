@@ -237,8 +237,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           </Stack>
         </Stack>
       )}
-      {section && (
-        <div ref={regionNavRef}>
+      <div ref={regionNavRef}>
         <SurfaceNavigator
           surface={surface}
           section={section}
@@ -249,13 +248,14 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           isCompact={isNarrow}
           overflowRegionIds={isMixer ? ['color-fx', 'outputs', 'monitoring', 'mic'] : undefined}
           onRegionChange={(value) => {
-            saveResumeTarget({surface, sectionId: section.id, controlId: selectedControlId ?? undefined});
+            if (section) {
+              saveResumeTarget({surface, sectionId: section.id, controlId: selectedControlId ?? undefined});
+            }
             selectRegion(value);
           }}
           resumeTarget={resumeTarget ?? undefined}
         />
-        </div>
-      )}
+      </div>
       {activeMixerRegion && (
         <div className={styles.regionHint}>
           <Text type="supporting">Swipe horizontally for all mixer lessons →</Text>

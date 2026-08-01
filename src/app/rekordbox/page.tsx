@@ -2,7 +2,6 @@ import type {Metadata} from 'next';
 import {Text} from '@astryxdesign/core/Text';
 import {Stack} from '@astryxdesign/core/Stack';
 import {SurfaceView} from '@/components/SurfaceView';
-import {PageBreadcrumbs} from '@/components/PageBreadcrumbs';
 import {PageFrame} from '@/components/PageFrame';
 
 export const metadata: Metadata = {
@@ -22,7 +21,6 @@ export default function RekordboxPage() {
   return (
     <PageFrame>
       <Stack direction="vertical" gap={4} xstyle={undefined}>
-        <PageBreadcrumbs items={[{label: 'dj-101', href: '/'}, {label: 'rekordbox 7'}]} />
         <Text as="h1" type="display-1">rekordbox 7</Text>
         <Text type="large" as="p">
           Orient yourself in Performance mode, then open the populated player deck lesson.

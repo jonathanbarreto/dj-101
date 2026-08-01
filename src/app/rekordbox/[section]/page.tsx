@@ -3,7 +3,6 @@ import type {Metadata} from 'next';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Text} from '@astryxdesign/core/Text';
 import {SurfaceView} from '@/components/SurfaceView';
-import {PageBreadcrumbs} from '@/components/PageBreadcrumbs';
 import {PageFrame} from '@/components/PageFrame';
 import {controlsInSection, SECTIONS} from '@/content';
 import type {SectionId} from '@/content/types';
@@ -50,11 +49,6 @@ export default async function RekordboxSectionPage({
   return (
     <PageFrame>
       <Stack direction="vertical" gap={4} xstyle={undefined}>
-        <PageBreadcrumbs items={[
-          {label: 'dj-101', href: '/'},
-          {label: 'rekordbox 7', href: '/rekordbox'},
-          {label: section.label},
-        ]} />
         <Text as="h1" type="display-1">{section.label}</Text>
         <SurfaceView surface="software" sectionId={section.id} />
       </Stack>

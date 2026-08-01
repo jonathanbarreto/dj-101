@@ -13,6 +13,8 @@ import RekordboxSectionPage, {
 import NotFound from '../not-found';
 import CoordsPage from '../dev/coords/page';
 
+const RESUME_STORAGE_KEY = 'dj101:resume:v1';
+
 vi.mock('next/navigation', () => ({
   notFound: vi.fn(() => {
     throw new Error('NEXT_NOT_FOUND');
@@ -21,6 +23,7 @@ vi.mock('next/navigation', () => ({
 
 beforeEach(() => {
   vi.mocked(notFound).mockClear();
+  window.sessionStorage.clear();
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
@@ -55,6 +58,41 @@ describe('routes', () => {
     render(<RekordboxPage />);
     expect(screen.getByRole('heading', {name: 'rekordbox 7'})).toBeDefined();
     expect(screen.queryByRole('main')).toBeNull();
+  });
+
+  it('uses SurfaceView orientation for map and taught-section routes without duplicate breadcrumbs', async () => {
+    const controller = render(<ControllerPage />);
+    expect(screen.getByRole('navigation', {name: 'Surface orientation'})).toBeDefined();
+    expect(screen.queryByRole('navigation', {name: 'Breadcrumb'})).toBeNull();
+    expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1);
+    controller.unmount();
+
+    const section = render(await RekordboxSectionPage({
+      params: Promise.resolve({section: 'rb-deck'}),
+    }));
+    expect(screen.getByRole('navigation', {name: 'Surface orientation'})).toBeDefined();
+    expect(screen.getByRole('link', {name: 'View map'}).getAttribute('href'))
+      .toBe('/rekordbox');
+    expect(screen.queryByRole('navigation', {name: 'Breadcrumb'})).toBeNull();
+    expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1);
+    section.unmount();
+  });
+
+  it('offers Resume from each map only after a valid same-surface target is stored', () => {
+    window.sessionStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify({
+      surface: 'hardware', sectionId: 'deck-left', controlId: 'deck-left-play-pause',
+    }));
+    const controller = render(<ControllerPage />);
+    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href'))
+      .toBe('/controller/deck-left#deck-left-play-pause');
+    controller.unmount();
+
+    window.sessionStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify({
+      surface: 'software', sectionId: 'rb-deck', controlId: 'rb-deck-title',
+    }));
+    render(<RekordboxPage />);
+    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href'))
+      .toBe('/rekordbox/rb-deck#rb-deck-title');
   });
 
   it('generates static params only for the matching surface', () => {
