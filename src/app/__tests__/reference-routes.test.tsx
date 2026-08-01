@@ -1,3 +1,5 @@
+import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
 import {render, screen} from '@testing-library/react';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {notFound} from 'next/navigation';
@@ -17,6 +19,18 @@ beforeEach(() => {
 });
 
 describe('reference routes', () => {
+  it('shows the horizontal-scroll hint through tablet widths only', () => {
+    const styles = readFileSync(
+      resolve(import.meta.dirname, '../reference/[topic]/ReferencePage.module.css'),
+      'utf8',
+    );
+
+    expect(styles).toMatch(/\.scrollHint\s*{\s*display:\s*none;\s*}/);
+    expect(styles).toMatch(
+      /@media\s*\(max-width:\s*48rem\)[\s\S]*?\.scrollHint\s*{\s*display:\s*block;\s*}/,
+    );
+  });
+
   it('generates only the three published topics', () => {
     expect(generateStaticParams()).toEqual([
       {topic: 'beat-fx'},
