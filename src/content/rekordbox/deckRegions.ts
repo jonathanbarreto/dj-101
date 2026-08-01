@@ -12,10 +12,10 @@ export interface RbDeckRegion {
 export const RB_DECK_DESKTOP_RECT: Rect = {x: 0, y: 0.268, w: 0.48, h: 0.265};
 
 const narrowVisualRects: Readonly<Record<RbDeckRegionId, Rect>> = {
-  info: {x: 0, y: 0.268, w: 0.24, h: 0.13},
-  sync: {x: 0.24, y: 0.268, w: 0.24, h: 0.13},
-  wave: {x: 0, y: 0.31, w: 0.48, h: 0.223},
-  pads: {x: 0, y: 0.31, w: 0.48, h: 0.223},
+  info: {x: 0, y: 0.255, w: 0.24, h: 0.143},
+  sync: {x: 0.24, y: 0.255, w: 0.24, h: 0.143},
+  wave: RB_DECK_DESKTOP_RECT,
+  pads: {x: 0, y: 0.38, w: 0.48, h: 0.17},
   loop: {x: 0.3, y: 0.395, w: 0.18, h: 0.138},
   jog: {x: 0.3, y: 0.395, w: 0.18, h: 0.138},
 };
@@ -68,17 +68,15 @@ export const RB_DECK_REGIONS: readonly RbDeckRegion[] = [
 
 const markerOffsets: Readonly<Record<string, Point>> = {
   'rb-deck-artwork': {x: 3, y: 0},
-  'rb-deck-original-bpm': {x: 0, y: 28},
-  'rb-deck-original-key': {x: 8, y: 0},
-  'rb-deck-key-sync': {x: 0, y: -8},
-  'rb-deck-key-shift': {x: 0, y: 20},
-  'rb-deck-beat-sync': {x: 0, y: -8},
-  'rb-deck-master': {x: 0, y: 20},
+  'rb-deck-original-bpm': {x: 0, y: 36},
+  'rb-deck-original-key': {x: 11, y: 0},
+  'rb-deck-key-shift': {x: 0, y: 27},
+  'rb-deck-master': {x: 0, y: 27},
   'rb-deck-hot-cue-marker': {x: -10, y: 0},
   'rb-deck-cue-point-marker': {x: 22, y: 0},
   'rb-deck-lighting-scenes': {x: 55, y: 0},
   'rb-deck-performance-pad-toggle': {x: 17, y: 0},
-  'rb-deck-grid-edit-toggle': {x: 62, y: 0},
+  'rb-deck-grid-edit-toggle': {x: 62, y: -2},
   'rb-deck-auto-loop': {x: -20, y: 0},
   'rb-deck-loop-length': {x: 25, y: 0},
   'rb-deck-loop-mode': {x: -20, y: 0},
@@ -87,9 +85,16 @@ const markerOffsets: Readonly<Record<string, Point>> = {
 
 const desktopMarkerOffsets: Readonly<Record<string, Point>> = {
   ...markerOffsets,
+  'rb-deck-title': {x: 0, y: 9},
+  'rb-deck-key-sync': {x: 0, y: 9},
+  'rb-deck-key-shift': {x: 0, y: 36},
+  'rb-deck-beat-sync': {x: 0, y: 9},
+  'rb-deck-master': {x: 0, y: 37},
   'rb-deck-loop-length': {x: -67, y: 0},
-  'rb-deck-play-pause': {x: 0, y: 8},
+  'rb-deck-cue': {x: -23, y: 0},
+  'rb-deck-play-pause': {x: 23, y: -3},
   'rb-deck-slip': {x: -48, y: -8},
+  'rb-deck-master-tempo': {x: 0, y: -4},
 };
 
 export function getRbDeckRegion(id: RbDeckRegionId): RbDeckRegion {

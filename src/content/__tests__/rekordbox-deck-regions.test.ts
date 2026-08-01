@@ -39,6 +39,17 @@ describe('rekordbox deck responsive regions', () => {
           return {id, x: point.x * width + offset.x, y: point.y * height + offset.y};
         });
 
+        for (const center of centers) {
+          expect(center.x, `${region.id}: ${center.id} clips the inline edge at ${width}px`)
+            .toBeGreaterThanOrEqual(22);
+          expect(center.x, `${region.id}: ${center.id} clips the inline edge at ${width}px`)
+            .toBeLessThanOrEqual(width - 22);
+          expect(center.y, `${region.id}: ${center.id} clips the block edge at ${width}px`)
+            .toBeGreaterThanOrEqual(22);
+          expect(center.y, `${region.id}: ${center.id} clips the block edge at ${width}px`)
+            .toBeLessThanOrEqual(height - 22);
+        }
+
         for (let left = 0; left < centers.length; left += 1) {
           for (let right = left + 1; right < centers.length; right += 1) {
             const a = centers[left];
