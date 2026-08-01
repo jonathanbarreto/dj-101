@@ -256,7 +256,7 @@ Use one controlled API containing `surface`, `section`, `activeRegionId`, `regio
 - Resume uses `resumeHref`;
 - deck and rekordbox show all fitting `Tab` values;
 - wide mixer layouts show six direct tabs: Signal path, Four channels, Color FX, Outputs, Headphones + sampler, and Mic;
-- narrow mixer layouts show Signal path and Four channels directly and use `TabMenu` for Color FX, Outputs, Headphones + sampler, and Mic; selecting an overflow option reflects its label in the menu trigger;
+- narrow mixer layouts show Signal path and Four channels directly and use a stable short-label `TabMenu` (“More”) for Color FX, Outputs, Headphones + sampler, and Mic; the selected overflow region remains visible in the orientation path rather than expanding the compact trigger;
 - selecting any value calls `onRegionChange`; no mixer tab requires horizontal scrolling.
 
 - [ ] **Step 4: Implement navigation using Astryx components**
