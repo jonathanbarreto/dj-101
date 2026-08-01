@@ -251,6 +251,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           regions={regions}
           isCompact={isNarrow}
           overflowRegionIds={isMixer ? ['color-fx', 'outputs', 'monitoring', 'mic'] : undefined}
+          onViewMap={() => {
+            if (!section) return;
+            const target = {surface, sectionId: section.id, controlId: selectedControlId ?? undefined};
+            saveResumeTarget(target);
+            setResumeTarget(target);
+          }}
           onRegionChange={(value) => {
             if (section) {
               saveResumeTarget({surface, sectionId: section.id, controlId: selectedControlId ?? undefined});

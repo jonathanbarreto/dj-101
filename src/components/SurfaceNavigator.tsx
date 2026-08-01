@@ -23,6 +23,7 @@ export interface SurfaceNavigatorProps {
   isCompact: boolean;
   overflowRegionIds?: string[];
   onRegionChange: (value: string) => void;
+  onViewMap?: () => void;
   resumeTarget?: ResumeTarget;
 }
 
@@ -36,6 +37,7 @@ export function SurfaceNavigator({
   isCompact,
   overflowRegionIds,
   onRegionChange,
+  onViewMap,
   resumeTarget,
 }: SurfaceNavigatorProps) {
   const rootHref = surface === 'hardware' ? '/controller' : '/rekordbox';
@@ -64,7 +66,7 @@ export function SurfaceNavigator({
       </nav>
       {(section || resumeTarget) ? (
         <Stack direction="horizontal" gap={2} wrap="wrap">
-          {section ? <Button className={styles.mapAction} label="View map" href={rootHref} variant="ghost" /> : null}
+          {section ? <Button className={styles.mapAction} label="View map" href={rootHref} variant="ghost" onClick={onViewMap} /> : null}
           {resumeTarget ? <Link href={resumeHref(resumeTarget)} isStandalone>Resume</Link> : null}
         </Stack>
       ) : null}

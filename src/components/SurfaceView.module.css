@@ -65,12 +65,6 @@
   margin-block-end: var(--spacing-2);
 }
 
-@media (min-width: 768px) {
-  .controlIndex {
-    display: none;
-  }
-}
-
 @media (max-width: 767px) {
   .regionHint {
     display: block;

@@ -66,6 +66,27 @@ describe('SurfaceNavigator', () => {
     expect(screen.getByRole('button', {name: 'Jog / tempo'})).toBeDefined();
   });
 
+  it('calls onViewMap while preserving the normal map link', async () => {
+    const onViewMap = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <SurfaceNavigator
+        surface="hardware"
+        section={SECTIONS['deck-left']}
+        regions={[]}
+        isCompact={false}
+        onRegionChange={vi.fn()}
+        onViewMap={onViewMap}
+      />,
+    );
+
+    const map = screen.getByRole('link', {name: 'View map'});
+    expect(map.getAttribute('href')).toBe('/controller');
+    map.addEventListener('click', (event) => event.preventDefault());
+    await user.click(map);
+    expect(onViewMap).toHaveBeenCalledTimes(1);
+  });
+
   it('suppresses the map self-link while retaining a stored resume target', () => {
     render(
       <SurfaceNavigator

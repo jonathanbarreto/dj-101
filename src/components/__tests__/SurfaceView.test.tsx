@@ -1,6 +1,7 @@
 import {cleanup, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {renderToString} from 'react-dom/server';
+import {readFileSync} from 'node:fs';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {SurfaceView} from '../SurfaceView';
 
@@ -91,6 +92,22 @@ describe('SurfaceView lesson coordination', () => {
     expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href')).toContain('deck-left');
   });
 
+  it('saves a section resume target before View map navigation', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+
+    const map = screen.getByRole('link', {name: 'View map'});
+    map.addEventListener('click', (event) => event.preventDefault());
+    await user.click(map);
+    expect(window.sessionStorage.getItem('dj101:resume:v1')).toBe(JSON.stringify({
+      surface: 'hardware', sectionId: 'deck-left',
+    }));
+
+    cleanup();
+    render(<SurfaceView surface="hardware" />);
+    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href')).toBe('/controller/deck-left');
+  });
+
   it('omits Resume from the initial map markup, then exposes a valid stored target after hydration', () => {
     window.sessionStorage.setItem('dj101:resume:v1', JSON.stringify({
       surface: 'hardware', sectionId: 'deck-left', controlId: 'deck-left-play-pause',
@@ -107,5 +124,12 @@ describe('SurfaceView lesson coordination', () => {
     const frame = vi.spyOn(window, 'requestAnimationFrame');
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
     expect(frame).not.toHaveBeenCalled();
+  });
+
+  it('keeps the control index visible at tablet and desktop widths', () => {
+    const css = readFileSync(`${process.cwd()}/src/components/SurfaceView.module.css`, 'utf8');
+    const desktopRules = css.match(/@media \(min-width: 768px\)\s*\{([\s\S]*?)\n\}/)?.[1] ?? '';
+
+    expect(desktopRules).not.toMatch(/\.controlIndex\s*\{[^}]*display:\s*none/);
   });
 });
