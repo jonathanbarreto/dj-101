@@ -11,6 +11,7 @@ import RekordboxSectionPage, {
   generateStaticParams as rekordboxParams,
 } from '../rekordbox/[section]/page';
 import NotFound from '../not-found';
+import CoordsPage from '../dev/coords/page';
 
 vi.mock('next/navigation', () => ({
   notFound: vi.fn(() => {
@@ -122,5 +123,10 @@ describe('routes', () => {
     expect(screen.getByRole('heading', {name: /lost the beat/i})).toBeDefined();
     expect(screen.getByRole('link', {name: /return to dj-101/i}).getAttribute('href'))
       .toBe('/');
+  });
+
+  it('keeps the coordinate authoring tool unavailable outside development', () => {
+    expect(() => CoordsPage()).toThrow('NEXT_NOT_FOUND');
+    expect(notFound).toHaveBeenCalledOnce();
   });
 });

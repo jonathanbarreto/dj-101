@@ -6,8 +6,8 @@ export type SectionId =
   | 'rb-record' | 'rb-sampler' | 'rb-lighting' | 'rb-palette'
   | 'rb-sources' | 'rb-tracklist';
 
-/** Source of a behavioral claim. 'virtualdj' is banned in shipped content. */
-export type SourceTag = 'manual' | 'rekordbox7' | 'virtualdj' | 'community';
+/** Canonical source of a behavioral claim. */
+export type SourceTag = 'manual' | 'rekordbox7' | 'community';
 
 /** Normalized point in master-image space. Both axes 0..1. */
 export interface Point { x: number; y: number; }
@@ -36,7 +36,7 @@ export type ControlKind =
 export interface Control {
   /** Stable, URL-addressable. Convention: `<section>-<slug>`. */
   id: string;
-  /** VirtualDJ manual reference number. Structure only — never cite its behavior. */
+  /** Neutral structural number used to correlate controls across diagrams. */
   ref?: number;
   surface: Surface;
   section: SectionId;

@@ -25,7 +25,11 @@ export async function generateMetadata({params}: {params: Promise<{section: stri
   const section = SECTIONS[requestedSection as SectionId];
   const label = connectionPanel?.label ?? section?.label;
   return label
-    ? {title: label, description: `Learn the DDJ-1000 ${label.toLowerCase()} with precise controls, practical use cases, and setup guidance.`}
+    ? {
+        title: label,
+        description: `Learn the DDJ-1000 ${label.toLowerCase()} with precise controls, practical use cases, and setup guidance.`,
+        alternates: {canonical: `/controller/${requestedSection}`},
+      }
     : {};
 }
 

@@ -18,7 +18,11 @@ export async function generateMetadata({params}: {params: Promise<{section: stri
   const {section: requestedSection} = await params;
   const section = SECTIONS[requestedSection as SectionId];
   return section?.surface === 'software'
-    ? {title: `${section.label} in rekordbox 7`, description: `Learn the rekordbox 7 ${section.label.toLowerCase()} and its DDJ-1000 hardware counterparts.`}
+    ? {
+        title: `${section.label} in rekordbox 7`,
+        description: `Learn the rekordbox 7 ${section.label.toLowerCase()} and its DDJ-1000 hardware counterparts.`,
+        alternates: {canonical: `/rekordbox/${requestedSection}`},
+      }
     : {};
 }
 

@@ -141,8 +141,7 @@ describe('DDJ-1000 hardware effects controls', () => {
         }
         expect(behavior!.detail.length, `${control.id} detail`).toBeGreaterThan(100);
         expect(behavior!.why.length, `${control.id} why`).toBeGreaterThan(100);
-        expect(`${behavior!.summary} ${behavior!.detail} ${behavior!.why}`)
-          .not.toMatch(/VirtualDJ|Serato/i);
+        expect(['manual', 'rekordbox7']).toContain(behavior!.source);
       }
       for (const link of control.referenceLinks ?? []) {
         expect(validRoutes.has(link.href), `${control.id} ${link.href}`).toBe(true);

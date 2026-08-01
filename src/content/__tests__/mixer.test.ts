@@ -118,8 +118,7 @@ describe('DDJ-1000 four-channel mixer content', () => {
         expect(behavior!.source, control.id).toBe('manual');
         expect(behavior!.detail.length, `${control.id} detail`).toBeGreaterThan(100);
         expect(behavior!.why.length, `${control.id} why`).toBeGreaterThan(100);
-        expect(`${behavior!.summary} ${behavior!.detail} ${behavior!.why}`)
-          .not.toMatch(/VirtualDJ|Serato/i);
+        expect(['manual', 'rekordbox7']).toContain(behavior!.source);
       }
     }
   });

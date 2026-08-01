@@ -65,7 +65,8 @@ describe('DDJ-1000 left deck content', () => {
       expect(control, id).toBeDefined();
       expect(control?.shiftLegend, id).toBe(legend);
       expect(control?.shift, `${id} must explain its grey legend`).toBeDefined();
-      expect(control?.shift?.source, `${id} must use a canonical source`).not.toBe('virtualdj');
+      expect(['manual', 'rekordbox7', 'community'], `${id} must use a canonical source`)
+        .toContain(control?.shift?.source);
     }
   });
 
@@ -129,10 +130,14 @@ describe('content integrity', () => {
     }
   });
 
-  it('does not ship VirtualDJ behavior data', () => {
+  it('uses only canonical behavior sources', () => {
     for (const control of ALL_CONTROLS) {
-      expect(control.primary.source, `${control.id} primary source`).not.toBe('virtualdj');
-      expect(control.shift?.source, `${control.id} shift source`).not.toBe('virtualdj');
+      expect(['manual', 'rekordbox7', 'community'], `${control.id} primary source`)
+        .toContain(control.primary.source);
+      if (control.shift) {
+        expect(['manual', 'rekordbox7', 'community'], `${control.id} shift source`)
+          .toContain(control.shift.source);
+      }
     }
   });
 

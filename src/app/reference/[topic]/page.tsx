@@ -87,6 +87,7 @@ export async function generateMetadata({params}: {params: Promise<{topic: string
   return {
     title: `${label} reference`,
     description: `A practical DDJ-1000 ${label} reference for rekordbox 7 Performance mode.`,
+    alternates: {canonical: `/reference/${topic}`},
   };
 }
 

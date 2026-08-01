@@ -8,6 +8,7 @@ import {PageBreadcrumbs} from '@/components/PageBreadcrumbs';
 export const metadata: Metadata = {
   title: 'Pioneer DJ DDJ-1000',
   description: 'Explore every taught section of the DDJ-1000, from both decks and the four-channel mixer to effects, browsing, and connections.',
+  alternates: {canonical: '/controller'},
 };
 
 export default function ControllerPage() {
