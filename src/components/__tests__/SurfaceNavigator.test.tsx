@@ -84,14 +84,15 @@ describe('SurfaceNavigator', () => {
     expect(screen.getByRole('button', {name: 'Jog / tempo'})).toBeDefined();
   });
 
-  it('keeps two mixer regions direct and moves the selected compact region into an accessible More menu', async () => {
+  it('keeps two mixer regions direct and moves compact regions into an accessible More menu', async () => {
     const onRegionChange = vi.fn();
     const user = userEvent.setup();
     render(
       <SurfaceNavigator
         surface="hardware"
         section={SECTIONS.mixer}
-        activeRegionId="color"
+        activeRegionId="headphones"
+        activeRegionLabel="Headphones + sampler"
         regions={mixerRegions}
         isCompact
         overflowRegionIds={['color', 'outputs', 'headphones', 'mic']}
@@ -102,7 +103,9 @@ describe('SurfaceNavigator', () => {
     expect(screen.getByRole('button', {name: 'Signal path'})).toBeDefined();
     expect(screen.getByRole('button', {name: 'Four channels'})).toBeDefined();
     expect(screen.queryByRole('button', {name: 'Outputs'})).toBeNull();
-    const overflowTrigger = screen.getByRole('button', {name: 'Color FX'});
+    expect(within(screen.getByRole('navigation', {name: 'Surface orientation'}))
+      .getByText('Headphones + sampler')).toBeDefined();
+    const overflowTrigger = screen.getByRole('button', {name: 'More'});
     expect(overflowTrigger.getAttribute('aria-haspopup')).toBe('menu');
 
     await user.click(overflowTrigger);
@@ -116,5 +119,7 @@ describe('SurfaceNavigator', () => {
     const css = readFileSync(`${process.cwd()}/src/components/SurfaceNavigator.module.css`, 'utf8');
 
     expect(css).not.toMatch(/overflow(?:-x)?:\s*(?:auto|scroll)/);
+    expect(css).not.toMatch(/white-space:\s*nowrap/);
+    expect(css).toMatch(/\.regionTabs\s*\{[^}]*min-inline-size:\s*0/);
   });
 });

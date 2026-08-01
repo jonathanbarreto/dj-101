@@ -43,6 +43,11 @@ export function SurfaceNavigator({
   const overflowIds = isCompact ? new Set(overflowRegionIds) : new Set<string>();
   const directRegions = regions.filter((region) => !overflowIds.has(region.id));
   const overflowRegions = regions.filter((region) => overflowIds.has(region.id));
+  const overflowValues = new Map(overflowRegions.map((region) => [`overflow:${region.id}`, region.id]));
+
+  function handleRegionChange(value: string) {
+    onRegionChange(overflowValues.get(value) ?? value);
+  }
 
   return (
     <Stack direction="vertical" gap={2}>
@@ -65,7 +70,7 @@ export function SurfaceNavigator({
         <div className={styles.regionTabs}>
           <TabList
             value={activeRegionId ?? ''}
-            onChange={onRegionChange}
+            onChange={handleRegionChange}
             size="sm"
             layout="hug"
             hasDivider
@@ -78,7 +83,10 @@ export function SurfaceNavigator({
               <TabMenu
                 key="overflow"
                 label="More"
-                options={overflowRegions.map((region) => ({value: region.id, label: region.label}))}
+                options={overflowRegions.map((region) => ({
+                  value: `overflow:${region.id}`,
+                  label: region.label,
+                }))}
               />
             ) : null}
           </TabList>

@@ -5,6 +5,7 @@
 
 .regionTabs {
   max-inline-size: 100%;
+  min-inline-size: 0;
 }
 
 .regionTabs :global(button) {
