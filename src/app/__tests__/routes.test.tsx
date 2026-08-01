@@ -1,5 +1,6 @@
 import {render, screen} from '@testing-library/react';
-import {describe, expect, it} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {notFound} from 'next/navigation';
 import Home from '../page';
 import ControllerPage from '../controller/page';
 import ControllerSectionPage, {
@@ -9,6 +10,16 @@ import RekordboxPage from '../rekordbox/page';
 import RekordboxSectionPage, {
   generateStaticParams as rekordboxParams,
 } from '../rekordbox/[section]/page';
+
+vi.mock('next/navigation', () => ({
+  notFound: vi.fn(() => {
+    throw new Error('NEXT_NOT_FOUND');
+  }),
+}));
+
+beforeEach(() => {
+  vi.mocked(notFound).mockClear();
+});
 
 describe('routes', () => {
   it('renders the home copy and surface links', () => {
@@ -45,15 +56,17 @@ describe('routes', () => {
 
   it('rejects unknown and cross-surface controller sections', async () => {
     await expect(ControllerSectionPage({params: Promise.resolve({section: 'not-real'})}))
-      .rejects.toThrow();
+      .rejects.toThrow('NEXT_NOT_FOUND');
     await expect(ControllerSectionPage({params: Promise.resolve({section: 'rb-deck'})}))
-      .rejects.toThrow();
+      .rejects.toThrow('NEXT_NOT_FOUND');
+    expect(notFound).toHaveBeenCalledTimes(2);
   });
 
   it('rejects unknown and cross-surface rekordbox sections', async () => {
     await expect(RekordboxSectionPage({params: Promise.resolve({section: 'not-real'})}))
-      .rejects.toThrow();
+      .rejects.toThrow('NEXT_NOT_FOUND');
     await expect(RekordboxSectionPage({params: Promise.resolve({section: 'deck-left'})}))
-      .rejects.toThrow();
+      .rejects.toThrow('NEXT_NOT_FOUND');
+    expect(notFound).toHaveBeenCalledTimes(2);
   });
 });

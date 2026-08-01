@@ -1,5 +1,5 @@
-import {render, screen} from '@testing-library/react';
-import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
+import {act, render, screen} from '@testing-library/react';
+import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import * as content from '@/content';
 import type {Control} from '@/content/types';
 import {SurfaceView} from '../SurfaceView';
@@ -20,6 +20,9 @@ const testControl: Control = {
 };
 
 const originalMatchMedia = window.matchMedia;
+const originalRequestAnimationFrame = window.requestAnimationFrame;
+const originalCancelAnimationFrame = window.cancelAnimationFrame;
+let animationFrames: FrameRequestCallback[];
 
 beforeAll(() => {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
@@ -36,6 +39,21 @@ beforeAll(() => {
 
 afterAll(() => {
   window.matchMedia = originalMatchMedia;
+});
+
+beforeEach(() => {
+  animationFrames = [];
+  window.requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
+    animationFrames.push(callback);
+    return animationFrames.length;
+  });
+  window.cancelAnimationFrame = vi.fn();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  window.requestAnimationFrame = originalRequestAnimationFrame;
+  window.cancelAnimationFrame = originalCancelAnimationFrame;
 });
 
 describe('SurfaceView', () => {
@@ -57,14 +75,31 @@ describe('SurfaceView', () => {
     expect(screen.queryByRole('switch', {name: /shift/i})).toBeNull();
   });
 
-  it('uses the section crop and renders that section controls', () => {
+  it('starts a section at the full image, then transitions to its crop', () => {
     const controlsSpy = vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
 
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
 
     expect(controlsSpy).toHaveBeenCalledWith('deck-left');
+    expect(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes')).toBe('100vw');
+    expect(animationFrames).toHaveLength(1);
+
+    act(() => animationFrames[0](0));
+
     expect(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes')).toBe('309vw');
     expect(screen.getByRole('button', {name: 'Test control'})).toBeDefined();
+    expect(parseFloat(
+      screen.getByRole('button', {name: 'Test control'}).parentElement?.style.left ?? '',
+    )).toBeCloseTo(28.7037);
     expect(screen.queryByRole('link', {name: 'Mixer'})).toBeNull();
+  });
+
+  it('cancels a pending section crop when it unmounts', () => {
+    const {unmount} = render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+
+    expect(animationFrames).toHaveLength(1);
+    unmount();
+
+    expect(window.cancelAnimationFrame).toHaveBeenCalledWith(1);
   });
 });
