@@ -1,0 +1,58 @@
+.marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dot,
+.ring {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.dot {
+  z-index: 1;
+  border: 2px solid var(--color-on-dark);
+  background: var(--color-accent);
+}
+
+.dotOpen {
+  background: var(--color-text-primary);
+}
+
+.ring {
+  pointer-events: none;
+  background: var(--color-accent);
+  animation: hotspot-pulse calc(var(--duration-slow) * 3) var(--ease-standard) infinite;
+}
+
+@keyframes hotspot-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  80%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation-name: none;
+  }
+}
