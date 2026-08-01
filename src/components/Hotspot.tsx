@@ -1,17 +1,23 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
+import {useRef} from 'react';
 import {Popover} from '@astryxdesign/core/Popover';
 import type {Control, Point, Rect} from '@/content/types';
 import {isVisible, toViewport} from '@/lib/geometry';
-import {ControlLessonPanel} from './ControlLesson';
+import {ControlPreview} from './ControlPreview';
 import {HotspotMarker} from './HotspotMarker';
 
 export interface HotspotProps {
   control: Control;
   rect: Rect;
   isShiftActive: boolean;
+  isSelected?: boolean;
+  isPreviewOpen?: boolean;
+  onPreviewOpenChange?: (isOpen: boolean, trigger?: HTMLButtonElement | null) => void;
+  onReadLesson?: (trigger?: HTMLButtonElement | null) => void;
+  /** @deprecated use isPreviewOpen */
   isOpen?: boolean;
+  /** @deprecated use onPreviewOpenChange */
   onOpenChange?: (isOpen: boolean) => void;
   markerOffset?: Point;
 }
@@ -20,48 +26,16 @@ export function Hotspot({
   control,
   rect,
   isShiftActive,
-  isOpen: controlledIsOpen,
+  isSelected,
+  isPreviewOpen,
+  onPreviewOpenChange,
+  onReadLesson,
+  isOpen,
   onOpenChange,
   markerOffset = {x: 0, y: 0},
 }: HotspotProps) {
   const visible = isVisible(control.at, rect);
-  const [openControlId, setOpenControlId] = useState<string | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const shouldRestoreFocusRef = useRef(false);
-  const isControlled = controlledIsOpen !== undefined;
-  const isOpen = visible && (isControlled ? controlledIsOpen : openControlId === control.id);
-
-  function setOpen(nextIsOpen: boolean) {
-    shouldRestoreFocusRef.current = !nextIsOpen;
-    if (!isControlled) setOpenControlId(nextIsOpen ? control.id : null);
-    onOpenChange?.(nextIsOpen);
-  }
-
-  useEffect(() => {
-    if (isOpen || !shouldRestoreFocusRef.current) return;
-
-    let secondFrame = 0;
-    const firstFrame = window.requestAnimationFrame(() => {
-      secondFrame = window.requestAnimationFrame(() => {
-        shouldRestoreFocusRef.current = false;
-        const trigger = document
-          .getElementById(control.id)
-          ?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]');
-        (trigger ?? triggerRef.current)?.focus();
-      });
-    });
-
-    return () => {
-      window.cancelAnimationFrame(firstFrame);
-      if (secondFrame) window.cancelAnimationFrame(secondFrame);
-    };
-  }, [control.id, isOpen]);
-
-  useEffect(() => {
-    if (openControlId !== null && (!visible || openControlId !== control.id)) {
-      setOpen(false);
-    }
-  }, [control.id, openControlId, visible]);
 
   if (!visible) return null;
 
@@ -100,12 +74,19 @@ export function Hotspot({
       )}
       <Popover
         key={control.id}
-        isOpen={isOpen}
-        onOpenChange={setOpen}
+        isOpen={(isPreviewOpen ?? isOpen ?? false) && (isSelected ?? true)}
+        onOpenChange={(nextIsOpen) => {
+          onPreviewOpenChange?.(nextIsOpen, triggerRef.current);
+          onOpenChange?.(nextIsOpen);
+        }}
         label={label}
-        placement="below"
-        width="min(340px, calc(100vw - 2 * var(--spacing-3)))"
-        content={<ControlLessonPanel control={control} isShiftActive={isShiftActive} />}
+        width="min(22rem, calc(100vw - 2 * var(--spacing-3)))"
+        content={<ControlPreview
+          control={control}
+          isShiftActive={isShiftActive}
+          onReadLesson={() => onReadLesson?.(triggerRef.current)}
+          onClose={() => onPreviewOpenChange?.(false, triggerRef.current)}
+        />}
       >
         {(triggerProps) => (
           <HotspotMarker
@@ -118,7 +99,7 @@ export function Hotspot({
             aria-expanded={triggerProps['aria-expanded']}
             aria-controls={triggerProps['aria-controls']}
             aria-label={label}
-            isOpen={isOpen}
+            isOpen={(isPreviewOpen ?? isOpen ?? false) && (isSelected ?? true)}
           />
         )}
       </Popover>

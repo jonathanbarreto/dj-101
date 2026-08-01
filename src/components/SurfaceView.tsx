@@ -20,7 +20,7 @@ import {
   isDeckSection,
   type DeckRegionId,
 } from '@/content/hardware/deckRegions';
-import {mixerGainControls, mixerSignalFlowSteps} from '@/content/hardware/mixer';
+import {mixerChannelOverview, mixerGainControls, mixerSignalFlowSteps} from '@/content/hardware/mixer';
 import {
   getMixerRegion,
   getMixerRegionForControl,
@@ -38,7 +38,10 @@ import {
 } from '@/content/rekordbox/deckRegions';
 import type {Control, Rect, SectionId, Surface} from '@/content/types';
 import {Hotspot} from './Hotspot';
-import {ControlLessonPanel} from './ControlLesson';
+import {ControlLessonDialog} from './ControlLessonDialog';
+import {ControlIndex} from './ControlIndex';
+import {SurfaceNavigator} from './SurfaceNavigator';
+import {readResumeTarget, saveResumeTarget} from '@/lib/resume-state';
 import {ShiftProvider, useShift} from './ShiftContext';
 import {ShiftToggle} from './ShiftToggle';
 import {Stage} from './Stage';
@@ -106,10 +109,11 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     : allControls;
   const [crop, setCrop] = useState<{sectionId?: SectionId; rect: Rect}>({
     sectionId,
-    rect: FULL,
+    rect: targetRect,
   });
-  const [openControlId, setOpenControlId] = useState<string | null>(null);
-  const [pendingControlId, setPendingControlId] = useState<string | null>(null);
+  const [selectedControlId, setSelectedControlId] = useState<string | null>(null);
+  const [overlayMode, setOverlayMode] = useState<'none' | 'preview' | 'lesson'>('none');
+  const initiatorRef = useRef<HTMLElement | null>(null);
   const stageRect = crop.sectionId === sectionId ? crop.rect : FULL;
   const baseHref = surface === 'hardware' ? '/controller' : '/rekordbox';
   const sections = Object.values(SECTIONS).filter((candidate) => candidate.surface === surface);
@@ -118,9 +122,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const isCompactSection = isNarrow && section !== undefined;
   const showControlIndex = (activeRegion !== undefined && controls.length > 0)
     || (isCompactSection && controls.length > 0);
-  const openCompactControl = isCompactSection
-    ? controls.find((control) => control.id === openControlId)
-    : undefined;
+  const selectedControl = allControls.find((control) => control.id === selectedControlId) ?? null;
 
   const activateControl = useCallback((controlId: string, updateHash: boolean) => {
     const control = allControls.find((candidate) => candidate.id === controlId);
@@ -133,8 +135,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (rbRegion) setActiveRegionId(rbRegion.id);
     if (mixerRegion) setActiveMixerRegionId(mixerRegion.id);
     if (deckRegion) setActiveDeckRegionId(deckRegion.id);
-    setOpenControlId(isCompactSection ? control.id : null);
-    setPendingControlId(control.id);
+    setSelectedControlId(control.id);
+    setOverlayMode(isNarrow ? 'lesson' : 'preview');
+    if (section) saveResumeTarget({surface, sectionId: section.id, controlId: control.id});
 
     if (updateHash && typeof window !== 'undefined') {
       const nextHash = `#${encodeURIComponent(control.id)}`;
@@ -143,13 +146,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       }
     }
     return true;
-  }, [allControls, isCompactSection, isDeck, isMixer, isRbDeck]);
+  }, [allControls, isDeck, isMixer, isNarrow, isRbDeck, section, surface]);
 
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      setCrop({sectionId: section?.id, rect: targetRect});
-    });
-    return () => window.cancelAnimationFrame(frame);
+    setCrop({sectionId: section?.id, rect: targetRect});
   }, [section?.id, targetRect]);
 
   useEffect(() => {
@@ -157,8 +157,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     const openHashTarget = () => {
       const id = hashControlId();
       if (!id || !activateControl(id, false)) {
-        setOpenControlId(null);
-        setPendingControlId(null);
+        setSelectedControlId(null);
+        setOverlayMode('none');
+      } else {
+        setOverlayMode('lesson');
       }
     };
     openHashTarget();
@@ -167,42 +169,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   }, [activateControl, section]);
 
   useEffect(() => {
-    if (!pendingControlId) return;
-    let secondFrame = 0;
-    const firstFrame = window.requestAnimationFrame(() => {
-      secondFrame = window.requestAnimationFrame(() => {
-        if (isCompactSection) {
-          document.getElementById(`${pendingControlId}-lesson`)?.focus();
-        } else {
-          const trigger = document
-            .getElementById(pendingControlId)
-            ?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]');
-          if (trigger) {
-            trigger.focus();
-            setOpenControlId(pendingControlId);
-          }
-        }
-        setPendingControlId(null);
-      });
-    });
-    return () => {
-      window.cancelAnimationFrame(firstFrame);
-      if (secondFrame) window.cancelAnimationFrame(secondFrame);
-    };
-  }, [pendingControlId, activeRegionId, activeMixerRegionId, activeDeckRegionId, isCompactSection]);
-
-  useEffect(() => {
-    if (!openControlId) return;
-    if (isCompactSection) {
-      document.getElementById(`${openControlId}-lesson`)?.focus();
-      return;
-    }
-    const dialog = document
-      .getElementById(openControlId)
-      ?.querySelector<HTMLElement>('[role="dialog"]');
-    const destination = dialog?.querySelector<HTMLElement>('a[href], button');
-    destination?.focus();
-  }, [isCompactSection, openControlId]);
+    if (!selectedControlId || overlayMode !== 'preview' || isNarrow) return;
+    setOverlayMode('lesson');
+  }, [isNarrow, overlayMode, selectedControlId]);
 
   useEffect(() => {
     if (!isNarrow || !activeRegion) return;
@@ -220,29 +189,33 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     return () => window.cancelAnimationFrame(frame);
   }, [activeRegion, isNarrow]);
 
-  const closeCompactLesson = useCallback((controlId: string) => {
-    setOpenControlId(null);
-    setPendingControlId(null);
-    if (typeof window !== 'undefined' && window.location.hash) {
-      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
-    }
-    queueMicrotask(() => {
-      document
-        .querySelector<HTMLElement>(`[data-control-id="${controlId}"] button`)
-        ?.focus();
-    });
-  }, []);
+  const closeOverlay = useCallback((controlId: string | null = selectedControlId) => {
+    if (controlId) clearMatchingControlHash(controlId);
+    setOverlayMode('none');
+    setSelectedControlId(null);
+    queueMicrotask(() => initiatorRef.current?.focus());
+  }, [selectedControlId]);
 
   function selectRegion(value: string) {
     if (isMixer) setActiveMixerRegionId(value as MixerRegionId);
     else if (isDeck) setActiveDeckRegionId(value as DeckRegionId);
     else setActiveRegionId(value as RbDeckRegionId);
-    setOpenControlId(null);
-    setPendingControlId(null);
+    setSelectedControlId(null);
+    setOverlayMode('none');
     if (typeof window !== 'undefined' && window.location.hash) {
       window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
     }
+    queueMicrotask(() => regionNavRef.current?.querySelector<HTMLButtonElement>(
+      `[data-tab-value="${value}"]`,
+    )?.focus());
   }
+
+  const regions = activeRegion ? (isMixer ? MIXER_REGIONS : isDeck ? DECK_REGIONS : RB_DECK_REGIONS) : [];
+  const resumeTarget = readResumeTarget(surface);
+  const selectControl = (controlId: string, trigger: HTMLButtonElement | null, mode: 'preview' | 'lesson') => {
+    initiatorRef.current = trigger;
+    if (activateControl(controlId, true)) setOverlayMode(isNarrow ? 'lesson' : mode);
+  };
 
   return (
     <Stack direction="vertical" gap={3} xstyle={undefined}>
@@ -264,20 +237,23 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           </Stack>
         </Stack>
       )}
-      {activeRegion && (
-        <div className={styles.regionNav} ref={regionNavRef}>
-          <TabList
-            value={activeRegion.id}
-            onChange={selectRegion}
-            size="sm"
-            layout={isMixer ? 'hug' : 'fill'}
-            hasDivider
-            aria-label={isMixer ? 'Mixer lesson region' : isDeck ? 'Deck lesson region' : 'Player deck region'}
-          >
-            {(isMixer ? MIXER_REGIONS : isDeck ? DECK_REGIONS : RB_DECK_REGIONS).map((region) => (
-              <Tab key={region.id} value={region.id} label={region.label} />
-            ))}
-          </TabList>
+      {section && (
+        <div ref={regionNavRef}>
+        <SurfaceNavigator
+          surface={surface}
+          section={section}
+          activeRegionId={activeRegion?.id}
+          activeRegionLabel={activeRegion?.label}
+          selectedControlLabel={selectedControl?.label}
+          regions={regions}
+          isCompact={isNarrow}
+          overflowRegionIds={isMixer ? ['color-fx', 'outputs', 'monitoring', 'mic'] : undefined}
+          onRegionChange={(value) => {
+            saveResumeTarget({surface, sectionId: section.id, controlId: selectedControlId ?? undefined});
+            selectRegion(value);
+          }}
+          resumeTarget={resumeTarget ?? undefined}
+        />
         </div>
       )}
       {activeMixerRegion && (
@@ -316,6 +292,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           </Stack>
         </div>
       )}
+      {activeMixerRegion?.id === 'channels' && <Text>{mixerChannelOverview}</Text>}
       <Stage surface={surface} rect={stageRect}>
         {section === undefined
           ? isNarrow ? null : (
@@ -350,17 +327,17 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 control={control}
                 rect={stageRect}
                 isShiftActive={isShiftActive}
-                isOpen={openControlId === control.id}
-                onOpenChange={(nextIsOpen) => {
+                isSelected={selectedControlId === control.id}
+                isPreviewOpen={overlayMode === 'preview'}
+                onPreviewOpenChange={(nextIsOpen, trigger) => {
                   if (nextIsOpen) {
-                    if (openControlId === control.id) return;
-                    if (activateControl(control.id, true)) {
-                      setOpenControlId(control.id);
-                    }
+                    selectControl(control.id, trigger ?? null, 'preview');
                   } else {
-                    setOpenControlId(null);
-                    clearMatchingControlHash(control.id);
+                    closeOverlay(control.id);
                   }
+                }}
+                onReadLesson={(trigger) => {
+                  selectControl(control.id, trigger ?? null, 'lesson');
                 }}
                 markerOffset={activeRbRegion
                   ? getRbDeckMarkerOffset(control.id, isNarrow)
@@ -368,29 +345,16 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               />
             ))}
       </Stage>
-      {openCompactControl && (
-        <div
-          id={`${openCompactControl.id}-lesson`}
-          className={styles.compactLesson}
-          role="region"
-          aria-label={`${openCompactControl.label} lesson`}
-          tabIndex={-1}
-          onKeyDown={(event) => {
-            if (event.key !== 'Escape') return;
-            closeCompactLesson(openCompactControl.id);
-          }}
-        >
-          <div className={styles.compactLessonClose}>
-            <Button
-              label="Close lesson"
-              size="sm"
-              variant="ghost"
-              onClick={() => closeCompactLesson(openCompactControl.id)}
-            />
-          </div>
-          <ControlLessonPanel control={openCompactControl} isShiftActive={isShiftActive} />
-        </div>
-      )}
+      <ControlLessonDialog
+        control={selectedControl}
+        isShiftActive={isShiftActive}
+        isOpen={overlayMode === 'lesson'}
+        isFullscreen={isNarrow}
+        onOpenChange={(open) => {
+          if (open) setOverlayMode('lesson');
+          else closeOverlay();
+        }}
+      />
       {section === undefined && isNarrow && (
         <List
           hasDividers
@@ -441,27 +405,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       )}
       {showControlIndex && section && (
         <div className={styles.controlIndex}>
-          <List
-            density="balanced"
-            hasDividers
-            header={<Text type="label">Controls in {activeRegion?.label ?? section.label}</Text>}
-          >
-            {controls.map((control: Control) => (
-              <ListItem
-                key={control.id}
-                data-control-id={control.id}
-                className={styles.controlIndexItem}
-                label={isShiftActive && control.shift
-                  ? control.shiftLegend ?? control.label
-                  : control.label}
-                description={isShiftActive && control.shift
-                  ? control.shift.summary
-                  : control.primary.summary}
-                onClick={() => activateControl(control.id, true)}
-                isSelected={openControlId === control.id}
-              />
-            ))}
-          </List>
+          <ControlIndex
+            controls={controls}
+            selectedControlId={selectedControlId}
+            title={`Controls in ${activeRegion?.label ?? section.label}`}
+            onSelect={(controlId, trigger) => selectControl(controlId, trigger, 'lesson')}
+          />
         </div>
       )}
     </Stack>

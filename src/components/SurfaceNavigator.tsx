@@ -19,7 +19,7 @@ export interface SurfaceNavigatorProps {
   activeRegionId?: string;
   activeRegionLabel?: string;
   selectedControlLabel?: string;
-  regions: Region[];
+  regions: readonly Region[];
   isCompact: boolean;
   overflowRegionIds?: string[];
   onRegionChange: (value: string) => void;

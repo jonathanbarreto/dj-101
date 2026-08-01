@@ -11,13 +11,10 @@ import {
 } from '../hardware/mixerRegions';
 
 describe('mixer teaching regions', () => {
-  it('uses the nine binding lesson tabs in signal-flow order', () => {
+  it('uses six consolidated lesson tabs in signal-flow order', () => {
     expect(MIXER_REGIONS.map(({id, label}) => [id, label])).toEqual([
       ['signal', 'Signal path'],
-      ['channel-3', 'CH3'],
-      ['channel-1', 'CH1'],
-      ['channel-2', 'CH2'],
-      ['channel-4', 'CH4'],
+      ['channels', 'Four channels'],
       ['color-fx', 'Color FX'],
       ['outputs', 'Outputs'],
       ['monitoring', 'Headphones + sampler'],
@@ -35,16 +32,21 @@ describe('mixer teaching regions', () => {
     ]);
   });
 
-  it('assigns every control to exactly one non-signal region', () => {
+  it('shows representative channel controls while resolving every legacy channel hash', () => {
     const assigned = MIXER_REGIONS.flatMap((region) => region.controlIds);
     const mixerLessonControls = [
       ...mixerControls,
       ...hardwareFxControls.filter(({section}) => section === 'mixer'),
     ];
-    expect(assigned).toHaveLength(mixerLessonControls.length);
-    expect(new Set(assigned).size).toBe(mixerLessonControls.length);
-    expect(new Set(assigned)).toEqual(new Set(mixerLessonControls.map(({id}) => id)));
+    expect(assigned).toHaveLength(26);
+    expect(new Set(assigned).size).toBe(26);
+    expect(assigned).toContain('mixer-ch2-trim');
+    expect(assigned).toContain('mixer-ch3-input');
+    expect(assigned).not.toContain('mixer-ch1-trim');
     for (const control of mixerControls) expect(getMixerRegionForControl(control.id)).toBeDefined();
+    for (const channel of [1, 2, 3, 4]) {
+      expect(getMixerRegionForControl(`mixer-ch${channel}-trim`)?.id).toBe('channels');
+    }
     expect(getMixerRegionForControl('mixer-sound-color-fx-select')?.id).toBe('color-fx');
   });
 

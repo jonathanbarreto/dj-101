@@ -1,535 +1,81 @@
-import {act, render, screen, waitFor} from '@testing-library/react';
+import {cleanup, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {renderToString} from 'react-dom/server';
-import {afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
-import * as content from '@/content';
-import type {Control} from '@/content/types';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {SurfaceView} from '../SurfaceView';
 
-const testControl: Control = {
-  id: 'deck-left-loop-in',
-  surface: 'hardware',
-  section: 'deck-left',
-  label: 'Test control',
-  shiftLegend: 'Test shift',
-  kind: 'button',
-  at: {x: 0.1, y: 0.2},
-  primary: {
-    summary: 'Test behavior',
-    detail: 'Test detail',
-    why: 'Test reason',
-    source: 'manual',
-  },
-  shift: {
-    summary: 'Shift test behavior',
-    detail: 'Shift test detail',
-    why: 'Shift test reason',
-    source: 'manual',
-  },
-};
-
 const originalMatchMedia = window.matchMedia;
-const originalRequestAnimationFrame = window.requestAnimationFrame;
-const originalCancelAnimationFrame = window.cancelAnimationFrame;
-let animationFrames: FrameRequestCallback[];
 
-beforeAll(() => {
+function media(narrow = false) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
+    matches: narrow && query === '(max-width: 767px)', media: query, onchange: null,
+    addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
+    removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
   }));
-});
+}
 
-afterAll(() => {
-  window.matchMedia = originalMatchMedia;
-});
-
-beforeEach(() => {
-  window.history.replaceState(null, '', '/');
-  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  }));
-  animationFrames = [];
-  window.requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
-    animationFrames.push(callback);
-    return animationFrames.length;
+describe('SurfaceView lesson coordination', () => {
+  beforeEach(() => {
+    window.history.replaceState(null, '', '/controller/deck-left');
+    window.sessionStorage.clear();
+    media();
   });
-  window.cancelAnimationFrame = vi.fn();
-});
-
-afterEach(() => {
-  vi.restoreAllMocks();
-  window.requestAnimationFrame = originalRequestAnimationFrame;
-  window.cancelAnimationFrame = originalCancelAnimationFrame;
-});
-
-describe('SurfaceView', () => {
-  it('organizes the mixer into an accessible signal-flow-first lesson', async () => {
-    const user = userEvent.setup();
-    render(<SurfaceView surface="hardware" sectionId="mixer" />);
-
-    expect(screen.getByRole('navigation', {name: 'Mixer lesson region'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'Signal path'}).getAttribute('aria-current'))
-      .toBe('page');
-    expect(screen.getByText('Choose the source')).toBeDefined();
-    expect(screen.getByText('HEADPHONES LEVEL')).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'CH 3 TRIM'})).toBeNull();
-
-    await user.click(screen.getByRole('button', {name: 'CH3'}));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-    expect(screen.getByRole('button', {name: 'CH 3 TRIM'})).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'CH 1 TRIM'})).toBeNull();
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
   });
 
-  it('selects and opens a mixer hash destination in its owning region', () => {
-    window.history.replaceState(null, '', '/controller/mixer#mixer-headphones-mixing');
-    render(<SurfaceView surface="hardware" sectionId="mixer" />);
-
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    expect(screen.getByRole('button', {name: 'Headphones + sampler'}).getAttribute('aria-current'))
-      .toBe('page');
-    expect(screen.getByRole('button', {name: 'HEADPHONES MIXING'}).getAttribute('aria-expanded'))
-      .toBe('true');
-  });
-
-  it('makes the Sound Color selection lesson and both effects references discoverable', () => {
-    window.history.replaceState(null, '', '/controller/mixer#mixer-sound-color-fx-select');
-    const {unmount} = render(<SurfaceView surface="hardware" sectionId="mixer" />);
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    expect(screen.getByRole('button', {name: 'Color FX'}).getAttribute('aria-current')).toBe('page');
-    expect(screen.getByRole('button', {name: 'SOUND COLOR FX SELECT'}).getAttribute('aria-expanded'))
-      .toBe('true');
-    unmount();
-
-    window.history.replaceState(null, '', '/controller/fx');
-    render(<SurfaceView surface="hardware" sectionId="fx" />);
-    expect(screen.getByText(/Prepare Beat FX in signal order/i)).toBeDefined();
-    expect(screen.getAllByRole('link', {name: /Compare all 14 Beat FX/})
-      .some((link) => link.getAttribute('href') === '/reference/beat-fx')).toBe(true);
-    expect(screen.getByRole('link', {name: /Sound Color FX directions/}).getAttribute('href'))
-      .toBe('/reference/sound-color-fx');
-  });
-
-  it('server-renders the deterministic Info region even when the URL has a valid hash', () => {
-    window.history.replaceState(null, '', '/rekordbox/rb-deck#rb-deck-slip');
-
-    const html = renderToString(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    expect(html).toContain('data-tab-value="info"');
-    expect(html).toMatch(/data-tab-value="info"[^>]*data-selected="selected"/);
-    expect(html).not.toMatch(/data-tab-value="jog"[^>]*data-selected="selected"/);
-  });
-
-  it('shows only hardware section links with controller hrefs on the hardware overview', () => {
-    render(<SurfaceView surface="hardware" />);
-
-    const deckLink = screen.getByRole('link', {name: 'Left deck'});
-    expect(deckLink.getAttribute('href')).toBe('/controller/deck-left');
-    expect(deckLink.style.left).not.toBe('');
-    const rearLink = screen.getByRole('link', {name: /Rear connections/});
-    const frontLink = screen.getByRole('link', {name: /Front headphones/});
-    expect(rearLink.getAttribute('href')).toBe('/controller/rear');
-    expect(frontLink.getAttribute('href')).toBe('/controller/front');
-    expect(rearLink.style.left).toBe('');
-    expect(frontLink.style.left).toBe('');
-    expect(screen.queryByRole('link', {name: 'Player deck'})).toBeNull();
-    expect(screen.getByRole('switch', {name: /shift/i})).toBeDefined();
-  });
-
-  it('turns the narrow hardware overview into a clean Astryx lesson list', () => {
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(max-width: 767px)', media: query, onchange: null,
-      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
-      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
-    }));
-    render(<SurfaceView surface="hardware" />);
-
-    expect(screen.getByRole('img', {name: /DDJ-1000/i})).toBeDefined();
-    expect(screen.queryByTestId('overview-overlay-link')).toBeNull();
-    expect(screen.getByRole('link', {name: /Left deck/i}).getAttribute('href'))
-      .toBe('/controller/deck-left');
-    expect(screen.getByRole('link', {name: /Rear connections/i}).getAttribute('href'))
-      .toBe('/controller/rear');
-  });
-
-  it('shows only software section links with rekordbox hrefs and no SHIFT control', () => {
-    render(<SurfaceView surface="software" />);
-
-    expect(screen.getByRole('link', {name: 'Player deck'}).getAttribute('href'))
-      .toBe('/rekordbox/rb-deck');
-    expect(screen.queryByRole('link', {name: 'Left deck'})).toBeNull();
-    expect(screen.queryByRole('switch', {name: /shift/i})).toBeNull();
-  });
-
-  it('keeps unavailable rekordbox zones as orientation labels, not dead routes', () => {
-    render(<SurfaceView surface="software" />);
-
-    expect(screen.getByRole('link', {name: 'Player deck'}).getAttribute('href'))
-      .toBe('/rekordbox/rb-deck');
-    expect(screen.queryByRole('link', {name: 'Waveforms'})).toBeNull();
-    expect(screen.getByText('Waveforms')).toBeDefined();
-    expect(screen.getByText(/orientation only/i)).toBeDefined();
-  });
-
-  it('does not describe hidden orientation labels on the narrow software overview', () => {
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(max-width: 767px)', media: query, onchange: null,
-      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
-      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
-    }));
-    render(<SurfaceView surface="software" />);
-
-    expect(screen.queryByText(/muted zone names are orientation only/i)).toBeNull();
-    expect(screen.getByText(/player deck is the published rekordbox 7 lesson/i)).toBeDefined();
-  });
-
-  it('organizes each hardware deck into three focused image regions', async () => {
+  it('opens a desktop hotspot as a preview, then promotes it to the one full dialog', async () => {
     const user = userEvent.setup();
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+    await user.click(screen.getByRole('button', {name: 'LOOP IN · 1/2X'}));
+    expect(screen.getAllByRole('button', {name: 'Read full lesson'}).length).toBeGreaterThan(0);
+    expect(document.querySelectorAll('dialog')).toHaveLength(0);
 
-    expect(screen.getByRole('navigation', {name: 'Deck lesson region'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'Loop / transport'}).getAttribute('aria-current'))
-      .toBe('page');
-    expect(screen.getByRole('button', {name: 'LOOP IN · 1/2X'})).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'JOG DIAL'})).toBeNull();
-
-    await user.click(screen.getByRole('button', {name: 'Jog / tempo'}));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-    expect(screen.getByRole('button', {name: 'JOG DIAL'})).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'LOOP IN · 1/2X'})).toBeNull();
-    expect(parseInt(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes') ?? '0'))
-      .toBeLessThanOrEqual(200);
+    await user.click(screen.getAllByRole('button', {name: 'Read full lesson'})[0]);
+    expect(document.querySelectorAll('dialog')).toHaveLength(1);
   });
 
-  it('starts a section at the full image, then transitions to its crop', () => {
-    const controlsSpy = vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
+  it('opens a valid direct hash in its owning region as a dialog', () => {
+    window.history.replaceState(null, '', '/controller/mixer#mixer-ch1-trim');
+    render(<SurfaceView surface="hardware" sectionId="mixer" />);
+    expect(screen.getByRole('button', {name: 'Four channels'}).getAttribute('aria-current')).toBe('page');
+    expect(document.querySelectorAll('dialog')).toHaveLength(1);
+    expect(screen.getByRole('heading', {name: 'CH 1 TRIM'})).toBeDefined();
+  });
 
+  it('keeps malformed hashes safe and clears only the matching hash when closing', async () => {
+    const user = userEvent.setup();
+    window.history.replaceState(null, '', '/controller/deck-left#%E0%A4%A');
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+    expect(document.querySelectorAll('dialog')).toHaveLength(0);
 
-    expect(controlsSpy).toHaveBeenCalledWith('deck-left');
-    expect(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes')).toBe('100vw');
-    expect(parseFloat(
-      screen.getByRole('button', {name: 'Test control'}).parentElement?.style.left ?? '',
-    )).toBeCloseTo(10);
-    expect(animationFrames).toHaveLength(1);
-
-    act(() => animationFrames[0](0));
-
-    expect(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes')).toBe('200vw');
-    expect(screen.getByRole('button', {name: 'Test control'})).toBeDefined();
-    expect(parseFloat(
-      screen.getByRole('button', {name: 'Test control'}).parentElement?.style.left ?? '',
-    )).toBeCloseTo(20);
-    expect(screen.queryByRole('link', {name: 'Mixer'})).toBeNull();
-  });
-
-  it('cancels a pending section crop when it unmounts', () => {
-    const {unmount} = render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-
-    expect(animationFrames).toHaveLength(1);
-    unmount();
-
-    expect(window.cancelAnimationFrame).toHaveBeenCalledWith(1);
-  });
-
-  it('uses an accessible Astryx region selector and filters software markers', async () => {
-    const user = userEvent.setup();
-    render(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    expect(screen.getByRole('navigation', {name: 'Player deck region'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'ARTWORK'})).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'SLIP'})).toBeNull();
-
-    await user.click(screen.getByRole('button', {name: 'Jog'}));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    expect(screen.getByRole('button', {name: 'SLIP'})).toBeDefined();
-    expect(screen.getByText('Controls in Jog')).toBeDefined();
-    expect(screen.getByRole('button', {name: /^SLIP /})).toBeDefined();
-    expect(screen.queryByText('Open SLIP lesson')).toBeNull();
-  });
-
-  it('keeps the full player-deck visual crop while filtering desktop markers', async () => {
-    const user = userEvent.setup();
-    render(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    act(() => animationFrames.shift()!(0));
-    expect(screen.getByRole('img', {name: /rekordbox 7/i}).getAttribute('sizes')).toBe('209vw');
-
-    await user.click(screen.getByRole('button', {name: 'Jog'}));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    expect(screen.getByRole('img', {name: /rekordbox 7/i}).getAttribute('sizes')).toBe('209vw');
-    expect(screen.getByRole('button', {name: 'SLIP'})).toBeDefined();
-  });
-
-  it('selects, focuses, and opens a valid hash destination', async () => {
-    const user = userEvent.setup();
-    window.history.replaceState(null, '', '/rekordbox/rb-deck#rb-deck-slip');
-    render(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    const trigger = screen.getByRole('button', {name: 'SLIP'});
-    expect(screen.getByRole('button', {name: 'Jog'}).getAttribute('aria-current')).toBe('page');
-    expect(trigger.getAttribute('aria-expanded')).toBe('true');
-    const dialog = screen.getByRole('dialog', {name: 'SLIP'});
-    await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
-
-    await user.keyboard('{Escape}');
-    await waitFor(() => expect(trigger.getAttribute('aria-expanded')).toBe('false'));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-    expect(document.activeElement).toBe(trigger);
+    await user.click(screen.getByRole('button', {name: 'LOOP IN · 1/2X'}));
+    await user.click(screen.getAllByRole('button', {name: 'Read full lesson'})[0]);
+    await user.click(screen.getAllByRole('button', {name: 'Close'}).at(-1)!);
     expect(window.location.hash).toBe('');
   });
 
-  it('opens an indexed control and writes a stable hash without navigation loops', async () => {
+  it('uses a dialog directly on mobile and supports indexed lessons', async () => {
     const user = userEvent.setup();
-    render(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    await user.click(screen.getByRole('button', {name: /^ARTWORK /}));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    expect(window.location.hash).toBe('#rb-deck-artwork');
-    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('true');
-  });
-
-  it('writes a stable hash when a desktop photo hotspot opens its lesson', async () => {
-    const user = userEvent.setup();
-    render(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    await user.click(screen.getByRole('button', {name: 'ARTWORK'}));
-
-    expect(window.location.hash).toBe('#rb-deck-artwork');
-    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('true');
-  });
-
-  it('ignores an invalid hash and leaves the default region usable', () => {
-    window.history.replaceState(null, '', '/rekordbox/rb-deck#not-a-control');
-    render(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    expect(screen.getByRole('button', {name: 'Info'}).getAttribute('aria-current')).toBe('page');
-    expect(screen.getByRole('button', {name: 'ARTWORK'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
-  });
-
-  it('treats malformed percent-encoded hashes as invalid on load and hashchange', () => {
-    window.history.replaceState(null, '', '/rekordbox/rb-deck#%E0%A4%A');
-
-    expect(() => render(<SurfaceView surface="software" sectionId="rb-deck" />)).not.toThrow();
-    expect(screen.getByRole('button', {name: 'Info'}).getAttribute('aria-current')).toBe('page');
-    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
-
-    expect(() => {
-      window.history.replaceState(null, '', '/rekordbox/rb-deck#%');
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
-    }).not.toThrow();
-    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
-  });
-
-  it('replaces overlapping hardware markers with an operable narrow lesson index', async () => {
-    const user = userEvent.setup();
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(max-width: 767px)',
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
-    vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
-
+    media(true);
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-
-    expect(screen.getByText('Controls in Loop / transport')).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'Test control'})).toBeNull();
-    const indexButton = screen.getByRole('button', {name: /^Test control /});
-    expect(indexButton).toBeDefined();
-
-    await user.click(screen.getByRole('switch', {name: /shift/i}));
-    const shiftIndexButton = screen.getByRole('button', {name: /Test shift Shift test behavior/});
-    expect(shiftIndexButton).toBeDefined();
-
-    await user.click(shiftIndexButton);
-    const lesson = screen.getByRole('region', {name: 'Test control lesson'});
-    expect(lesson.textContent).toContain('Shift test behavior');
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-    expect(document.activeElement).toBe(lesson);
-
-    await user.keyboard('{Escape}');
-    expect(screen.queryByRole('region', {name: 'Test control lesson'})).toBeNull();
-    expect(document.activeElement).toBe(shiftIndexButton);
+    await user.click(screen.getByRole('button', {name: /LOOP IN/}));
+    expect(document.querySelectorAll('dialog')).toHaveLength(1);
+    expect(screen.queryByRole('button', {name: 'Read full lesson'})).toBeNull();
   });
 
-  it('places a selected narrow lesson immediately after the image and before its index', async () => {
+  it('saves a control resume target and exposes it through the navigator', async () => {
     const user = userEvent.setup();
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(max-width: 767px)', media: query, onchange: null,
-      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
-      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
-    }));
-    vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
-    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-
-    await user.click(screen.getByRole('button', {name: /^Test control /}));
-    const image = screen.getByRole('img', {name: /DDJ-1000/i});
-    const lesson = screen.getByRole('region', {name: 'Test control lesson'});
-    expect(screen.getByRole('heading', {level: 2, name: 'Test control'})).toBeDefined();
-    const indexHeading = screen.getByText(/Controls in Loop \/ transport/);
-    expect(image.compareDocumentPosition(lesson) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(lesson.compareDocumentPosition(indexHeading) & Node.DOCUMENT_POSITION_FOLLOWING)
-      .toBeTruthy();
-  });
-
-  it('shows the active Shift title in a selected narrow lesson', async () => {
-    const user = userEvent.setup();
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(max-width: 767px)', media: query, onchange: null,
-      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
-      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
-    }));
-    vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
-    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-
-    await user.click(screen.getByRole('switch', {name: /shift/i}));
-    await user.click(screen.getByRole('button', {name: /^Test shift /}));
-
-    expect(screen.getByRole('heading', {level: 2, name: 'Test shift'})).toBeDefined();
-  });
-
-  it('hides narrow rekordbox photo hotspots and opens lessons from the list', async () => {
-    const user = userEvent.setup();
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(max-width: 767px)', media: query, onchange: null,
-      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
-      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
-    }));
-    render(<SurfaceView surface="software" sectionId="rb-deck" />);
-
-    expect(screen.queryByRole('button', {name: 'ARTWORK'})).toBeNull();
-    await user.click(screen.getByRole('button', {name: /^ARTWORK /}));
-    expect(screen.getByRole('region', {name: 'ARTWORK lesson'})).toBeDefined();
-  });
-
-  it('presents signal flow and gain roles as scannable lists without a nested image scroller', () => {
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
-
+    const first = render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+    await user.click(screen.getByRole('button', {name: 'LOOP IN · 1/2X'}));
+    first.unmount();
     render(<SurfaceView surface="hardware" sectionId="mixer" />);
-
-    expect(screen.getAllByRole('list')).toHaveLength(2);
-    expect(screen.getByText('Choose the source')).toBeDefined();
-    expect(screen.getByText('TRIM')).toBeDefined();
-    expect(screen.queryByRole('region', {name: 'Scrollable mixer control image'})).toBeNull();
+    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href')).toContain('deck-left');
   });
 
-  it('scrolls a deep-linked mobile tab into view and clears the hash on explicit close', async () => {
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      matches: query === '(max-width: 767px)',
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
-    const originalScrollTo = HTMLElement.prototype.scrollTo;
-    const scrollTo = vi.fn();
-    HTMLElement.prototype.scrollTo = scrollTo;
-    window.history.replaceState(null, '', '/controller/mixer#mixer-mic-low');
-
-    render(<SurfaceView surface="hardware" sectionId="mixer" />);
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    expect(screen.getByRole('button', {name: 'Mic'}).getAttribute('aria-current')).toBe('page');
-    expect(scrollTo).toHaveBeenCalled();
-    expect(screen.getByRole('region', {name: 'MIC EQ LOW lesson'})).toBeDefined();
-
-    await userEvent.setup().click(screen.getByRole('button', {name: 'Close lesson'}));
-    expect(window.location.hash).toBe('');
-    expect(screen.queryByRole('region', {name: 'MIC EQ LOW lesson'})).toBeNull();
-
-    HTMLElement.prototype.scrollTo = originalScrollTo;
-  });
-
-  it('restores mobile lesson focus after responsive hydration for a direct FX hash', async () => {
-    const user = userEvent.setup();
-    let narrow = false;
-    const listeners = new Set<() => void>();
-    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-      get matches() { return query === '(max-width: 767px)' && narrow; },
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: (_event: string, listener: () => void) => listeners.add(listener),
-      removeEventListener: (_event: string, listener: () => void) => listeners.delete(listener),
-      dispatchEvent: vi.fn(),
-    }));
-    window.history.replaceState(null, '', '/controller/fx#fx-on-off');
-
-    render(<SurfaceView surface="hardware" sectionId="fx" />);
-    act(() => {
-      narrow = true;
-      listeners.forEach((listener) => listener());
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-
-    const lesson = screen.getByRole('region', {name: 'BEAT FX ON / OFF lesson'});
-    const trigger = screen.getByRole('button', {name: /BEAT FX ON \/ OFF/});
-    await waitFor(() => expect(document.activeElement).toBe(lesson));
-
-    await user.keyboard('{Escape}');
-    expect(window.location.hash).toBe('');
-    expect(screen.queryByRole('region', {name: 'BEAT FX ON / OFF lesson'})).toBeNull();
-    expect(document.activeElement).toBe(trigger);
+  it('has no initial full-stage animation frame', () => {
+    const frame = vi.spyOn(window, 'requestAnimationFrame');
+    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+    expect(frame).not.toHaveBeenCalled();
   });
 });

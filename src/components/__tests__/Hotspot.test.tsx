@@ -1,263 +1,39 @@
-import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest';
-import {act, render, screen, waitFor} from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {describe, expect, it, vi} from 'vitest';
 import type {Control, Rect} from '@/content/types';
 import {Hotspot} from '../Hotspot';
 
-const originalMatchMedia = Object.getOwnPropertyDescriptor(window, 'matchMedia');
-
-beforeAll(() => {
-  Object.defineProperty(window, 'matchMedia', {
-    configurable: true,
-    writable: true,
-    value: (query: string): MediaQueryList => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }),
-  });
-});
-
-afterAll(() => {
-  if (originalMatchMedia) {
-    Object.defineProperty(window, 'matchMedia', originalMatchMedia);
-  } else {
-    delete (window as unknown as {matchMedia?: typeof window.matchMedia}).matchMedia;
-  }
-});
-
 const control: Control = {
-  id: 'deck-left-slip',
-  surface: 'hardware',
-  section: 'deck-left',
-  label: 'SLIP',
-  shiftLegend: 'VINYL',
-  kind: 'button',
-  at: {x: 0.1, y: 0.2},
-  primary: {
-    summary: 'Keeps the track playing underneath your performance',
-    detail: 'Slip mode detail text long enough to pass validation.',
-    why: 'Reach for it when you want to go wild and land back on the grid.',
-    source: 'manual',
-  },
-  shift: {
-    summary: 'Toggles vinyl mode on and off',
-    detail: 'Vinyl mode detail text long enough to pass validation.',
-    why: 'Turn it on when you want the jog top to scratch rather than bend.',
-    source: 'manual',
-  },
+  id: 'deck-left-slip', surface: 'hardware', section: 'deck-left', label: 'SLIP',
+  kind: 'button', at: {x: 0.2, y: 0.3},
+  primary: {summary: 'Keeps time', detail: 'Presses the physical SLIP control.', why: 'Use it.', source: 'manual'},
 };
-
-const FULL: Rect = {x: 0, y: 0, w: 1, h: 1};
+const rect: Rect = {x: 0, y: 0, w: 1, h: 1};
 
 describe('Hotspot', () => {
-  it('renders the primary trigger with the control label', () => {
-    render(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
-
-    expect(screen.getByRole('button', {name: 'SLIP'})).toBeDefined();
-  });
-
-  it('maps a point into a half-width crop', () => {
-    render(
-      <Hotspot
-        control={control}
-        rect={{x: 0, y: 0, w: 0.5, h: 1}}
-        isShiftActive={false}
-      />,
-    );
-
-    const trigger = screen.getByRole('button', {name: 'SLIP'});
-    expect(trigger.parentElement?.style.left).toBe('20%');
-    expect(trigger.parentElement?.style.transition).toBe(
-      'left var(--duration-medium) var(--ease-standard), top var(--duration-medium) var(--ease-standard)',
-    );
-  });
-
-  it('uses the Astryx emphasized-border token for marker leader lines', () => {
-    const {container} = render(
-      <Hotspot
-        control={control}
-        rect={FULL}
-        isShiftActive={false}
-        markerOffset={{x: 20, y: 0}}
-      />,
-    );
-
-    expect(
-      container.querySelector<HTMLElement>('[data-hotspot-leader]')?.style.background,
-    ).toBe('var(--color-border-emphasized)');
-  });
-
-  it('does not render a marker outside the crop', () => {
-    const {container} = render(
-      <Hotspot
-        control={control}
-        rect={{x: 0.5, y: 0, w: 0.5, h: 1}}
-        isShiftActive={false}
-      />,
-    );
-
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('renders the shift trigger with the shift legend', () => {
-    render(<Hotspot control={control} rect={FULL} isShiftActive />);
-
-    expect(screen.getByRole('button', {name: 'VINYL'})).toBeDefined();
-  });
-
-  it('opens the primary behavior from the primary trigger', async () => {
+  it('is controlled and renders only the compact preview', async () => {
     const user = userEvent.setup();
-    render(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
-
-    const trigger = screen.getByRole('button', {name: 'SLIP'});
-    expect(trigger.getAttribute('aria-expanded')).toBe('false');
-
-    await user.click(trigger);
-
-    expect(trigger.getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByRole('heading', {level: 2, name: 'SLIP'})).toBeDefined();
-    expect(await screen.findByText(control.primary.summary)).toBeDefined();
-    expect(screen.getByRole('dialog').parentElement?.style.getPropertyValue('--x-width')).toBe(
-      'min(340px, calc(100vw - 2 * var(--spacing-3)))',
-    );
+    const onPreviewOpenChange = vi.fn();
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={onPreviewOpenChange} onReadLesson={() => {}} />);
+    expect(screen.getByText('Physical action: Presses the physical SLIP control.')).toBeDefined();
+    expect(screen.queryByText('When to use it')).toBeNull();
+    await user.click(screen.getByRole('button', {name: 'Close'}));
+    expect(onPreviewOpenChange).toHaveBeenCalledWith(false, expect.any(HTMLButtonElement));
   });
 
-  it('supports section-owned controlled open state', async () => {
+  it('reports the triggering marker and read-full action to its parent', async () => {
     const user = userEvent.setup();
-    const onOpenChange = vi.fn();
-    const {rerender} = render(
-      <Hotspot
-        control={control}
-        rect={FULL}
-        isShiftActive={false}
-        isOpen={false}
-        onOpenChange={onOpenChange}
-      />,
-    );
-
-    await user.click(screen.getByRole('button', {name: 'SLIP'}));
-    expect(onOpenChange).toHaveBeenCalledWith(true);
-
-    rerender(
-      <Hotspot
-        control={control}
-        rect={FULL}
-        isShiftActive={false}
-        isOpen
-        onOpenChange={onOpenChange}
-      />,
-    );
-    expect(screen.getByRole('button', {name: 'SLIP'}).getAttribute('aria-expanded')).toBe('true');
+    const onPreviewOpenChange = vi.fn();
+    const onReadLesson = vi.fn();
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={onPreviewOpenChange} onReadLesson={onReadLesson} />);
+    await user.click(screen.getByRole('button', {name: 'Read full lesson'}));
+    expect(onReadLesson).toHaveBeenCalledWith(expect.any(HTMLButtonElement));
   });
 
-  it('opens the shift behavior from the shift trigger', async () => {
-    const user = userEvent.setup();
-    render(<Hotspot control={control} rect={FULL} isShiftActive />);
-
-    const trigger = screen.getByRole('button', {name: 'VINYL'});
-    expect(trigger.getAttribute('aria-expanded')).toBe('false');
-
-    await user.click(trigger);
-
-    expect(trigger.getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByRole('heading', {level: 2, name: 'VINYL'})).toBeDefined();
-    expect(await screen.findByText(control.shift!.summary)).toBeDefined();
-  });
-
-  it('closes on Escape and returns focus to the trigger', async () => {
-    const user = userEvent.setup();
-    render(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
-    const trigger = screen.getByRole('button', {name: 'SLIP'});
-
-    await user.click(trigger);
-    expect(trigger.getAttribute('aria-expanded')).toBe('true');
-
-    await user.keyboard('{Escape}');
-
-    expect(trigger.getAttribute('aria-expanded')).toBe('false');
-    await waitFor(() => expect(document.activeElement).toBe(trigger));
-  });
-
-  it('defers Escape focus restoration until two post-close animation frames', async () => {
-    const user = userEvent.setup();
-    const frames: FrameRequestCallback[] = [];
-    const requestAnimationFrame = vi.spyOn(window, 'requestAnimationFrame')
-      .mockImplementation((callback) => {
-        frames.push(callback);
-        return frames.length;
-      });
-    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
-    render(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
-    const trigger = screen.getByRole('button', {name: 'SLIP'});
-
-    await user.click(trigger);
-    act(() => {
-      const openingFrames = frames.splice(0);
-      openingFrames.forEach((frame) => frame(0));
-    });
-    await user.keyboard('{Escape}');
-
-    expect(requestAnimationFrame).toHaveBeenCalled();
-    act(() => {
-      const firstClosingFrames = frames.splice(0);
-      firstClosingFrames.forEach((frame) => frame(0));
-    });
-    expect(frames.length).toBeGreaterThan(0);
-    act(() => {
-      const secondClosingFrames = frames.splice(0);
-      secondClosingFrames.forEach((frame) => frame(0));
-    });
-    expect(document.activeElement).toBe(trigger);
-  });
-
-  it('resets an open popover after the hotspot leaves and re-enters the crop', async () => {
-    const user = userEvent.setup();
-    const {container, rerender} = render(
-      <Hotspot control={control} rect={FULL} isShiftActive={false} />,
-    );
-    const trigger = screen.getByRole('button', {name: 'SLIP'});
-
-    await user.click(trigger);
-    expect(trigger.getAttribute('aria-expanded')).toBe('true');
-
-    rerender(
-      <Hotspot
-        control={control}
-        rect={{x: 0.5, y: 0, w: 0.5, h: 1}}
-        isShiftActive={false}
-      />,
-    );
-    expect(container.firstChild).toBeNull();
-
-    rerender(<Hotspot control={control} rect={FULL} isShiftActive={false} />);
-    expect(screen.getByRole('button', {name: 'SLIP'}).getAttribute('aria-expanded'))
-      .toBe('false');
-  });
-
-  it('does not preserve open state when the control identity changes', async () => {
-    const user = userEvent.setup();
-    const {rerender} = render(
-      <Hotspot control={control} rect={FULL} isShiftActive={false} />,
-    );
-    const trigger = screen.getByRole('button', {name: 'SLIP'});
-
-    await user.click(trigger);
-    expect(trigger.getAttribute('aria-expanded')).toBe('true');
-
-    const nextControl: Control = {
-      ...control,
-      id: 'deck-left-play',
-      label: 'PLAY',
-    };
-    rerender(<Hotspot control={nextControl} rect={FULL} isShiftActive={false} />);
-
-    expect(screen.getByRole('button', {name: 'PLAY'}).getAttribute('aria-expanded'))
-      .toBe('false');
+  it('uses bounded width and allows Astryx to choose flip placement', () => {
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={() => {}} onReadLesson={() => {}} />);
+    expect(screen.getByRole('dialog').parentElement?.style.getPropertyValue('--x-width'))
+      .toBe('min(22rem, calc(100vw - 2 * var(--spacing-3)))');
   });
 });

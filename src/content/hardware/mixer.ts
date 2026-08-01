@@ -3,6 +3,9 @@ import type {Behavior, Control, Point} from '../types';
 export const MIXER_CHANNEL_ORDER = [3, 1, 2, 4] as const;
 export type MixerChannel = (typeof MIXER_CHANNEL_ORDER)[number];
 
+export const mixerChannelOverview =
+  'The DDJ-1000 has four simultaneous physical channel strips. DECK SELECT maps the left deck to 1/3 and the right deck to 2/4.';
+
 type ChannelControlSlug =
   | 'input' | 'trim' | 'meter' | 'high' | 'mid' | 'low'
   | 'color' | 'cue' | 'fader' | 'assign';

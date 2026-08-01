@@ -1,9 +1,9 @@
 import type {Rect} from '../types';
-import {mixerControls, MIXER_CHANNEL_ORDER} from './mixer';
+import {mixerControls} from './mixer';
 import {hardwareFxControls} from './fx';
 
 export type MixerRegionId =
-  | 'signal' | 'channel-3' | 'channel-1' | 'channel-2' | 'channel-4'
+  | 'signal' | 'channels'
   | 'color-fx' | 'outputs' | 'monitoring' | 'mic';
 
 export interface MixerRegion {
@@ -14,15 +14,16 @@ export interface MixerRegion {
   narrowRect: Rect;
 }
 
-const channelRegion = (channel: number): MixerRegion => ({
-  id: `channel-${channel}` as MixerRegionId,
-  label: `CH${channel}`,
+const channelsRegion: MixerRegion = {
+  id: 'channels',
+  label: 'Four channels',
+  // CH2 is the representative strip; CH3 adds the PHONO/LINE selector variant.
   controlIds: mixerControls
-    .filter((control) => control.id.startsWith(`mixer-ch${channel}-`))
+    .filter((control) => control.id.startsWith('mixer-ch2-') || control.id === 'mixer-ch3-input')
     .map(({id}) => id),
   rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
   narrowRect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
-});
+};
 
 const mixerLessonControls = [
   ...mixerControls,
@@ -39,7 +40,7 @@ export const MIXER_REGIONS: MixerRegion[] = [
     rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
     narrowRect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
   },
-  ...MIXER_CHANNEL_ORDER.map(channelRegion),
+  channelsRegion,
   {
     id: 'color-fx', label: 'Color FX', controlIds: ids(20),
     rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
@@ -72,6 +73,7 @@ export function getMixerRegion(id: MixerRegionId): MixerRegion {
 }
 
 export function getMixerRegionForControl(controlId: string): MixerRegion | undefined {
+  if (/^mixer-ch[1-4]-/.test(controlId)) return getMixerRegion('channels');
   return MIXER_REGIONS.find((region) => region.controlIds.includes(controlId));
 }
 

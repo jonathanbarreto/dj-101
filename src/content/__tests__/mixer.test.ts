@@ -1,11 +1,15 @@
 import {describe, expect, it} from 'vitest';
 
-import {mixerControls, MIXER_CHANNEL_ORDER} from '../hardware/mixer';
+import {mixerChannelOverview, mixerControls, MIXER_CHANNEL_ORDER} from '../hardware/mixer';
 
 const channelControls = mixerControls.filter((control) => control.id.startsWith('mixer-ch'));
 const globalControls = mixerControls.filter((control) => !control.id.startsWith('mixer-ch'));
 
 describe('DDJ-1000 four-channel mixer content', () => {
+  it('summarizes the four physical strips and deck-select mapping once', () => {
+    expect(mixerChannelOverview).toMatch(/four simultaneous physical channel strips/i);
+    expect(mixerChannelOverview).toMatch(/left.*1\/3.*right.*2\/4/i);
+  });
   it('builds ten controls for each strip in physical 3 · 1 · 2 · 4 order', () => {
     expect(MIXER_CHANNEL_ORDER).toEqual([3, 1, 2, 4]);
     expect(channelControls).toHaveLength(40);
