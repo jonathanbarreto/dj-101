@@ -3,6 +3,7 @@ import {deckControls} from './hardware/deck';
 import {browserControls} from './hardware/browser';
 import {rightDeckControls} from './hardware/right-deck';
 import {mixerControls} from './hardware/mixer';
+import {hardwareFxControls} from './hardware/fx';
 import {rbDeckControls} from './rekordbox/deck';
 
 const modules: Control[][] = [
@@ -10,6 +11,7 @@ const modules: Control[][] = [
   rightDeckControls,
   browserControls,
   mixerControls,
+  hardwareFxControls,
   rbDeckControls,
 ];
 

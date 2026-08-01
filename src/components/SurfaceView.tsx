@@ -211,6 +211,22 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     <Stack direction="vertical" gap={3} xstyle={undefined}>
       {surface === 'hardware' ? <ShiftToggle /> : null}
       {sectionId === 'browser' && <Text>{browserSectionIntro}</Text>}
+      {sectionId === 'fx' && (
+        <Stack direction="vertical" gap={2}>
+          <Text>
+            Prepare Beat FX in signal order: choose the effect, route its target, set the
+            beat or parameter, start LEVEL/DEPTH low, then switch it on at the phrase.
+          </Text>
+          <Stack direction="horizontal" gap={3} wrap="wrap">
+            <Link href="/reference/beat-fx" isStandalone>
+              Compare all 14 Beat FX →
+            </Link>
+            <Link href="/reference/sound-color-fx" isStandalone>
+              Sound Color FX directions →
+            </Link>
+          </Stack>
+        </Stack>
+      )}
       {activeRegion && (
         <div className={styles.regionNav} ref={regionNavRef}>
           <TabList

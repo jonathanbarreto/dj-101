@@ -100,6 +100,27 @@ describe('SurfaceView', () => {
       .toBe('true');
   });
 
+  it('makes the Sound Color selection lesson and both effects references discoverable', () => {
+    window.history.replaceState(null, '', '/controller/mixer#mixer-sound-color-fx-select');
+    const {unmount} = render(<SurfaceView surface="hardware" sectionId="mixer" />);
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    expect(screen.getByRole('button', {name: 'Color FX'}).getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('button', {name: 'SOUND COLOR FX SELECT'}).getAttribute('aria-expanded'))
+      .toBe('true');
+    unmount();
+
+    window.history.replaceState(null, '', '/controller/fx');
+    render(<SurfaceView surface="hardware" sectionId="fx" />);
+    expect(screen.getByText(/Prepare Beat FX in signal order/i)).toBeDefined();
+    expect(screen.getAllByRole('link', {name: /Compare all 14 Beat FX/})
+      .some((link) => link.getAttribute('href') === '/reference/beat-fx')).toBe(true);
+    expect(screen.getByRole('link', {name: /Sound Color FX directions/}).getAttribute('href'))
+      .toBe('/reference/sound-color-fx');
+  });
+
   it('server-renders the deterministic Info region even when the URL has a valid hash', () => {
     window.history.replaceState(null, '', '/rekordbox/rb-deck#rb-deck-slip');
 

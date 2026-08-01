@@ -52,6 +52,11 @@ export interface Control {
   related?: string[];
   /** Cross-surface link: hardware ⇄ software control ids. */
   counterpart?: string[];
+  /** Curated routes to reference tables or deeper lessons; not control-id links. */
+  referenceLinks?: Array<{
+    href: `/reference/${string}`;
+    label: string;
+  }>;
 }
 
 export interface SurfaceSpec {

@@ -26,7 +26,7 @@ export const SECTIONS: Record<SectionId, SectionSpec> = {
   'deck-left':  {id:'deck-left',  surface:'hardware', label:'Left deck',  rect:{x:0.0070,y:0.0220,w:0.3240,h:0.9560}, marker:{x:0.1690,y:0.5000}},
   'deck-right': {id:'deck-right', surface:'hardware', label:'Right deck', rect:{x:0.6290,y:0.0220,w:0.3700,h:0.9560}, marker:{x:0.8140,y:0.5000}},
   'mixer':      {id:'mixer',      surface:'hardware', label:'Mixer',      rect:{x:0.3320,y:0.0220,w:0.2960,h:0.9560}, marker:{x:0.4800,y:0.5000}},
-  'fx':         {id:'fx',         surface:'hardware', label:'Beat FX',    rect:{x:0.5780,y:0.4300,w:0.0505,h:0.5100}, marker:{x:0.6033,y:0.6850}},
+  'fx':         {id:'fx',         surface:'hardware', label:'Beat FX',    rect:{x:0.4500,y:0.4300,w:0.4000,h:0.5480}, marker:{x:0.6200,y:0.6850}},
   'browser':    {id:'browser',    surface:'hardware', label:'Browser',    rect:{x:0.2670,y:0.0340,w:0.0640,h:0.1440}, marker:{x:0.2990,y:0.1060}},
   'rear':       {id:'rear',       surface:'hardware', label:'Rear panel', rect:{x:0,    y:0,    w:1,    h:1},    marker:{x:0.5,  y:0.05}},
   'front':      {id:'front',      surface:'hardware', label:'Front panel',rect:{x:0,    y:0,    w:1,    h:1},    marker:{x:0.5,  y:0.95}},

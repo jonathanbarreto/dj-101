@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest';
 
 import {mixerControls} from '../hardware/mixer';
+import {hardwareFxControls} from '../hardware/fx';
 import {SURFACES} from '../surfaces';
 import {cropAspectRatio} from '../../lib/geometry';
 import {
@@ -10,13 +11,14 @@ import {
 } from '../hardware/mixerRegions';
 
 describe('mixer teaching regions', () => {
-  it('uses the eight binding lesson tabs in signal-flow order', () => {
+  it('uses the nine binding lesson tabs in signal-flow order', () => {
     expect(MIXER_REGIONS.map(({id, label}) => [id, label])).toEqual([
       ['signal', 'Signal path'],
       ['channel-3', 'CH3'],
       ['channel-1', 'CH1'],
       ['channel-2', 'CH2'],
       ['channel-4', 'CH4'],
+      ['color-fx', 'Color FX'],
       ['outputs', 'Outputs'],
       ['monitoring', 'Headphones + sampler'],
       ['mic', 'Mic'],
@@ -35,10 +37,15 @@ describe('mixer teaching regions', () => {
 
   it('assigns every control to exactly one non-signal region', () => {
     const assigned = MIXER_REGIONS.flatMap((region) => region.controlIds);
-    expect(assigned).toHaveLength(mixerControls.length);
-    expect(new Set(assigned).size).toBe(mixerControls.length);
-    expect(new Set(assigned)).toEqual(new Set(mixerControls.map(({id}) => id)));
+    const mixerLessonControls = [
+      ...mixerControls,
+      ...hardwareFxControls.filter(({section}) => section === 'mixer'),
+    ];
+    expect(assigned).toHaveLength(mixerLessonControls.length);
+    expect(new Set(assigned).size).toBe(mixerLessonControls.length);
+    expect(new Set(assigned)).toEqual(new Set(mixerLessonControls.map(({id}) => id)));
     for (const control of mixerControls) expect(getMixerRegionForControl(control.id)).toBeDefined();
+    expect(getMixerRegionForControl('mixer-sound-color-fx-select')?.id).toBe('color-fx');
   });
 
   it('keeps every region crop inside the one hardware master and contains its controls', () => {
@@ -50,7 +57,7 @@ describe('mixer teaching regions', () => {
         expect(rect.x + rect.w).toBeLessThanOrEqual(1);
         expect(rect.y + rect.h).toBeLessThanOrEqual(1);
         for (const id of region.controlIds) {
-          const control = mixerControls.find((item) => item.id === id)!;
+          const control = [...mixerControls, ...hardwareFxControls].find((item) => item.id === id)!;
           expect(control.at.x, `${region.id}/${id} x`).toBeGreaterThanOrEqual(rect.x);
           expect(control.at.x, `${region.id}/${id} x`).toBeLessThanOrEqual(rect.x + rect.w);
           expect(control.at.y, `${region.id}/${id} y`).toBeGreaterThanOrEqual(rect.y);
