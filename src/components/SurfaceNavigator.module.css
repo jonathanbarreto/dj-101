@@ -1,0 +1,16 @@
+.orientation {
+  color: var(--color-text-secondary);
+  font-size: var(--text-supporting-size);
+}
+
+.regionTabs {
+  max-inline-size: 100%;
+}
+
+.regionTabs :global(button) {
+  min-block-size: var(--spacing-11);
+}
+
+.mapAction {
+  inline-size: fit-content;
+}
