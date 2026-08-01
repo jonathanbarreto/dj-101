@@ -66,6 +66,23 @@ describe('SurfaceNavigator', () => {
     expect(screen.getByRole('button', {name: 'Jog / tempo'})).toBeDefined();
   });
 
+  it('suppresses the map self-link while retaining a stored resume target', () => {
+    render(
+      <SurfaceNavigator
+        surface="hardware"
+        section={undefined}
+        regions={[]}
+        isCompact={false}
+        onRegionChange={vi.fn()}
+        resumeTarget={{surface: 'hardware', sectionId: 'deck-left'}}
+      />,
+    );
+
+    expect(screen.queryByRole('link', {name: 'View map'})).toBeNull();
+    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href'))
+      .toBe('/controller/deck-left');
+  });
+
   it('uses the same region navigator for a hardware deck', () => {
     render(
       <SurfaceNavigator

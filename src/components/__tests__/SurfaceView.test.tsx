@@ -1,5 +1,6 @@
 import {cleanup, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {renderToString} from 'react-dom/server';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {SurfaceView} from '../SurfaceView';
 
@@ -88,6 +89,18 @@ describe('SurfaceView lesson coordination', () => {
     first.unmount();
     render(<SurfaceView surface="hardware" sectionId="mixer" />);
     expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href')).toContain('deck-left');
+  });
+
+  it('omits Resume from the initial map markup, then exposes a valid stored target after hydration', () => {
+    window.sessionStorage.setItem('dj101:resume:v1', JSON.stringify({
+      surface: 'hardware', sectionId: 'deck-left', controlId: 'deck-left-play-pause',
+    }));
+
+    expect(renderToString(<SurfaceView surface="hardware" />)).not.toContain('Resume');
+
+    render(<SurfaceView surface="hardware" />);
+    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href'))
+      .toBe('/controller/deck-left#deck-left-play-pause');
   });
 
   it('has no initial full-stage animation frame', () => {

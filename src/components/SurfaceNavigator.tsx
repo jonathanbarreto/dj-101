@@ -62,10 +62,12 @@ export function SurfaceNavigator({
           {selectedControlLabel ? <span>{selectedControlLabel}</span> : null}
         </Stack>
       </nav>
-      <Stack direction="horizontal" gap={2} wrap="wrap">
-        <Button className={styles.mapAction} label="View map" href={rootHref} variant="ghost" />
-        {resumeTarget ? <Link href={resumeHref(resumeTarget)} isStandalone>Resume</Link> : null}
-      </Stack>
+      {(section || resumeTarget) ? (
+        <Stack direction="horizontal" gap={2} wrap="wrap">
+          {section ? <Button className={styles.mapAction} label="View map" href={rootHref} variant="ghost" /> : null}
+          {resumeTarget ? <Link href={resumeHref(resumeTarget)} isStandalone>Resume</Link> : null}
+        </Stack>
+      ) : null}
       {regions.length > 0 ? (
         <div className={styles.regionTabs}>
           <TabList

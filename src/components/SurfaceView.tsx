@@ -41,7 +41,7 @@ import {Hotspot} from './Hotspot';
 import {ControlLessonDialog} from './ControlLessonDialog';
 import {ControlIndex} from './ControlIndex';
 import {SurfaceNavigator} from './SurfaceNavigator';
-import {readResumeTarget, saveResumeTarget} from '@/lib/resume-state';
+import {readResumeTarget, saveResumeTarget, type ResumeTarget} from '@/lib/resume-state';
 import {ShiftProvider, useShift} from './ShiftContext';
 import {ShiftToggle} from './ShiftToggle';
 import {Stage} from './Stage';
@@ -113,6 +113,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   });
   const [selectedControlId, setSelectedControlId] = useState<string | null>(null);
   const [overlayMode, setOverlayMode] = useState<'none' | 'preview' | 'lesson'>('none');
+  const [resumeTarget, setResumeTarget] = useState<ResumeTarget | null>(null);
   const initiatorRef = useRef<HTMLElement | null>(null);
   const stageRect = crop.sectionId === sectionId ? crop.rect : FULL;
   const baseHref = surface === 'hardware' ? '/controller' : '/rekordbox';
@@ -151,6 +152,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   useEffect(() => {
     setCrop({sectionId: section?.id, rect: targetRect});
   }, [section?.id, targetRect]);
+
+  useEffect(() => {
+    setResumeTarget(readResumeTarget(surface));
+  }, [surface]);
 
   useEffect(() => {
     if (!section) return;
@@ -211,7 +216,6 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   }
 
   const regions = activeRegion ? (isMixer ? MIXER_REGIONS : isDeck ? DECK_REGIONS : RB_DECK_REGIONS) : [];
-  const resumeTarget = readResumeTarget(surface);
   const selectControl = (controlId: string, trigger: HTMLButtonElement | null, mode: 'preview' | 'lesson') => {
     initiatorRef.current = trigger;
     if (activateControl(controlId, true)) setOverlayMode(isNarrow ? 'lesson' : mode);
