@@ -7,6 +7,7 @@ import {
   type SetStateAction,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -24,19 +25,23 @@ interface ShiftProviderProps {
 export function ShiftProvider({children}: ShiftProviderProps) {
   const [isShiftLatched, setIsShiftLatched] = useState(false);
   const [isPhysicallyHeld, setIsPhysicallyHeld] = useState(false);
+  const heldShiftKeys = useRef(new Set<string>());
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Shift') {
+        heldShiftKeys.current.add(event.code || 'Shift');
         setIsPhysicallyHeld(true);
       }
     };
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.key === 'Shift') {
-        setIsPhysicallyHeld(false);
+        heldShiftKeys.current.delete(event.code || 'Shift');
+        setIsPhysicallyHeld(heldShiftKeys.current.size > 0);
       }
     };
     const handleBlur = () => {
+      heldShiftKeys.current.clear();
       setIsPhysicallyHeld(false);
     };
 

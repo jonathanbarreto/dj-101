@@ -10,7 +10,7 @@ export function ShiftToggle() {
     <Switch
       label="SHIFT"
       value={isShiftActive}
-      onChange={() => setIsShiftActive(isLatched => !isLatched)}
+      onChange={checked => setIsShiftActive(checked)}
     />
   );
 }

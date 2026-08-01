@@ -59,16 +59,28 @@ describe('ShiftToggle', () => {
     expect(screen.getByTestId('state').textContent).toBe('on');
   });
 
-  it('keeps SHIFT effective and latches it when toggled during a physical hold', async () => {
+  it('honors the controlled off value when toggled during a physical hold', async () => {
     const user = userEvent.setup();
     render(<Subject />);
 
-    fireEvent.keyDown(window, {key: 'Shift'});
+    fireEvent.keyDown(window, {key: 'Shift', code: 'ShiftLeft'});
     await user.click(screen.getByRole('switch', {name: /shift/i}));
     expect(screen.getByTestId('state').textContent).toBe('on');
 
-    fireEvent.keyUp(window, {key: 'Shift'});
+    fireEvent.keyUp(window, {key: 'Shift', code: 'ShiftLeft'});
+    expect(screen.getByTestId('state').textContent).toBe('off');
+  });
+
+  it('stays active until both physical Shift keys are released', () => {
+    render(<Subject />);
+
+    fireEvent.keyDown(window, {key: 'Shift', code: 'ShiftLeft'});
+    fireEvent.keyDown(window, {key: 'Shift', code: 'ShiftRight'});
+    fireEvent.keyUp(window, {key: 'Shift', code: 'ShiftLeft'});
     expect(screen.getByTestId('state').textContent).toBe('on');
+
+    fireEvent.keyUp(window, {key: 'Shift', code: 'ShiftRight'});
+    expect(screen.getByTestId('state').textContent).toBe('off');
   });
 
   it('clears a physical Shift hold when the window loses focus', () => {
