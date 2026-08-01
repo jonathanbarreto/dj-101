@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import {Link} from '@astryxdesign/core/Link';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Text} from '@astryxdesign/core/Text';
 
@@ -13,6 +13,7 @@ export default function Home() {
         <Stack direction="horizontal" gap={3} xstyle={undefined}>
           <Link href="/controller">The controller →</Link>
           <Link href="/rekordbox">rekordbox 7 →</Link>
+          <Link href="/reference/beat-fx">Reference library →</Link>
         </Stack>
       </Stack>
     </main>
