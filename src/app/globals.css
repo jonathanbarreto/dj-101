@@ -1,0 +1,9 @@
+@import "@astryxdesign/core/reset.css";
+@import "@astryxdesign/core/astryx.css";
+@import "@astryxdesign/theme-neutral/theme.css";
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
