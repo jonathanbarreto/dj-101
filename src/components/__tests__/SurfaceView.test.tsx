@@ -311,6 +311,7 @@ describe('SurfaceView', () => {
       while (animationFrames.length > 0) animationFrames.shift()!(0);
     });
     expect(document.activeElement).toBe(trigger);
+    expect(window.location.hash).toBe('');
   });
 
   it('opens an indexed control and writes a stable hash without navigation loops', async () => {
@@ -332,6 +333,20 @@ describe('SurfaceView', () => {
 
     expect(screen.getByRole('button', {name: 'Info'}).getAttribute('aria-current')).toBe('page');
     expect(screen.getByRole('button', {name: 'ARTWORK'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('treats malformed percent-encoded hashes as invalid on load and hashchange', () => {
+    window.history.replaceState(null, '', '/rekordbox/rb-deck#%E0%A4%A');
+
+    expect(() => render(<SurfaceView surface="software" sectionId="rb-deck" />)).not.toThrow();
+    expect(screen.getByRole('button', {name: 'Info'}).getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
+
+    expect(() => {
+      window.history.replaceState(null, '', '/rekordbox/rb-deck#%');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    }).not.toThrow();
     expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
   });
 

@@ -29,6 +29,8 @@ describe('DDJ-1000 hardware effects controls', () => {
     expect(copy).toMatch(/external (input|source)/i);
     expect(copy).toMatch(/onboard.*external input/i);
     expect(copy).toMatch(/rekordbox functions.*cannot.*external input/i);
+    expect(copy).toMatch(/four.*printed.*defaults/i);
+    expect(copy).toMatch(/CFX USER.*remap/i);
     expect(byRef(20).referenceLinks).toEqual([
       {href: '/reference/sound-color-fx', label: 'Compare the four Sound Color FX directions'},
     ]);
@@ -78,6 +80,7 @@ describe('DDJ-1000 hardware effects controls', () => {
     expect(copy).toMatch(/MIC.*SP.*sampler/i);
     expect(copy).toMatch(/MST.*whole (master )?mix|MST.*summed/i);
     expect(copy).toMatch(/routes|target/i);
+    expect(copy).toMatch(/CH1.*CH4.*channel CUE.*cannot monitor.*Beat FX effect sound/i);
   });
 
   it('never mislabels LEVEL/DEPTH as a generic wet/dry control', () => {

@@ -57,7 +57,7 @@ export const specificationGroups: SpecificationGroup[] = [
     title: 'Physical and power',
     rows: [
       {specification: 'Dimensions', value: '708 × 73.4 × 361.4 mm (W × H × D)', note: 'Full-size four-channel controller.'},
-      {specification: 'Main-unit weight', value: '6.0 kg', note: '13.4 lb.'},
+      {specification: 'Main-unit weight', value: '6.0 kg', note: '13.2 lb.'},
       {specification: 'Main-unit power', value: 'DC 12 V, 2,000 mA', note: 'External adapter; rated adapter output is DC 12 V, 3 A.'},
       {specification: 'Operating range', value: '5–35 °C; 5–85% RH', note: 'Humidity rating assumes no condensation.'},
     ],

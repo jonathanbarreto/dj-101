@@ -19,7 +19,7 @@ describe('DDJ-1000 right deck content', () => {
       expect(right?.at.x, `${rightId} measured x`).toBeGreaterThanOrEqual(0.629);
       expect(right?.at.x, `${rightId} measured x`).toBeLessThanOrEqual(0.999);
 
-      if (left.ref !== 36) {
+      if (left.ref !== 36 && left.ref !== 41) {
         expect(right?.primary, `${rightId} shares canonical teaching copy`).toBe(left.primary);
         expect(right?.shift, `${rightId} shares canonical SHIFT copy`).toBe(left.shift);
       }
@@ -61,6 +61,7 @@ describe('DDJ-1000 right deck content', () => {
     expect(selector?.primary.detail).toMatch(/decks? 2 and 4/i);
     expect(selector?.primary.detail).toMatch(/3.*1.*2.*4/i);
     expect(selector?.primary.gotcha).toMatch(/jog display.*deck number/i);
+    expect(selector?.primary.detail).not.toMatch(/club-standard/i);
   });
 
   it('keeps every rekordbox counterpart reciprocal for both physical decks', () => {

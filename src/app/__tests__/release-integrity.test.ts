@@ -7,6 +7,7 @@ import sitemap, {PUBLISHED_ROUTES} from '../sitemap';
 import {getSiteUrl} from '@/lib/site-url';
 import {metadata as controllerMetadata} from '../controller/page';
 import {generateMetadata as controllerSectionMetadata} from '../controller/[section]/page';
+import ControllerSectionPage from '../controller/[section]/page';
 import {metadata as rekordboxMetadata} from '../rekordbox/page';
 import {generateMetadata as rekordboxSectionMetadata} from '../rekordbox/[section]/page';
 import {generateMetadata as referenceMetadata} from '../reference/[topic]/page';
@@ -100,6 +101,21 @@ describe('production release integrity', () => {
     await expect(referenceMetadata({
       params: Promise.resolve({topic: 'beat-fx'}),
     })).resolves.toMatchObject({alternates: {canonical: '/reference/beat-fx'}});
+  });
+
+  it('rejects inherited and prototype-like controller route keys', async () => {
+    for (const section of ['toString', 'constructor', '__proto__']) {
+      await expect(controllerSectionMetadata({params: Promise.resolve({section})}))
+        .resolves.toEqual({});
+      await expect(ControllerSectionPage({params: Promise.resolve({section})}))
+        .rejects.toMatchObject({digest: 'NEXT_HTTP_ERROR_FALLBACK;404'});
+    }
+  });
+
+  it('ignores all environment files except the documented example', () => {
+    const ignore = read('.gitignore');
+    expect(ignore).toMatch(/^\.env\*$/m);
+    expect(ignore).toMatch(/^!\.env\.example$/m);
   });
 
   it('lists every published route and no development or placeholder route', () => {

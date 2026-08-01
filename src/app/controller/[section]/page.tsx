@@ -21,8 +21,12 @@ export function generateStaticParams() {
 
 export async function generateMetadata({params}: {params: Promise<{section: string}>}): Promise<Metadata> {
   const {section: requestedSection} = await params;
-  const connectionPanel = CONNECTION_PANELS[requestedSection as ConnectionPanel];
-  const section = SECTIONS[requestedSection as SectionId];
+  const connectionPanel = Object.hasOwn(CONNECTION_PANELS, requestedSection)
+    ? CONNECTION_PANELS[requestedSection as ConnectionPanel]
+    : undefined;
+  const section = Object.hasOwn(SECTIONS, requestedSection)
+    ? SECTIONS[requestedSection as SectionId]
+    : undefined;
   const label = connectionPanel?.label ?? section?.label;
   return label
     ? {
@@ -39,8 +43,12 @@ export default async function ControllerSectionPage({
   params: Promise<{section: string}>;
 }) {
   const {section: requestedSection} = await params;
-  const connectionPanel = CONNECTION_PANELS[requestedSection as ConnectionPanel];
-  const section = SECTIONS[requestedSection as SectionId];
+  const connectionPanel = Object.hasOwn(CONNECTION_PANELS, requestedSection)
+    ? CONNECTION_PANELS[requestedSection as ConnectionPanel]
+    : undefined;
+  const section = Object.hasOwn(SECTIONS, requestedSection)
+    ? SECTIONS[requestedSection as SectionId]
+    : undefined;
 
   if (connectionPanel === undefined && (section === undefined || section.surface !== 'hardware')) {
     notFound();

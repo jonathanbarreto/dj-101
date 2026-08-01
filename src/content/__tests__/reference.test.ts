@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {beatFx} from '../reference/beat-fx';
 import {soundColorFx} from '../reference/sound-color-fx';
-import {specifications} from '../reference/specs';
+import {specificationGroups, specifications} from '../reference/specs';
 
 describe('Beat FX reference', () => {
   it('follows the selector order exactly', () => {
@@ -103,6 +103,8 @@ describe('DDJ-1000 specifications', () => {
   it('records the verified physical and digital-audio facts', () => {
     expect(specifications.dimensionsMm).toEqual({width: 708, height: 73.4, depth: 361.4});
     expect(specifications.weightKg).toBe(6);
+    expect(specificationGroups.flatMap((group) => group.rows)
+      .find((row) => row.specification === 'Main-unit weight')?.note).toBe('13.2 lb.');
     expect(specifications.audio.samplingRateKhz).toBe(44.1);
     expect(specifications.audio.daConverterBits).toBe(32);
     expect(specifications.audio.adConverterBits).toBe(24);

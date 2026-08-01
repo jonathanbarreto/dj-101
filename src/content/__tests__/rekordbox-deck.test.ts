@@ -48,12 +48,24 @@ describe('rekordbox 7 player deck content', () => {
     expect(rbDeckControls.every((control) => control.section === 'rb-deck')).toBe(true);
   });
 
-  it('marks DVS as subscription content while keeping stems available', () => {
+  it('explains current DVS eligibility precisely while keeping stems available', () => {
     expect(rbDeckControls.filter((control) => control.primary.tier === 'subscription').map((control) => control.id))
       .toEqual(['rb-deck-dvs-mode']);
     const stems = rbDeckControls.find((control) => control.id === 'rb-deck-stems');
+    const dvs = rbDeckControls.find((control) => control.id === 'rb-deck-dvs-mode')!;
+    expect(`${dvs.primary.detail} ${dvs.primary.gotcha}`).toMatch(/Core.*Creative.*Professional/i);
+    expect(`${dvs.primary.detail} ${dvs.primary.gotcha}`).toMatch(/DVS-unlocking hardware/i);
+    expect(`${dvs.primary.detail} ${dvs.primary.gotcha}`).toMatch(/DDJ-1000.*Performance.*not DVS/i);
+    expect(`${dvs.primary.detail} ${dvs.primary.gotcha}`).not.toMatch(/supported DVS plan/i);
     expect(stems?.primary.gotcha).toMatch(/DDJ-1000.*without a paid plan/i);
     expect(stems?.primary.gotcha).toContain('Preferences → Extensions → STEMS');
+  });
+
+  it('teaches the exact software CUE state sequence', () => {
+    const cue = rbDeckControls.find((control) => control.id === 'rb-deck-cue')!;
+    expect(cue.primary.detail).toMatch(/paused.*sets? (?:the )?cue/i);
+    expect(cue.primary.detail).toMatch(/playing.*back-cue.*paus/i);
+    expect(cue.primary.detail).toMatch(/at (?:the )?cue.*hold.*Cue Sampler.*release.*returns? to (?:the )?cue/i);
   });
 
   it('describes ACTIVE STEM controls without treating MUTE as a stem button', () => {

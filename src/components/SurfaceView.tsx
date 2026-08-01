@@ -53,8 +53,17 @@ export interface SurfaceViewProps {
 
 function hashControlId(): string | null {
   if (typeof window === 'undefined') return null;
-  const value = decodeURIComponent(window.location.hash.slice(1));
-  return value || null;
+  try {
+    const value = decodeURIComponent(window.location.hash.slice(1));
+    return value || null;
+  } catch {
+    return null;
+  }
+}
+
+function clearMatchingControlHash(controlId: string) {
+  if (typeof window === 'undefined' || hashControlId() !== controlId) return;
+  window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
 }
 
 function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
@@ -344,6 +353,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 isOpen={openControlId === control.id}
                 onOpenChange={(nextIsOpen) => {
                   setOpenControlId(nextIsOpen ? control.id : null);
+                  if (!nextIsOpen) clearMatchingControlHash(control.id);
                 }}
                 markerOffset={activeRbRegion
                   ? getRbDeckMarkerOffset(control.id, isNarrow)

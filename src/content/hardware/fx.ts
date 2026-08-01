@@ -22,9 +22,9 @@ export const hardwareFxControls: Control[] = [
     at: {x: 0.37, y: 0.486},
     primary: manual(
       'Selects one Sound Color FX for the mixer',
-      'The four buttons choose DUB ECHO, PITCH, NOISE, or FILTER globally. Press a button and it flashes to show the selected effect; press that selected button again to cancel it. Only one Sound Color FX can be selected for all four channels at a time, but nothing is heard until a channel’s COLOR knob leaves its centre-off detent.',
+      'The four printed choices—DUB ECHO, PITCH, NOISE, and FILTER—are the defaults for the Sound Color FX assignments. In rekordbox 7, CFX USER can remap those buttons to other software Color FX. Press a button and it flashes to show the selected effect; press that selected button again to cancel it. Only one Sound Color FX can be selected for all four channels at a time, but nothing is heard until a channel’s COLOR knob leaves its centre-off detent.',
       'Choose the effect before a transition, then apply it independently with each channel’s COLOR knob. That separation lets you filter one outgoing track while another channel stays neutral. These onboard hardware Sound Color FX also work with a compatible external input, so a turntable or line player can take part without using a rekordbox deck.',
-      {gotcha: 'The row selects one global effect; it does not apply that effect equally to every channel. Each per-channel COLOR knob controls its own amount and direction, and centre remains off. Rekordbox functions cannot be used for an external input.'},
+      {gotcha: 'The four printed labels describe the onboard hardware defaults, which can process compatible external inputs. Rekordbox functions, including a CFX USER remap, cannot process an external input. The row selects one global effect; each per-channel COLOR knob controls its own amount and direction, and centre remains off.'},
     ),
     referenceLinks: [
       {href: '/reference/sound-color-fx', label: 'Compare the four Sound Color FX directions'},
@@ -97,7 +97,7 @@ export const hardwareFxControls: Control[] = [
       'Routes Beat FX to one source or to the complete master mix',
       'Turn CH SELECT to target CH1, CH2, CH3, CH4, MIC, SP for the sampler, or MST for the summed master bus. A channel choice processes only that strip’s routed signal; MIC and SP isolate those sources; MST processes the whole master mix after sources have been combined.',
       'Target the outgoing channel for a clean transition effect while the incoming track stays untouched. Use SP for a sampler flourish or MIC only for a deliberate voice effect. Reserve MST for a rehearsed whole-mix move, because every audible deck, microphone, and sampler source can be affected together.',
-      {gotcha: 'CH SELECT is effect routing, not headphone cue or crossfader assignment. MST means the whole mix—not the currently selected deck.'},
+      {gotcha: 'CH SELECT is effect routing, not headphone cue or crossfader assignment. When CH1, CH2, CH3, or CH4 is targeted, the channel CUE button cannot monitor the Beat FX effect sound in headphones. MST means the whole mix—not the currently selected deck.'},
     ),
   },
   {

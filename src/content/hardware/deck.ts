@@ -34,17 +34,13 @@ export const deckControls: Control[] = [
   },
   {
     id: 'deck-left-quantize', ref: 41, surface: 'hardware', section: 'deck-left',
-    label: 'QUANTIZE', shiftLegend: 'WAKE UP', kind: 'button', at: {x: 0.2176, y: 0.0794},
+    label: 'QUANTIZE', kind: 'button', at: {x: 0.2176, y: 0.0794},
     counterpart: ['rb-deck-quantize'],
     primary: manual(
       'Snaps performance actions to the beat grid',
-      'Quantize aligns actions such as setting or triggering hot cues and loops to the nearest beat in the rekordbox beat grid rather than firing them at the exact instant you press.',
+      'Press QUANTIZE during normal use to toggle rekordbox Quantize on or off. When enabled, it aligns actions such as setting or triggering hot cues and loops to the nearest beat in the rekordbox beat grid rather than firing them at the exact instant you press. On the left deck only, pressing this same button while the unit is in standby wakes the controller; WAKE UP is not a SHIFT command.',
       'Turn it on when you are punching a vocal hot cue over a four-on-the-floor track: a slightly early finger press still lands on the next beat instead of making the vocal flam against the kick.',
-    ),
-    shift: manual(
-      'Wakes the controller from auto standby',
-      'Holding SHIFT and pressing QUANTIZE sends WAKE UP, returning the DDJ-1000 from its automatic standby state to normal operation.',
-      'Reach for this at the beginning of a set or after a long pause when the unit has gone dark; it is faster and safer than tracing power connections while the next DJ is waiting.',
+      {gotcha: 'The standby wake-up action belongs only to the left QUANTIZE button and requires an ordinary press, not SHIFT.'},
     ),
   },
   {
@@ -221,7 +217,7 @@ export const deckControls: Control[] = [
     primary: manual(
       'Starts or pauses the selected deck',
       'PLAY/PAUSE toggles playback for the deck selected on this side of the controller.',
-      'Use a deliberate press on the first downbeat of a phrase when launching an intro by ear. If the incoming track is already cued and quantified, that one press is the moment the audience hears your choice.',
+      'Use a deliberate press on the first downbeat of a phrase when launching an intro by ear. If the incoming track is already cued and quantized, that one press is the moment the audience hears your choice.',
     ),
   },
   {
@@ -230,7 +226,7 @@ export const deckControls: Control[] = [
     counterpart: ['rb-deck-cue'],
     primary: manual(
       'Sets, recalls, and previews the cue point',
-      'CUE sets a cue point when stopped; when a cue exists it returns there. Holding CUE from pause plays temporarily, and releasing it returns to the cue point.',
+      'While paused, press CUE to set the cue at the current position. While playing, press CUE to back-cue to that point and pause. While paused at the cue, hold CUE to play in Cue Sampler mode; release it to stop and return to the cue.',
       'Tap and hold CUE in headphones to audition the first kick of an incoming track repeatedly while you align it to the master; release it until you are ready to launch for real.',
     ),
   },

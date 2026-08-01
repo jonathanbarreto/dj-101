@@ -233,7 +233,7 @@ export const rbDeckControls: Control[] = [
       'Use the visible mode to diagnose a DVS deck before touching the record: INT explains why timecode does nothing, ABS suits traditional needle-position control, and REL preserves modern jumps such as Hot Cues.',
       {
         tier: 'subscription',
-        gotcha: 'The DDJ-1000 unlocks Performance control but not rekordbox DVS; a supported DVS plan and compatible timecode setup are still required.',
+        gotcha: 'DVS is currently available with rekordbox Core, Creative, or Professional plans, or with DVS-unlocking hardware. The DDJ-1000 unlocks Performance mode only, not DVS, so this controller still requires an eligible plan plus a compatible timecode setup.',
       },
     ),
   },
@@ -242,7 +242,7 @@ export const rbDeckControls: Control[] = [
     label: 'CUE', kind: 'button', at: {x: 0.3725, y: 0.4555},
     primary: rekordbox(
       'Sets or temporarily plays from the current cue',
-      'When paused, CUE sets the cue at the current position. Holding it continues playback; releasing returns to that cue, matching the core deck cue workflow.',
+      'While paused, press CUE to set the cue at the current position. While playing, press CUE to back-cue to that point and pause. While paused at the cue, hold CUE to play in Cue Sampler mode; release it to stop and return to the cue.',
       'Watch the on-screen cue marker after setting it from hardware. The visible position confirms that repeated cue taps will audition the intended transient rather than an older point hidden elsewhere in the arrangement.',
     ),
     counterpart: hardwareDecks('cue'),

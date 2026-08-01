@@ -32,7 +32,7 @@ const RIGHT_DECK_POINTS: Record<string, Point> = {
 const rightDeckSelect: Behavior = {
   summary: 'Chooses whether this side controls deck 2 or deck 4',
   detail:
-    'DECK SELECT switches this physical right deck between rekordbox decks 2 and 4. The jog display and every control on this side follow the selected software deck. The mixer keeps its club-standard 3 · 1 · 2 · 4 strip order, so deck 2 is the inner-right channel and deck 4 is the outer-right channel.',
+    'DECK SELECT switches this physical right deck between rekordbox decks 2 and 4. The jog display and every control on this side follow the selected software deck. The mixer uses a 3 · 1 · 2 · 4 strip order, so deck 2 is the inner-right channel and deck 4 is the outer-right channel.',
   why:
     'Check the jog display, then switch to deck 4 when you need a third or fourth layer without giving up the track already playing on deck 2. Confirm the matching channel fader and headphone cue before pressing PLAY so a quiet preparation deck does not become an on-air mistake.',
   gotcha:
@@ -40,13 +40,24 @@ const rightDeckSelect: Behavior = {
   source: 'manual',
 };
 
+const rightQuantize: Behavior = {
+  summary: 'Snaps performance actions to the beat grid',
+  detail:
+    'Press QUANTIZE to toggle rekordbox Quantize on or off. When enabled, it aligns actions such as setting or triggering hot cues and loops to the nearest beat in the rekordbox beat grid rather than firing them at the exact instant you press.',
+  why:
+    'Turn it on when you are punching a vocal hot cue over a four-on-the-floor track: a slightly early finger press still lands on the next beat instead of making the vocal flam against the kick.',
+  source: 'manual',
+};
+
 /**
  * The hardware is a translated duplicate, not a mirrored UI. Reusing the
  * Behavior objects keeps the two lessons identical unless the mechanism
- * genuinely differs: only DECK SELECT changes from the 3/1 to the 2/4 layer.
+ * genuinely differs: DECK SELECT changes from the 3/1 to the 2/4 layer, and
+ * QUANTIZE omits the left button's standby wake-up action.
  */
 export const rightDeckControls: Control[] = deckControls.map((left): Control => {
   const isDeckSelect = left.ref === 36;
+  const isQuantize = left.ref === 41;
   const slug = left.id.replace('deck-left-', '');
   const point = RIGHT_DECK_POINTS[slug];
 
@@ -58,6 +69,8 @@ export const rightDeckControls: Control[] = deckControls.map((left): Control => 
     section: 'deck-right',
     label: isDeckSelect ? 'DECK SELECT 2/4' : left.label,
     at: point,
-    primary: isDeckSelect ? rightDeckSelect : left.primary,
+    shiftLegend: isQuantize ? undefined : left.shiftLegend,
+    primary: isDeckSelect ? rightDeckSelect : isQuantize ? rightQuantize : left.primary,
+    shift: isQuantize ? undefined : left.shift,
   };
 });

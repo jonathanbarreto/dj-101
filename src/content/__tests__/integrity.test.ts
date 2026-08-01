@@ -48,7 +48,6 @@ describe('DDJ-1000 left deck content', () => {
       'deck-left-loop-in': 'IN ADJUST',
       'deck-left-loop-out': 'OUT ADJUST/RELOOP',
       'deck-left-loop-exit': 'ACTIVE LOOP',
-      'deck-left-quantize': 'WAKE UP',
       'deck-left-slip': 'VINYL',
       'deck-left-jog-dial': 'GRID ADJUST',
       'deck-left-beat-sync': 'MASTER',
@@ -68,6 +67,29 @@ describe('DDJ-1000 left deck content', () => {
       expect(['manual', 'rekordbox7', 'community'], `${id} must use a canonical source`)
         .toContain(control?.shift?.source);
     }
+  });
+
+  it('models QUANTIZE and left-deck standby wake-up without inventing a SHIFT layer', () => {
+    const left = deckControls.find((control) => control.id === 'deck-left-quantize')!;
+    const right = ALL_CONTROLS.find((control) => control.id === 'deck-right-quantize')!;
+
+    expect(left.shiftLegend).toBeUndefined();
+    expect(left.shift).toBeUndefined();
+    expect(left.primary.detail).toMatch(/press.*toggle.*quantize/i);
+    expect(left.primary.detail).toMatch(/left deck.*standby.*wake/i);
+    expect(left.primary.detail).not.toMatch(/holding SHIFT.*QUANTIZE|SHIFT \+ QUANTIZE/i);
+    expect(right.shiftLegend).toBeUndefined();
+    expect(right.shift).toBeUndefined();
+    expect(`${right.primary.summary} ${right.primary.detail} ${right.primary.why}`).not.toMatch(/wake|standby/i);
+  });
+
+  it('teaches the exact CUE state sequence and keeps published copy typo-free', () => {
+    const cue = deckControls.find((control) => control.id === 'deck-left-cue')!;
+    expect(cue.primary.detail).toMatch(/paused.*sets? (?:the )?cue/i);
+    expect(cue.primary.detail).toMatch(/playing.*back-cue.*paus/i);
+    expect(cue.primary.detail).toMatch(/at (?:the )?cue.*hold.*Cue Sampler.*release.*returns? to (?:the )?cue/i);
+    expect(deckControls.map((control) => Object.values(control.primary).join(' ')).join(' '))
+      .not.toMatch(/quantified/i);
   });
 
   it('keeps deck explanations specific enough to teach a live decision', () => {
