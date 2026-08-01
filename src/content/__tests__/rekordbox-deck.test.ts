@@ -112,6 +112,14 @@ describe('rekordbox 7 player deck content', () => {
     expect(masterTempo?.counterpart).toContain('deck-left-key-reset');
     expect(keyReset?.counterpart).toContain('rb-deck-master-tempo');
   });
+
+  it('explains transport confirmation for both physical deck sides', () => {
+    const play = rbDeckControls.find((control) => control.id === 'rb-deck-play-pause');
+
+    expect(play?.primary.why).toMatch(/left.*1.*3/i);
+    expect(play?.primary.why).toMatch(/right.*2.*4/i);
+    expect(play?.primary.why).not.toMatch(/physical left side between decks 1 and 3/i);
+  });
 });
 
 describe('rekordbox software master', () => {

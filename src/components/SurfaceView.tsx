@@ -9,6 +9,7 @@ import {useMediaQuery} from '@astryxdesign/core/hooks';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {controlsInSection, SECTIONS} from '@/content';
 import {browserSectionIntro} from '@/content/hardware/browser';
+import {getBrowserVisualRect} from '@/content/hardware/browserVisual';
 import {
   getRbDeckMarkerOffset,
   getRbDeckRegion,
@@ -51,7 +52,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const activeRegion = isRbDeck ? getRbDeckRegion(activeRegionId) : undefined;
   const targetRect = activeRegion
     ? getRbDeckVisualRect(activeRegion.id, isNarrow)
-    : section?.rect ?? FULL;
+    : sectionId === 'browser'
+      ? getBrowserVisualRect(isNarrow)
+      : section?.rect ?? FULL;
   const controls = activeRegion
     ? allControls.filter((control) => activeRegion.controlIds.includes(control.id))
     : allControls;
@@ -219,8 +222,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 key={control.id}
                 data-control-id={control.id}
                 className={styles.controlIndexItem}
-                label={control.label}
-                description={control.primary.summary}
+                label={isShiftActive && control.shift
+                  ? control.shiftLegend ?? control.label
+                  : control.label}
+                description={isShiftActive && control.shift
+                  ? control.shift.summary
+                  : control.primary.summary}
                 onClick={() => activateControl(control.id, true)}
                 isSelected={openControlId === control.id}
               />

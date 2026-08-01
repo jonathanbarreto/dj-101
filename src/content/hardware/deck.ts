@@ -12,8 +12,8 @@ const manual = (summary: string, detail: string, why: string, extras: Partial<Be
  * This deck lesson covers canonical controls 32–52. Canonical references
  * 53–55 are the Browser rotary selector, BACK, and VIEW, so they belong to
  * the Browser area rather than this deck lesson.
- * These controls behave the same on the right deck; documenting one deck
- * avoids repeating a second, identical lesson.
+ * The right deck derives these Behavior objects in right-deck.ts so the
+ * shared controls stay word-for-word consistent without duplicating prose.
  */
 export const deckControls: Control[] = [
   {

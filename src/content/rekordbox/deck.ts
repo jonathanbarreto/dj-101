@@ -253,7 +253,7 @@ export const rbDeckControls: Control[] = [
     primary: rekordbox(
       'Starts or pauses this software deck',
       'The play control changes the deck between playing and paused states. Its state and the moving jog indicator provide an on-screen confirmation of transport.',
-      'Use the animation as a quick check after switching the physical left side between decks 1 and 3. It shows which software deck actually received your press before you touch a channel fader.',
+      'Use the animation as a quick check after pressing DECK SELECT: the left side operates decks 1 and 3, while the right side operates decks 2 and 4. It shows which software deck actually received your press before you touch a channel fader.',
     ),
     counterpart: hardwareDecks('play-pause'),
   },

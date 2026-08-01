@@ -11,12 +11,19 @@ const testControl: Control = {
   surface: 'hardware',
   section: 'deck-left',
   label: 'Test control',
+  shiftLegend: 'Test shift',
   kind: 'button',
   at: {x: 0.1, y: 0.5},
   primary: {
     summary: 'Test behavior',
     detail: 'Test detail',
     why: 'Test reason',
+    source: 'manual',
+  },
+  shift: {
+    summary: 'Shift test behavior',
+    detail: 'Shift test detail',
+    why: 'Shift test reason',
     source: 'manual',
   },
 };
@@ -215,9 +222,15 @@ describe('SurfaceView', () => {
     expect(screen.getByText('Controls in Left deck')).toBeDefined();
     expect(screen.queryByRole('button', {name: 'Test control'})).toBeNull();
     const indexButton = screen.getByRole('button', {name: /^Test control /});
-    await user.click(indexButton);
+    expect(indexButton).toBeDefined();
+
+    await user.click(screen.getByRole('switch', {name: /shift/i}));
+    const shiftIndexButton = screen.getByRole('button', {name: /Test shift Shift test behavior/});
+    expect(shiftIndexButton).toBeDefined();
+
+    await user.click(shiftIndexButton);
     const lesson = screen.getByRole('region', {name: 'Test control lesson'});
-    expect(lesson.textContent).toContain('Test behavior');
+    expect(lesson.textContent).toContain('Shift test behavior');
     act(() => {
       while (animationFrames.length > 0) animationFrames.shift()!(0);
     });
@@ -225,6 +238,6 @@ describe('SurfaceView', () => {
 
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('region', {name: 'Test control lesson'})).toBeNull();
-    expect(document.activeElement).toBe(indexButton);
+    expect(document.activeElement).toBe(shiftIndexButton);
   });
 });
