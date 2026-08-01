@@ -352,8 +352,15 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 isShiftActive={isShiftActive}
                 isOpen={openControlId === control.id}
                 onOpenChange={(nextIsOpen) => {
-                  setOpenControlId(nextIsOpen ? control.id : null);
-                  if (!nextIsOpen) clearMatchingControlHash(control.id);
+                  if (nextIsOpen) {
+                    if (openControlId === control.id) return;
+                    if (activateControl(control.id, true)) {
+                      setOpenControlId(control.id);
+                    }
+                  } else {
+                    setOpenControlId(null);
+                    clearMatchingControlHash(control.id);
+                  }
                 }}
                 markerOffset={activeRbRegion
                   ? getRbDeckMarkerOffset(control.id, isNarrow)

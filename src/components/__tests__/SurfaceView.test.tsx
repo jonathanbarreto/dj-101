@@ -327,6 +327,16 @@ describe('SurfaceView', () => {
     expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('true');
   });
 
+  it('writes a stable hash when a desktop photo hotspot opens its lesson', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    await user.click(screen.getByRole('button', {name: 'ARTWORK'}));
+
+    expect(window.location.hash).toBe('#rb-deck-artwork');
+    expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('true');
+  });
+
   it('ignores an invalid hash and leaves the default region usable', () => {
     window.history.replaceState(null, '', '/rekordbox/rb-deck#not-a-control');
     render(<SurfaceView surface="software" sectionId="rb-deck" />);
