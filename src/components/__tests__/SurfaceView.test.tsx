@@ -7,13 +7,13 @@ import type {Control} from '@/content/types';
 import {SurfaceView} from '../SurfaceView';
 
 const testControl: Control = {
-  id: 'deck-left-test-control',
+  id: 'deck-left-loop-in',
   surface: 'hardware',
   section: 'deck-left',
   label: 'Test control',
   shiftLegend: 'Test shift',
   kind: 'button',
-  at: {x: 0.1, y: 0.5},
+  at: {x: 0.1, y: 0.2},
   primary: {
     summary: 'Test behavior',
     detail: 'Test detail',
@@ -52,6 +52,16 @@ afterAll(() => {
 
 beforeEach(() => {
   window.history.replaceState(null, '', '/');
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
   animationFrames = [];
   window.requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
     animationFrames.push(callback);
@@ -147,6 +157,22 @@ describe('SurfaceView', () => {
     expect(screen.getByRole('switch', {name: /shift/i})).toBeDefined();
   });
 
+  it('turns the narrow hardware overview into a clean Astryx lesson list', () => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 767px)', media: query, onchange: null,
+      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
+      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }));
+    render(<SurfaceView surface="hardware" />);
+
+    expect(screen.getByRole('img', {name: /DDJ-1000/i})).toBeDefined();
+    expect(screen.queryByTestId('overview-overlay-link')).toBeNull();
+    expect(screen.getByRole('link', {name: /Left deck/i}).getAttribute('href'))
+      .toBe('/controller/deck-left');
+    expect(screen.getByRole('link', {name: /Rear connections/i}).getAttribute('href'))
+      .toBe('/controller/rear');
+  });
+
   it('shows only software section links with rekordbox hrefs and no SHIFT control', () => {
     render(<SurfaceView surface="software" />);
 
@@ -154,6 +180,36 @@ describe('SurfaceView', () => {
       .toBe('/rekordbox/rb-deck');
     expect(screen.queryByRole('link', {name: 'Left deck'})).toBeNull();
     expect(screen.queryByRole('switch', {name: /shift/i})).toBeNull();
+  });
+
+  it('keeps unavailable rekordbox zones as orientation labels, not dead routes', () => {
+    render(<SurfaceView surface="software" />);
+
+    expect(screen.getByRole('link', {name: 'Player deck'}).getAttribute('href'))
+      .toBe('/rekordbox/rb-deck');
+    expect(screen.queryByRole('link', {name: 'Waveforms'})).toBeNull();
+    expect(screen.getByText('Waveforms')).toBeDefined();
+    expect(screen.getByText(/orientation only/i)).toBeDefined();
+  });
+
+  it('organizes each hardware deck into three focused image regions', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+
+    expect(screen.getByRole('navigation', {name: 'Deck lesson region'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Loop / transport'}).getAttribute('aria-current'))
+      .toBe('page');
+    expect(screen.getByRole('button', {name: 'LOOP IN · 1/2X'})).toBeDefined();
+    expect(screen.queryByRole('button', {name: 'JOG DIAL'})).toBeNull();
+
+    await user.click(screen.getByRole('button', {name: 'Jog / tempo'}));
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+    expect(screen.getByRole('button', {name: 'JOG DIAL'})).toBeDefined();
+    expect(screen.queryByRole('button', {name: 'LOOP IN · 1/2X'})).toBeNull();
+    expect(parseInt(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes') ?? '0'))
+      .toBeLessThanOrEqual(200);
   });
 
   it('starts a section at the full image, then transitions to its crop', () => {
@@ -170,11 +226,11 @@ describe('SurfaceView', () => {
 
     act(() => animationFrames[0](0));
 
-    expect(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes')).toBe('309vw');
+    expect(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes')).toBe('200vw');
     expect(screen.getByRole('button', {name: 'Test control'})).toBeDefined();
     expect(parseFloat(
       screen.getByRole('button', {name: 'Test control'}).parentElement?.style.left ?? '',
-    )).toBeCloseTo(28.7037);
+    )).toBeCloseTo(20);
     expect(screen.queryByRole('link', {name: 'Mixer'})).toBeNull();
   });
 
@@ -280,7 +336,7 @@ describe('SurfaceView', () => {
 
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
 
-    expect(screen.getByText('Controls in Left deck')).toBeDefined();
+    expect(screen.getByText('Controls in Loop / transport')).toBeDefined();
     expect(screen.queryByRole('button', {name: 'Test control'})).toBeNull();
     const indexButton = screen.getByRole('button', {name: /^Test control /});
     expect(indexButton).toBeDefined();
@@ -300,6 +356,39 @@ describe('SurfaceView', () => {
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('region', {name: 'Test control lesson'})).toBeNull();
     expect(document.activeElement).toBe(shiftIndexButton);
+  });
+
+  it('places a selected narrow lesson immediately after the image and before its index', async () => {
+    const user = userEvent.setup();
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 767px)', media: query, onchange: null,
+      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
+      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }));
+    vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
+    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+
+    await user.click(screen.getByRole('button', {name: /^Test control /}));
+    const image = screen.getByRole('img', {name: /DDJ-1000/i});
+    const lesson = screen.getByRole('region', {name: 'Test control lesson'});
+    const indexHeading = screen.getByText(/Controls in Loop \/ transport/);
+    expect(image.compareDocumentPosition(lesson) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(lesson.compareDocumentPosition(indexHeading) & Node.DOCUMENT_POSITION_FOLLOWING)
+      .toBeTruthy();
+  });
+
+  it('hides narrow rekordbox photo hotspots and opens lessons from the list', async () => {
+    const user = userEvent.setup();
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 767px)', media: query, onchange: null,
+      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(),
+      removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }));
+    render(<SurfaceView surface="software" sectionId="rb-deck" />);
+
+    expect(screen.queryByRole('button', {name: 'ARTWORK'})).toBeNull();
+    await user.click(screen.getByRole('button', {name: /^ARTWORK /}));
+    expect(screen.getByRole('region', {name: 'ARTWORK lesson'})).toBeDefined();
   });
 
   it('presents signal flow and gain roles as scannable lists without a nested image scroller', () => {

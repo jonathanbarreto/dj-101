@@ -1,0 +1,8 @@
+.footer {
+  border-block-start: var(--border-width) solid var(--color-border);
+  background: var(--color-background-muted);
+}
+
+.legal {
+  max-inline-size: 80ch;
+}

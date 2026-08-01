@@ -10,6 +10,7 @@ import RekordboxPage from '../rekordbox/page';
 import RekordboxSectionPage, {
   generateStaticParams as rekordboxParams,
 } from '../rekordbox/[section]/page';
+import NotFound from '../not-found';
 
 vi.mock('next/navigation', () => ({
   notFound: vi.fn(() => {
@@ -39,10 +40,11 @@ describe('routes', () => {
     expect(screen.getByText(
       'An interactive guide to the Pioneer DDJ-1000 and rekordbox 7 — what every control does, and when to reach for it.',
     )).toBeDefined();
-    expect(screen.getByRole('link', {name: 'The controller →'}).getAttribute('href'))
+    expect(screen.getByRole('link', {name: /Learn the controller/}).getAttribute('href'))
       .toBe('/controller');
-    expect(screen.getByRole('link', {name: 'rekordbox 7 →'}).getAttribute('href'))
+    expect(screen.getByRole('link', {name: /Learn rekordbox 7/}).getAttribute('href'))
       .toBe('/rekordbox');
+    expect(screen.queryByRole('main')).toBeNull();
   });
 
   it('renders the overview page titles', () => {
@@ -52,6 +54,7 @@ describe('routes', () => {
 
     render(<RekordboxPage />);
     expect(screen.getByRole('heading', {name: 'rekordbox 7'})).toBeDefined();
+    expect(screen.queryByRole('main')).toBeNull();
   });
 
   it('generates static params only for the matching surface', () => {
@@ -95,10 +98,13 @@ describe('routes', () => {
     expect(screen.queryByRole('img')).toBeNull();
   });
 
-  it('uses the Astryx navigation contract for the controller backlink', async () => {
+  it('uses Astryx breadcrumbs with a non-linked current page', async () => {
     render(await ControllerSectionPage({params: Promise.resolve({section: 'rear'})}));
-    expect(screen.getByRole('link', {name: '← The controller'}).getAttribute('data-color'))
-      .toBe('accent');
+    expect(screen.getByRole('navigation', {name: 'Breadcrumb'})).toBeDefined();
+    expect(screen.getByRole('link', {name: 'Controller'}).getAttribute('href'))
+      .toBe('/controller');
+    const breadcrumb = screen.getByRole('navigation', {name: 'Breadcrumb'});
+    expect(breadcrumb.querySelector('[aria-current="page"]')?.textContent).toBe('Rear connections');
   });
 
   it('rejects unknown and cross-surface rekordbox sections', async () => {
@@ -106,6 +112,15 @@ describe('routes', () => {
       .rejects.toThrow('NEXT_NOT_FOUND');
     await expect(RekordboxSectionPage({params: Promise.resolve({section: 'deck-left'})}))
       .rejects.toThrow('NEXT_NOT_FOUND');
-    expect(notFound).toHaveBeenCalledTimes(2);
+    await expect(RekordboxSectionPage({params: Promise.resolve({section: 'rb-waveform'})}))
+      .rejects.toThrow('NEXT_NOT_FOUND');
+    expect(notFound).toHaveBeenCalledTimes(3);
+  });
+
+  it('renders a polished not-found recovery path', () => {
+    render(<NotFound />);
+    expect(screen.getByRole('heading', {name: /lost the beat/i})).toBeDefined();
+    expect(screen.getByRole('link', {name: /return to dj-101/i}).getAttribute('href'))
+      .toBe('/');
   });
 });

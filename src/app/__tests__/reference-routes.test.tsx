@@ -41,6 +41,10 @@ describe('reference routes', () => {
     expect(screen.getByRole('columnheader', {name: 'LEVEL / DEPTH'})).toBeDefined();
     expect(screen.getAllByRole('row')).toHaveLength(15);
 
+    expect(screen.getByRole('navigation', {name: 'Breadcrumb'})).toBeDefined();
+    const currentCrumb = screen.getAllByText('Beat FX')
+      .find((element) => element.getAttribute('aria-current') === 'page');
+    expect(currentCrumb).toBeDefined();
     const activeLink = screen.getByRole('link', {name: 'Beat FX'});
     expect(activeLink.getAttribute('aria-current')).toBe('page');
     expect(screen.getByRole('link', {name: 'Sound Color FX'}).getAttribute('aria-current'))
@@ -68,7 +72,7 @@ describe('reference routes', () => {
 
   it('makes the reference library discoverable from home', () => {
     render(<Home />);
-    expect(screen.getByRole('link', {name: 'Reference library →'}).getAttribute('href'))
+    expect(screen.getByRole('link', {name: /Open the reference library/}).getAttribute('href'))
       .toBe('/reference/beat-fx');
   });
 });

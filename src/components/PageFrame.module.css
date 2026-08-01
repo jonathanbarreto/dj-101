@@ -1,0 +1,12 @@
+.frame {
+  inline-size: 100%;
+  max-inline-size: 90rem;
+  margin-inline: auto;
+  padding: var(--spacing-6);
+}
+
+@media (max-width: 767px) {
+  .frame {
+    padding: var(--spacing-3);
+  }
+}

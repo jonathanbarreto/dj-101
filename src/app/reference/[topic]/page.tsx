@@ -1,4 +1,5 @@
 import {notFound} from 'next/navigation';
+import type {Metadata} from 'next';
 import {Heading, Text} from '@astryxdesign/core/Text';
 import {Link} from '@astryxdesign/core/Link';
 import {Stack} from '@astryxdesign/core/Stack';
@@ -17,9 +18,16 @@ import {
   type SpecificationRow,
 } from '@/content/reference/specs';
 import styles from './ReferencePage.module.css';
+import {PageBreadcrumbs} from '@/components/PageBreadcrumbs';
+import {PageFrame} from '@/components/PageFrame';
 
 const TOPICS = ['beat-fx', 'sound-color-fx', 'specs'] as const;
 type ReferenceTopic = (typeof TOPICS)[number];
+const TOPIC_LABELS: Record<ReferenceTopic, string> = {
+  'beat-fx': 'Beat FX',
+  'sound-color-fx': 'Sound Color FX',
+  specs: 'Specifications',
+};
 
 interface BeatFxRow extends Record<string, unknown> {
   name: string;
@@ -72,10 +80,19 @@ export function generateStaticParams() {
   return TOPICS.map((topic) => ({topic}));
 }
 
+export async function generateMetadata({params}: {params: Promise<{topic: string}>}): Promise<Metadata> {
+  const {topic} = await params;
+  if (!isReferenceTopic(topic)) return {};
+  const label = TOPIC_LABELS[topic];
+  return {
+    title: `${label} reference`,
+    description: `A practical DDJ-1000 ${label} reference for rekordbox 7 Performance mode.`,
+  };
+}
+
 function ReferenceNav({topic}: {topic: ReferenceTopic}) {
   return (
     <Stack direction="horizontal" gap={3} wrap="wrap" as="nav">
-      <Link href="/" isStandalone>Home</Link>
       <Link
         href="/reference/beat-fx"
         isStandalone
@@ -270,13 +287,18 @@ export default async function ReferencePage({
   if (!isReferenceTopic(topic)) notFound();
 
   return (
-    <main className={styles.page}>
+    <PageFrame>
       <Stack direction="vertical" gap={6}>
+        <PageBreadcrumbs items={[
+          {label: 'dj-101', href: '/'},
+          {label: 'Reference', href: '/reference/beat-fx'},
+          {label: TOPIC_LABELS[topic]},
+        ]} />
         <ReferenceNav topic={topic} />
         {topic === 'beat-fx' ? <BeatFxReference /> : null}
         {topic === 'sound-color-fx' ? <SoundColorFxReference /> : null}
         {topic === 'specs' ? <SpecificationsReference /> : null}
       </Stack>
-    </main>
+    </PageFrame>
   );
 }

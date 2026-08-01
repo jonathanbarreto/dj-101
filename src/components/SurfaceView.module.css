@@ -20,6 +20,17 @@
   white-space: nowrap;
 }
 
+.overviewLabel {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-element);
+  background: var(--color-background-muted);
+  color: var(--color-text-secondary);
+  font-size: var(--text-supporting-size);
+  white-space: nowrap;
+}
+
 .controlIndex {
   display: block;
 }

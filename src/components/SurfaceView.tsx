@@ -11,6 +11,15 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {controlsInSection, SECTIONS} from '@/content';
 import {browserSectionIntro} from '@/content/hardware/browser';
 import {getBrowserVisualRect} from '@/content/hardware/browserVisual';
+import {
+  controlsForDeckRegion,
+  DECK_REGIONS,
+  getDeckRegion,
+  getDeckRegionForControl,
+  getDeckVisualRect,
+  isDeckSection,
+  type DeckRegionId,
+} from '@/content/hardware/deckRegions';
 import {mixerGainControls, mixerSignalFlowSteps} from '@/content/hardware/mixer';
 import {
   getMixerRegion,
@@ -53,6 +62,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const section = sectionId === undefined ? undefined : SECTIONS[sectionId];
   const isRbDeck = sectionId === 'rb-deck';
   const isMixer = sectionId === 'mixer';
+  const isDeck = isDeckSection(sectionId);
   const isNarrow = useMediaQuery('(max-width: 767px)', false);
   const regionNavRef = useRef<HTMLDivElement>(null);
   const allControls = useMemo(
@@ -61,18 +71,27 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   );
   const [activeRegionId, setActiveRegionId] = useState<RbDeckRegionId>('info');
   const [activeMixerRegionId, setActiveMixerRegionId] = useState<MixerRegionId>('signal');
+  const [activeDeckRegionId, setActiveDeckRegionId] = useState<DeckRegionId>('transport');
   const activeRbRegion = isRbDeck ? getRbDeckRegion(activeRegionId) : undefined;
   const activeMixerRegion = isMixer ? getMixerRegion(activeMixerRegionId) : undefined;
-  const activeRegion = activeRbRegion ?? activeMixerRegion;
+  const activeDeckRegion = isDeck ? getDeckRegion(activeDeckRegionId) : undefined;
+  const activeRegion = activeRbRegion ?? activeMixerRegion ?? activeDeckRegion;
   const targetRect = activeRbRegion
     ? getRbDeckVisualRect(activeRbRegion.id, isNarrow)
     : activeMixerRegion
       ? getMixerVisualRect(activeMixerRegion.id, isNarrow)
+    : activeDeckRegion && isDeck
+      ? getDeckVisualRect(activeDeckRegion.id, sectionId)
     : sectionId === 'browser'
       ? getBrowserVisualRect(isNarrow)
       : section?.rect ?? FULL;
-  const controls = activeRegion
-    ? activeRegion.controlIds
+  const activeControlIds = activeRbRegion?.controlIds
+    ?? activeMixerRegion?.controlIds
+    ?? (activeDeckRegion && isDeck
+      ? controlsForDeckRegion(activeDeckRegion, sectionId)
+      : undefined);
+  const controls = activeControlIds
+    ? activeControlIds
         .map((id) => allControls.find((control) => control.id === id))
         .filter((control): control is Control => control !== undefined)
     : allControls;
@@ -85,10 +104,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const stageRect = crop.sectionId === sectionId ? crop.rect : FULL;
   const baseHref = surface === 'hardware' ? '/controller' : '/rekordbox';
   const sections = Object.values(SECTIONS).filter((candidate) => candidate.surface === surface);
-  const isCompactHardware = isNarrow && section !== undefined && surface === 'hardware';
+  const populatedSections = sections.filter((candidate) => controlsInSection(candidate.id).length > 0);
+  const unavailableSections = sections.filter((candidate) => controlsInSection(candidate.id).length === 0);
+  const isCompactSection = isNarrow && section !== undefined;
   const showControlIndex = (activeRegion !== undefined && controls.length > 0)
-    || (isCompactHardware && controls.length > 0);
-  const openCompactControl = isCompactHardware
+    || (isCompactSection && controls.length > 0);
+  const openCompactControl = isCompactSection
     ? controls.find((control) => control.id === openControlId)
     : undefined;
 
@@ -98,10 +119,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
 
     const rbRegion = isRbDeck ? getRbDeckRegionForControl(control.id) : undefined;
     const mixerRegion = isMixer ? getMixerRegionForControl(control.id) : undefined;
-    if ((isRbDeck && !rbRegion) || (isMixer && !mixerRegion)) return false;
+    const deckRegion = isDeck ? getDeckRegionForControl(control.id) : undefined;
+    if ((isRbDeck && !rbRegion) || (isMixer && !mixerRegion) || (isDeck && !deckRegion)) return false;
     if (rbRegion) setActiveRegionId(rbRegion.id);
     if (mixerRegion) setActiveMixerRegionId(mixerRegion.id);
-    setOpenControlId(isCompactHardware ? control.id : null);
+    if (deckRegion) setActiveDeckRegionId(deckRegion.id);
+    setOpenControlId(isCompactSection ? control.id : null);
     setPendingControlId(control.id);
 
     if (updateHash && typeof window !== 'undefined') {
@@ -111,7 +134,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       }
     }
     return true;
-  }, [allControls, isCompactHardware, isMixer, isRbDeck]);
+  }, [allControls, isCompactSection, isDeck, isMixer, isRbDeck]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -139,7 +162,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     let secondFrame = 0;
     const firstFrame = window.requestAnimationFrame(() => {
       secondFrame = window.requestAnimationFrame(() => {
-        if (isCompactHardware) {
+        if (isCompactSection) {
           document.getElementById(`${pendingControlId}-lesson`)?.focus();
         } else {
           const trigger = document
@@ -157,11 +180,11 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       window.cancelAnimationFrame(firstFrame);
       if (secondFrame) window.cancelAnimationFrame(secondFrame);
     };
-  }, [pendingControlId, activeRegionId, activeMixerRegionId, isCompactHardware]);
+  }, [pendingControlId, activeRegionId, activeMixerRegionId, activeDeckRegionId, isCompactSection]);
 
   useEffect(() => {
     if (!openControlId) return;
-    if (isCompactHardware) {
+    if (isCompactSection) {
       document.getElementById(`${openControlId}-lesson`)?.focus();
       return;
     }
@@ -170,7 +193,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       ?.querySelector<HTMLElement>('[role="dialog"]');
     const destination = dialog?.querySelector<HTMLElement>('a[href], button');
     destination?.focus();
-  }, [isCompactHardware, openControlId]);
+  }, [isCompactSection, openControlId]);
 
   useEffect(() => {
     if (!isNarrow || !activeRegion) return;
@@ -180,7 +203,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         `[data-tab-value="${activeRegion.id}"]`,
       );
       if (!nav || !tab) return;
-      nav.scrollTo({
+      nav.scrollTo?.({
         left: tab.offsetLeft - (nav.clientWidth - tab.offsetWidth) / 2,
         behavior: 'auto',
       });
@@ -203,6 +226,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
 
   function selectRegion(value: string) {
     if (isMixer) setActiveMixerRegionId(value as MixerRegionId);
+    else if (isDeck) setActiveDeckRegionId(value as DeckRegionId);
     else setActiveRegionId(value as RbDeckRegionId);
     setOpenControlId(null);
     setPendingControlId(null);
@@ -239,9 +263,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             size="sm"
             layout={isMixer ? 'hug' : 'fill'}
             hasDivider
-            aria-label={isMixer ? 'Mixer lesson region' : 'Player deck region'}
+            aria-label={isMixer ? 'Mixer lesson region' : isDeck ? 'Deck lesson region' : 'Player deck region'}
           >
-            {(isMixer ? MIXER_REGIONS : RB_DECK_REGIONS).map((region) => (
+            {(isMixer ? MIXER_REGIONS : isDeck ? DECK_REGIONS : RB_DECK_REGIONS).map((region) => (
               <Tab key={region.id} value={region.id} label={region.label} />
             ))}
           </TabList>
@@ -285,20 +309,31 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       )}
       <Stage surface={surface} rect={stageRect}>
         {section === undefined
-          ? sections.map((candidate) => (
-              <Link
-                key={candidate.id}
-                href={`${baseHref}/${candidate.id}`}
-                className={styles.overviewLink}
-                style={{
-                  left: `${candidate.marker.x * 100}%`,
-                  top: `${candidate.marker.y * 100}%`,
-                }}
-              >
-                {candidate.label}
-              </Link>
-            ))
-          : isCompactHardware
+          ? isNarrow ? null : (
+              <>
+                {populatedSections.map((candidate) => (
+                  <Link
+                    key={candidate.id}
+                    href={`${baseHref}/${candidate.id}`}
+                    className={styles.overviewLink}
+                    data-testid="overview-overlay-link"
+                    style={{left: `${candidate.marker.x * 100}%`, top: `${candidate.marker.y * 100}%`}}
+                  >
+                    {candidate.label}
+                  </Link>
+                ))}
+                {unavailableSections.map((candidate) => (
+                  <span
+                    key={candidate.id}
+                    className={styles.overviewLabel}
+                    style={{left: `${candidate.marker.x * 100}%`, top: `${candidate.marker.y * 100}%`}}
+                  >
+                    {candidate.label}
+                  </span>
+                ))}
+              </>
+            )
+          : isCompactSection
             ? null
             : controls.map((control) => (
               <Hotspot
@@ -316,7 +351,59 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               />
             ))}
       </Stage>
-      {section === undefined && surface === 'hardware' && (
+      {openCompactControl && (
+        <div
+          id={`${openCompactControl.id}-lesson`}
+          className={styles.compactLesson}
+          role="region"
+          aria-label={`${openCompactControl.label} lesson`}
+          tabIndex={-1}
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape') return;
+            closeCompactLesson(openCompactControl.id);
+          }}
+        >
+          <div className={styles.compactLessonClose}>
+            <Button
+              label="Close lesson"
+              size="sm"
+              variant="ghost"
+              onClick={() => closeCompactLesson(openCompactControl.id)}
+            />
+          </div>
+          <ControlPopover control={openCompactControl} isShiftActive={isShiftActive} />
+        </div>
+      )}
+      {section === undefined && isNarrow && (
+        <List
+          hasDividers
+          density="spacious"
+          header={<Text type="label">Available lessons</Text>}
+        >
+          {populatedSections.map((candidate) => (
+            <ListItem
+              key={candidate.id}
+              href={`${baseHref}/${candidate.id}`}
+              label={candidate.label}
+              description={surface === 'hardware'
+                ? `Open the ${candidate.label.toLowerCase()} controls and practical lessons.`
+                : 'Learn the visible deck fields and their hardware counterparts.'}
+            />
+          ))}
+          {surface === 'hardware' && (
+            <>
+              <ListItem href="/controller/rear" label="Rear connections" description="Audio, microphones, power, dual USB routing, safe changeovers, and setup recipes" />
+              <ListItem href="/controller/front" label="Front headphones" description="The shared cue bus and its two headphone plug sizes" />
+            </>
+          )}
+        </List>
+      )}
+      {section === undefined && surface === 'software' && unavailableSections.length > 0 && (
+        <Text type="supporting">
+          Muted zone names are orientation only; their lesson routes are not published yet.
+        </Text>
+      )}
+      {section === undefined && surface === 'hardware' && !isNarrow && (
         <List
           hasDividers
           header={<Text type="label">Connections beyond the overhead view</Text>}
@@ -331,7 +418,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             label="Front headphones"
             description="The shared cue bus and its two headphone plug sizes"
           />
-        </List>
+          </List>
       )}
       {showControlIndex && section && (
         <div className={styles.controlIndex}>
@@ -356,32 +443,6 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               />
             ))}
           </List>
-          {openCompactControl && (
-            <div
-              id={`${openCompactControl.id}-lesson`}
-              className={styles.compactLesson}
-              role="region"
-              aria-label={`${openCompactControl.label} lesson`}
-              tabIndex={-1}
-              onKeyDown={(event) => {
-                if (event.key !== 'Escape') return;
-                closeCompactLesson(openCompactControl.id);
-              }}
-            >
-              <div className={styles.compactLessonClose}>
-                <Button
-                  label="Close lesson"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => closeCompactLesson(openCompactControl.id)}
-                />
-              </div>
-              <ControlPopover
-                control={openCompactControl}
-                isShiftActive={isShiftActive}
-              />
-            </div>
-          )}
         </div>
       )}
     </Stack>

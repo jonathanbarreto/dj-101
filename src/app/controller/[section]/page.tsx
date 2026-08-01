@@ -1,9 +1,11 @@
 import {notFound} from 'next/navigation';
-import {Link} from '@astryxdesign/core/Link';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Text} from '@astryxdesign/core/Text';
+import type {Metadata} from 'next';
 import {SurfaceView} from '@/components/SurfaceView';
 import {ConnectionLessons} from '@/components/ConnectionLessons';
+import {PageBreadcrumbs} from '@/components/PageBreadcrumbs';
+import {PageFrame} from '@/components/PageFrame';
 import {CONNECTION_PANELS, SECTIONS} from '@/content';
 import type {ConnectionPanel} from '@/content/hardware/connections';
 import type {SectionId} from '@/content/types';
@@ -15,6 +17,16 @@ export function generateStaticParams() {
   const connectionPanels = Object.values(CONNECTION_PANELS)
     .map((panel) => ({section: panel.id}));
   return [...imageSections, ...connectionPanels];
+}
+
+export async function generateMetadata({params}: {params: Promise<{section: string}>}): Promise<Metadata> {
+  const {section: requestedSection} = await params;
+  const connectionPanel = CONNECTION_PANELS[requestedSection as ConnectionPanel];
+  const section = SECTIONS[requestedSection as SectionId];
+  const label = connectionPanel?.label ?? section?.label;
+  return label
+    ? {title: label, description: `Learn the DDJ-1000 ${label.toLowerCase()} with precise controls, practical use cases, and setup guidance.`}
+    : {};
 }
 
 export default async function ControllerSectionPage({
@@ -31,9 +43,13 @@ export default async function ControllerSectionPage({
   }
 
   return (
-    <main>
+    <PageFrame>
       <Stack direction="vertical" gap={4} xstyle={undefined}>
-        <Link href="/controller" isStandalone>← The controller</Link>
+        <PageBreadcrumbs items={[
+          {label: 'dj-101', href: '/'},
+          {label: 'Controller', href: '/controller'},
+          {label: connectionPanel?.label ?? section!.label},
+        ]} />
         {connectionPanel ? (
           <ConnectionLessons panel={connectionPanel.id} />
         ) : (
@@ -43,6 +59,6 @@ export default async function ControllerSectionPage({
           </>
         )}
       </Stack>
-    </main>
+    </PageFrame>
   );
 }
