@@ -19,9 +19,10 @@ export function CoordPicker() {
   }
 
   function handlePick(event: React.MouseEvent<HTMLDivElement>) {
+    const {clientHeight, clientLeft, clientTop, clientWidth} = event.currentTarget;
     const bounds = event.currentTarget.getBoundingClientRect();
-    const viewportX = (event.clientX - bounds.left) / bounds.width;
-    const viewportY = (event.clientY - bounds.top) / bounds.height;
+    const viewportX = (event.clientX - bounds.left - clientLeft) / clientWidth;
+    const viewportY = (event.clientY - bounds.top - clientTop) / clientHeight;
     const x = rect.x + viewportX * rect.w;
     const y = rect.y + viewportY * rect.h;
 
