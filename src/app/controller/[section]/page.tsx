@@ -28,13 +28,21 @@ export async function generateMetadata({params}: {params: Promise<{section: stri
     ? SECTIONS[requestedSection as SectionId]
     : undefined;
   const label = connectionPanel?.label ?? section?.label;
-  return label
-    ? {
-        title: label,
-        description: `Learn the DDJ-1000 ${label.toLowerCase()} with precise controls, practical use cases, and setup guidance.`,
-        alternates: {canonical: `/controller/${requestedSection}`},
-      }
-    : {};
+  if (!label) return {};
+  const description = `Learn the DDJ-1000 ${label.toLowerCase()} with precise controls, practical use cases, and setup guidance.`;
+  const url = `/controller/${requestedSection}`;
+  return {
+    title: label,
+    description,
+    alternates: {canonical: url},
+    openGraph: {
+      type: 'article',
+      siteName: 'dj-101',
+      title: `${label} — DDJ-1000`,
+      description,
+      url,
+    },
+  };
 }
 
 export default async function ControllerSectionPage({

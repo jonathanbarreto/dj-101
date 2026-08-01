@@ -104,6 +104,32 @@ describe('production release integrity', () => {
     })).resolves.toMatchObject({alternates: {canonical: '/reference/beat-fx'}});
   });
 
+  it('gives every child route page-specific Open Graph identity', async () => {
+    expect(controllerMetadata.openGraph).toMatchObject({
+      title: 'Pioneer DJ DDJ-1000',
+      url: '/controller',
+    });
+    expect(rekordboxMetadata.openGraph).toMatchObject({
+      title: 'rekordbox 7',
+      url: '/rekordbox',
+    });
+    await expect(controllerSectionMetadata({
+      params: Promise.resolve({section: 'deck-left'}),
+    })).resolves.toMatchObject({
+      openGraph: {title: 'Left deck — DDJ-1000', url: '/controller/deck-left'},
+    });
+    await expect(rekordboxSectionMetadata({
+      params: Promise.resolve({section: 'rb-deck'}),
+    })).resolves.toMatchObject({
+      openGraph: {title: 'Player deck in rekordbox 7', url: '/rekordbox/rb-deck'},
+    });
+    await expect(referenceMetadata({
+      params: Promise.resolve({topic: 'beat-fx'}),
+    })).resolves.toMatchObject({
+      openGraph: {title: 'Beat FX reference', url: '/reference/beat-fx'},
+    });
+  });
+
   it('rejects inherited and prototype-like controller route keys', async () => {
     for (const section of ['toString', 'constructor', '__proto__']) {
       await expect(controllerSectionMetadata({params: Promise.resolve({section})}))
@@ -169,5 +195,13 @@ describe('production release integrity', () => {
     expect(masters).toHaveLength(2);
     expect(new Set(masters).size).toBe(masters.length);
     expect(masters.every((image) => /\/[^/]*master\.avif$/.test(image))).toBe(true);
+  });
+
+  it('ships only the two referenced AVIF master images', () => {
+    expect(readdirSync(resolve(root, 'public/images')).sort()).toEqual([
+      'ddj1000-master.avif',
+      'rekordbox-master.avif',
+    ]);
+    expect(read('scripts/optimize-images.mjs')).not.toMatch(/\.webp|webpPath|\.webp\(/);
   });
 });

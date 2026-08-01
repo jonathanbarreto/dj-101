@@ -19,13 +19,16 @@ export async function generateMetadata({params}: {params: Promise<{section: stri
   const section = Object.hasOwn(SECTIONS, requestedSection)
     ? SECTIONS[requestedSection as SectionId]
     : undefined;
-  return section?.surface === 'software'
-    ? {
-        title: `${section.label} in rekordbox 7`,
-        description: `Learn the rekordbox 7 ${section.label.toLowerCase()} and its DDJ-1000 hardware counterparts.`,
-        alternates: {canonical: `/rekordbox/${requestedSection}`},
-      }
-    : {};
+  if (section?.surface !== 'software') return {};
+  const title = `${section.label} in rekordbox 7`;
+  const description = `Learn the rekordbox 7 ${section.label.toLowerCase()} and its DDJ-1000 hardware counterparts.`;
+  const url = `/rekordbox/${requestedSection}`;
+  return {
+    title,
+    description,
+    alternates: {canonical: url},
+    openGraph: {type: 'article', siteName: 'dj-101', title, description, url},
+  };
 }
 
 export default async function RekordboxSectionPage({

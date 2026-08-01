@@ -21,9 +21,13 @@ export const deckControls: Control[] = [
     label: 'JOG DIAL', shiftLegend: 'GRID ADJUST', kind: 'jog', at: {x: 0.1115, y: 0.4392},
     counterpart: ['rb-deck-jog-tempo'],
     primary: manual(
-      'Scratches from the top and bends pitch from the rim',
-      'With VINYL mode on, touching the jog top stops the track and lets you move it like a record. Turning the outer ring bends pitch; with VINYL off, the top also pitch-bends. The centre display shows deck and playback information.',
-      'Nudge the rim when two kick drums are drifting during a long blend: a tiny clockwise push catches the incoming beat without changing its tempo setting. Use the top only when you deliberately want a scratch or a brake.',
+      'Scratches, pitch-bends, and keeps the deck state under your hand',
+      'With VINYL mode on, touching the jog top stops the track and lets you move it like a record. Turning the outer ring bends pitch; with VINYL off, the top also pitch-bends.\n\n# Read the on-jog display by job\n\n- **Deck identity and state:** the deck number tells you which software layer this side controls. The background is white for decks 1–2 and blue for decks 3–4; a bright background means on-air, a dark one means off-air, and red takes priority while Slip is active. Separate indicators show the current cue point and whether this deck is MASTER or SYNC.\n- **Track and tempo:** artwork, current key, key variation from the track’s original key, current BPM, playback speed change, and selected tempo range let you check the musical and timing state before touching a fader.\n- **Position and memory:** the waveform carries saved cue, loop, and Hot Cue memory markers. A playback-position needle shows the platter position, while the time display can show elapsed or remaining time.\n- **CUE SCOPE:** its compact timeline shows cue, loop, and Hot Cue markers from 4 bars behind to 16 bars ahead of the current position, with four-bar divisions. It is a phrase-warning strip, not a replacement for listening.\n\n# Customize what earns the space\n\nrekordbox settings can change the waveform color, show or hide artwork, and choose elapsed or remaining time. Hiding artwork enlarges the BPM readout when tempo information matters more than cover art.',
+      'Nudge the rim when two kick drums drift during a long blend, then use the display as a pre-move checklist: confirm the deck number before changing layers, read red as active Slip, and watch CUE SCOPE for the saved marker that announces the next phrase. The display helps you keep your eyes near your hands; your headphones still decide whether the mix is actually aligned.',
+      {tips: [
+        'Bright or dark white/blue backgrounds distinguish on-air from off-air; red Slip status overrides that normal state.',
+        'Treat CUE SCOPE as useful only when your saved cue, loop, and Hot Cue markers are prepared accurately.',
+      ]},
     ),
     shift: manual(
       'Edits the beat grid from the jog',
@@ -347,6 +351,15 @@ export const deckControls: Control[] = [
       'The eight performance pads execute the assignments from the active pad mode: Hot Cue, Pad FX, Beat Jump, Sampler, or one of the SHIFT-selected modes. Their action depends on the mode button, not on a separate grey function printed on the pad grid.',
       'Before a transition, glance at the lit mode button and mentally name what the pads will do. A pad that launches a safe hot cue in one moment can trigger a sampler sound or key shift in the next, which is a very different result over an exposed vocal.',
       {tips: ['Set the pad mode before the phrase arrives; do not discover it by firing a pad on the master output.']},
+    ),
+    shift: manual(
+      'Uses the SHIFT action assigned by the active pad mode',
+      'SHIFT plus a performance pad is not one global command across every pad mode. **In Hot Cue mode only, SHIFT plus an assigned pad deletes the Hot Cue stored on that pad.** The gesture targets that specific cue; it does not mean “delete” when the pads are in Keyboard, Pad FX, Beat Jump, Beat Loop, Sampler, or Key Shift mode.',
+      'Use the Hot Cue delete shortcut in headphones when you discover that one pad marks the wrong downbeat. First confirm the selected deck layer, confirm the HOT CUE mode light, and identify the exact pad; then remove the bad marker before it becomes a risky performance target.',
+      {
+        gotcha: 'This changes the track’s saved performance preparation. Confirm the deck number, Hot Cue mode, and assigned pad before pressing: SHIFT plus a pad is not a universal action in every pad mode.',
+        source: 'rekordbox7',
+      },
     ),
   },
 ];

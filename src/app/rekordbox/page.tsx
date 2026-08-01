@@ -9,6 +9,13 @@ export const metadata: Metadata = {
   title: 'rekordbox 7',
   description: 'Learn the rekordbox 7 Performance mode player deck and how it corresponds to the DDJ-1000 hardware.',
   alternates: {canonical: '/rekordbox'},
+  openGraph: {
+    type: 'website',
+    siteName: 'dj-101',
+    title: 'rekordbox 7',
+    description: 'Learn the rekordbox 7 Performance mode player deck and how it corresponds to the DDJ-1000 hardware.',
+    url: '/rekordbox',
+  },
 };
 
 export default function RekordboxPage() {

@@ -84,10 +84,14 @@ export async function generateMetadata({params}: {params: Promise<{topic: string
   const {topic} = await params;
   if (!isReferenceTopic(topic)) return {};
   const label = TOPIC_LABELS[topic];
+  const title = `${label} reference`;
+  const description = `A practical DDJ-1000 ${label} reference for rekordbox 7 Performance mode.`;
+  const url = `/reference/${topic}`;
   return {
-    title: `${label} reference`,
-    description: `A practical DDJ-1000 ${label} reference for rekordbox 7 Performance mode.`,
-    alternates: {canonical: `/reference/${topic}`},
+    title,
+    description,
+    alternates: {canonical: url},
+    openGraph: {type: 'article', siteName: 'dj-101', title, description, url},
   };
 }
 
