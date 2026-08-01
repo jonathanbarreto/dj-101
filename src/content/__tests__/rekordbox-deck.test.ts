@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import {describe, expect, it} from 'vitest';
 
 import {deckControls} from '../hardware/deck';
+import {rightDeckControls} from '../hardware/right-deck';
 import {rbDeckControls} from '../rekordbox/deck';
 import {SURFACES} from '../surfaces';
 
@@ -70,7 +71,7 @@ describe('rekordbox 7 player deck content', () => {
   });
 
   it('keeps every declared cross-surface link reciprocal, including one-to-many links', () => {
-    const all = [...deckControls, ...rbDeckControls];
+    const all = [...deckControls, ...rightDeckControls, ...rbDeckControls];
 
     for (const control of all) {
       for (const targetId of control.counterpart ?? []) {
@@ -83,10 +84,15 @@ describe('rekordbox 7 player deck content', () => {
     expect(rbDeckControls.find((control) => control.id === 'rb-deck-performance-pads')?.counterpart)
       .toEqual([
         'deck-left-hot-cue',
+        'deck-right-hot-cue',
         'deck-left-pad-fx-1',
+        'deck-right-pad-fx-1',
         'deck-left-beat-jump',
+        'deck-right-beat-jump',
         'deck-left-sampler',
+        'deck-right-sampler',
         'deck-left-pad-grid',
+        'deck-right-pad-grid',
       ]);
   });
 

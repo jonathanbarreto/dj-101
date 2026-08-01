@@ -32,6 +32,14 @@
   min-block-size: var(--spacing-11);
 }
 
+.compactLesson {
+  margin-block-start: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-muted);
+}
+
 @media (min-width: 768px) {
   .controlIndex {
     display: none;

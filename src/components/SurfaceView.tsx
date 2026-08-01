@@ -8,6 +8,7 @@ import {Text} from '@astryxdesign/core/Text';
 import {useMediaQuery} from '@astryxdesign/core/hooks';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {controlsInSection, SECTIONS} from '@/content';
+import {browserSectionIntro} from '@/content/hardware/browser';
 import {
   getRbDeckMarkerOffset,
   getRbDeckRegion,
@@ -18,6 +19,7 @@ import {
 } from '@/content/rekordbox/deckRegions';
 import type {Control, Rect, SectionId, Surface} from '@/content/types';
 import {Hotspot} from './Hotspot';
+import {ControlPopover} from './ControlPopover';
 import {ShiftProvider, useShift} from './ShiftContext';
 import {ShiftToggle} from './ShiftToggle';
 import {Stage} from './Stage';
@@ -62,6 +64,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const stageRect = crop.sectionId === sectionId ? crop.rect : FULL;
   const baseHref = surface === 'hardware' ? '/controller' : '/rekordbox';
   const sections = Object.values(SECTIONS).filter((candidate) => candidate.surface === surface);
+  const isCompactHardware = isNarrow && section !== undefined && surface === 'hardware';
+  const showControlIndex = activeRegion !== undefined
+    || isCompactHardware;
+  const openCompactControl = isCompactHardware
+    ? controls.find((control) => control.id === openControlId)
+    : undefined;
 
   const activateControl = useCallback((controlId: string, updateHash: boolean) => {
     const control = allControls.find((candidate) => candidate.id === controlId);
@@ -70,7 +78,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     const region = isRbDeck ? getRbDeckRegionForControl(control.id) : undefined;
     if (isRbDeck && !region) return false;
     if (region) setActiveRegionId(region.id);
-    setOpenControlId(null);
+    setOpenControlId(isCompactHardware ? control.id : null);
     setPendingControlId(control.id);
 
     if (updateHash && typeof window !== 'undefined') {
@@ -80,7 +88,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       }
     }
     return true;
-  }, [allControls, isRbDeck]);
+  }, [allControls, isCompactHardware, isRbDeck]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -108,12 +116,16 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     let secondFrame = 0;
     const firstFrame = window.requestAnimationFrame(() => {
       secondFrame = window.requestAnimationFrame(() => {
-        const trigger = document
-          .getElementById(pendingControlId)
-          ?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]');
-        if (trigger) {
-          trigger.focus();
-          setOpenControlId(pendingControlId);
+        if (isCompactHardware) {
+          document.getElementById(`${pendingControlId}-lesson`)?.focus();
+        } else {
+          const trigger = document
+            .getElementById(pendingControlId)
+            ?.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]');
+          if (trigger) {
+            trigger.focus();
+            setOpenControlId(pendingControlId);
+          }
         }
         setPendingControlId(null);
       });
@@ -122,7 +134,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       window.cancelAnimationFrame(firstFrame);
       if (secondFrame) window.cancelAnimationFrame(secondFrame);
     };
-  }, [pendingControlId, activeRegionId]);
+  }, [pendingControlId, activeRegionId, isCompactHardware]);
 
   useEffect(() => {
     if (!openControlId) return;
@@ -145,6 +157,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   return (
     <Stack direction="vertical" gap={3} xstyle={undefined}>
       {surface === 'hardware' ? <ShiftToggle /> : null}
+      {sectionId === 'browser' && <Text>{browserSectionIntro}</Text>}
       {activeRegion && (
         <div className={styles.regionNav}>
           <TabList
@@ -176,7 +189,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 {candidate.label}
               </Link>
             ))
-          : controls.map((control) => (
+          : isCompactHardware
+            ? null
+            : controls.map((control) => (
               <Hotspot
                 key={control.id}
                 control={control}
@@ -192,16 +207,17 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               />
             ))}
       </Stage>
-      {activeRegion && (
+      {showControlIndex && section && (
         <div className={styles.controlIndex}>
           <List
             density="balanced"
             hasDividers
-            header={<Text type="label">Controls in {activeRegion.label}</Text>}
+            header={<Text type="label">Controls in {activeRegion?.label ?? section.label}</Text>}
           >
             {controls.map((control: Control) => (
               <ListItem
                 key={control.id}
+                data-control-id={control.id}
                 className={styles.controlIndexItem}
                 label={control.label}
                 description={control.primary.summary}
@@ -210,6 +226,31 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               />
             ))}
           </List>
+          {openCompactControl && (
+            <div
+              id={`${openCompactControl.id}-lesson`}
+              className={styles.compactLesson}
+              role="region"
+              aria-label={`${openCompactControl.label} lesson`}
+              tabIndex={-1}
+              onKeyDown={(event) => {
+                if (event.key !== 'Escape') return;
+                setOpenControlId(null);
+                queueMicrotask(() => {
+                  document
+                    .querySelector<HTMLElement>(
+                      `[data-control-id="${openCompactControl.id}"] button`,
+                    )
+                    ?.focus();
+                });
+              }}
+            >
+              <ControlPopover
+                control={openCompactControl}
+                isShiftActive={isShiftActive}
+              />
+            </div>
+          )}
         </div>
       )}
     </Stack>

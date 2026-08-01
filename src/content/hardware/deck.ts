@@ -66,7 +66,7 @@ export const deckControls: Control[] = [
   },
   {
     id: 'deck-left-jog-feeling-adjust', ref: 44, surface: 'hardware', section: 'deck-left',
-    label: 'JOG ADJUST', kind: 'knob', at: {x: 0.2956, y: 0.0892},
+    label: 'JOG ADJUST', kind: 'knob', at: {x: 0.3098, y: 0.2169},
     primary: manual(
       'Sets how lightly or heavily the jog platter turns',
       'JOG FEELING ADJUST changes the mechanical resistance of the jog from LIGHT to HEAVY; it does not change track tempo, pitch range, or scratch audio.',
@@ -90,7 +90,7 @@ export const deckControls: Control[] = [
   },
   {
     id: 'deck-left-master-tempo', ref: 47, surface: 'hardware', section: 'deck-left',
-    label: 'MASTER TEMPO', shiftLegend: 'TEMPO RANGE', kind: 'button', at: {x: 0.2795, y: 0.7493},
+    label: 'MASTER TEMPO', shiftLegend: 'TEMPO RANGE', kind: 'button', at: {x: 0.2708, y: 0.6963},
     counterpart: ['rb-deck-master-tempo'],
     primary: manual(
       'Locks musical key while tempo changes',

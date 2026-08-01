@@ -7,6 +7,11 @@ const rekordbox = (
   extras: Partial<Behavior> = {},
 ): Behavior => ({summary, detail, why, source: 'rekordbox7', ...extras});
 
+const hardwareDecks = (...slugs: string[]): string[] => slugs.flatMap((slug) => [
+  `deck-left-${slug}`,
+  `deck-right-${slug}`,
+]);
+
 /**
  * The 28 numbered elements in rekordbox 7's two-deck player panel.
  * Coordinates were measured against the clean 1200x634 Performance-mode
@@ -87,7 +92,7 @@ export const rbDeckControls: Control[] = [
       'KEY SYNC applies key shifting so the loaded track follows the sync master’s key. The adjacent key readout and semitone difference show the result rather than hiding the transformation.',
       'Use the screen after pressing hardware KEY SYNC to verify what actually changed. A compatible-looking result still deserves headphone checking when vocals or sustained bass notes make artifacts obvious.',
     ),
-    counterpart: ['deck-left-key-sync'],
+    counterpart: hardwareDecks('key-sync'),
   },
   {
     id: 'rb-deck-key-shift', surface: 'software', section: 'rb-deck',
@@ -108,7 +113,7 @@ export const rbDeckControls: Control[] = [
       'Check this indicator when a synced blend begins drifting. If it is on, investigate the beat grid or live drums; if it is off, correct tempo and phase manually instead of blaming the analysis.',
       {gotcha: 'Sync aligns beats, not musical phrases, and it cannot repair an incorrectly analysed grid.'},
     ),
-    counterpart: ['deck-left-beat-sync'],
+    counterpart: hardwareDecks('beat-sync'),
   },
   {
     id: 'rb-deck-master', surface: 'software', section: 'rb-deck',
@@ -121,7 +126,7 @@ export const rbDeckControls: Control[] = [
     // The hardware schema links controls, not individual primary/SHIFT actions.
     // SHIFT + BEAT SYNC reaches this state, so both software Sync controls link
     // back to the same physical button.
-    counterpart: ['deck-left-beat-sync'],
+    counterpart: hardwareDecks('beat-sync'),
   },
   {
     id: 'rb-deck-hot-cue-marker', surface: 'software', section: 'rb-deck',
@@ -188,10 +193,7 @@ export const rbDeckControls: Control[] = [
       'Read the labels and colors before reaching for the hardware pads. The screen reveals cue names, times, and empty slots that the unlabelled rubber grid cannot, making an unfamiliar track far safer to perform.',
       {tips: ['The on-screen mode menu also exposes rekordbox modes that may require Pad Editor mapping on the DDJ-1000.']},
     ),
-    counterpart: [
-      'deck-left-hot-cue', 'deck-left-pad-fx-1', 'deck-left-beat-jump',
-      'deck-left-sampler', 'deck-left-pad-grid',
-    ],
+    counterpart: hardwareDecks('hot-cue', 'pad-fx-1', 'beat-jump', 'sampler', 'pad-grid'),
   },
   {
     id: 'rb-deck-auto-loop', surface: 'software', section: 'rb-deck',
@@ -201,7 +203,7 @@ export const rbDeckControls: Control[] = [
       'In AU mode, the numbered loop button creates an Auto Beat Loop of that many beats, aligned from the current position according to the deck’s timing and Quantize state.',
       'Use the displayed number as a preflight check before looping an exposed vocal. It prevents expecting four beats and accidentally trapping one beat because a previous performance left a shorter length selected.',
     ),
-    counterpart: ['deck-left-loop-exit'],
+    counterpart: hardwareDecks('loop-exit'),
   },
   {
     id: 'rb-deck-loop-length', surface: 'software', section: 'rb-deck',
@@ -211,7 +213,7 @@ export const rbDeckControls: Control[] = [
       'The left and right controls reduce or increase the Auto Beat Loop length shown above them. They select the length used by the on-screen auto-loop action.',
       'Set the length visually before the phrase arrives, then use the hardware half/double controls during the loop. The screen removes doubt about whether the next press will produce one, two, four, or eight beats.',
     ),
-    counterpart: ['deck-left-loop-in', 'deck-left-loop-out'],
+    counterpart: hardwareDecks('loop-in', 'loop-out'),
   },
   {
     id: 'rb-deck-loop-mode', surface: 'software', section: 'rb-deck',
@@ -243,7 +245,7 @@ export const rbDeckControls: Control[] = [
       'When paused, CUE sets the cue at the current position. Holding it continues playback; releasing returns to that cue, matching the core deck cue workflow.',
       'Watch the on-screen cue marker after setting it from hardware. The visible position confirms that repeated cue taps will audition the intended transient rather than an older point hidden elsewhere in the arrangement.',
     ),
-    counterpart: ['deck-left-cue'],
+    counterpart: hardwareDecks('cue'),
   },
   {
     id: 'rb-deck-play-pause', surface: 'software', section: 'rb-deck',
@@ -253,7 +255,7 @@ export const rbDeckControls: Control[] = [
       'The play control changes the deck between playing and paused states. Its state and the moving jog indicator provide an on-screen confirmation of transport.',
       'Use the animation as a quick check after switching the physical left side between decks 1 and 3. It shows which software deck actually received your press before you touch a channel fader.',
     ),
-    counterpart: ['deck-left-play-pause'],
+    counterpart: hardwareDecks('play-pause'),
   },
   {
     id: 'rb-deck-jog-tempo', surface: 'software', section: 'rb-deck',
@@ -264,7 +266,7 @@ export const rbDeckControls: Control[] = [
       'Use this readout to quantify what your hands changed on the controller. A drifting mix may show the correct BPM but a phase problem needing a jog nudge, or a large pitch percentage that calls for a gentler track choice.',
       {gotcha: 'Current BPM is not the same as the original analysed BPM shown in the track information line.'},
     ),
-    counterpart: ['deck-left-jog-dial', 'deck-left-tempo-slider'],
+    counterpart: hardwareDecks('jog-dial', 'tempo-slider'),
   },
   {
     id: 'rb-deck-slip', surface: 'software', section: 'rb-deck',
@@ -274,7 +276,7 @@ export const rbDeckControls: Control[] = [
       'With SLIP on, the track continues advancing silently underneath compatible scratches, loops, reverse moves, and cue jumps, then resumes at the uninterrupted timeline position.',
       'Check the screen before attempting a risky fill. The lit state confirms the safety net is active even if the hardware button is partly hidden by your hand or the booth lighting is poor.',
     ),
-    counterpart: ['deck-left-slip'],
+    counterpart: hardwareDecks('slip'),
   },
   {
     id: 'rb-deck-quantize', surface: 'software', section: 'rb-deck',
@@ -284,7 +286,7 @@ export const rbDeckControls: Control[] = [
       'Quantize automatically places loop points, Hot Cues, and Cues according to the analysed beat position instead of preserving every small timing error in the button press.',
       'Use the blue Q state as a warning as well as reassurance: it makes pad timing cleaner on a good grid, but an incorrect grid will pull an otherwise accurate finger press to the wrong place.',
     ),
-    counterpart: ['deck-left-quantize'],
+    counterpart: hardwareDecks('quantize'),
   },
   {
     id: 'rb-deck-master-tempo', surface: 'software', section: 'rb-deck',
@@ -294,6 +296,6 @@ export const rbDeckControls: Control[] = [
       'MASTER TEMPO changes playback speed without changing pitch. If the track key has been shifted, this control becomes KEY RESET so the live key can be restored.',
       'Watch this state before making a large BPM move on a vocal track. The screen tells you whether the singer’s key will stay fixed and exposes the KEY RESET state that a hardware label cannot change dynamically.',
     ),
-    counterpart: ['deck-left-master-tempo', 'deck-left-key-reset'],
+    counterpart: hardwareDecks('master-tempo', 'key-reset'),
   },
 ];

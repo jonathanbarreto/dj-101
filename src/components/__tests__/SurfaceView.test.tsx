@@ -195,4 +195,36 @@ describe('SurfaceView', () => {
     expect(screen.getByRole('button', {name: 'ARTWORK'})).toBeDefined();
     expect(screen.getByRole('button', {name: 'ARTWORK'}).getAttribute('aria-expanded')).toBe('false');
   });
+
+  it('replaces overlapping hardware markers with an operable narrow lesson index', async () => {
+    const user = userEvent.setup();
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 767px)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    vi.spyOn(content, 'controlsInSection').mockReturnValue([testControl]);
+
+    render(<SurfaceView surface="hardware" sectionId="deck-left" />);
+
+    expect(screen.getByText('Controls in Left deck')).toBeDefined();
+    expect(screen.queryByRole('button', {name: 'Test control'})).toBeNull();
+    const indexButton = screen.getByRole('button', {name: /^Test control /});
+    await user.click(indexButton);
+    const lesson = screen.getByRole('region', {name: 'Test control lesson'});
+    expect(lesson.textContent).toContain('Test behavior');
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+    expect(document.activeElement).toBe(lesson);
+
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('region', {name: 'Test control lesson'})).toBeNull();
+    expect(document.activeElement).toBe(indexButton);
+  });
 });
