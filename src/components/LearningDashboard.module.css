@@ -1,0 +1,26 @@
+.dashboard {
+  inline-size: 100%;
+}
+
+.learningGrid {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+}
+
+.learningCard {
+  block-size: 100%;
+  overflow: hidden;
+}
+
+.masterImage {
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--color-background-muted);
+}
+
+@media (max-width: 767px) {
+  .learningGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

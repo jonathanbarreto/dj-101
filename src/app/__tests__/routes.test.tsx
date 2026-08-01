@@ -34,17 +34,16 @@ beforeEach(() => {
 });
 
 describe('routes', () => {
-  it('renders the home copy and surface links', () => {
+  it('renders the visual learning dashboard inside the shared page frame', () => {
     render(<Home />);
 
     expect(screen.getByRole('heading', {name: 'dj-101'})).toBeDefined();
-    expect(screen.getByText(
-      'An interactive guide to the Pioneer DDJ-1000 and rekordbox 7 — what every control does, and when to reach for it.',
-    )).toBeDefined();
-    expect(screen.getByRole('link', {name: /Learn the controller/}).getAttribute('href'))
+    expect(screen.getByText(/Learn the controls where they live/i)).toBeDefined();
+    expect(screen.getByRole('link', {name: 'Learn the controller'}).getAttribute('href'))
       .toBe('/controller');
-    expect(screen.getByRole('link', {name: /Learn rekordbox 7/}).getAttribute('href'))
+    expect(screen.getByRole('link', {name: 'Learn rekordbox 7'}).getAttribute('href'))
       .toBe('/rekordbox');
+    expect(screen.getByTestId('page-frame')).toBeDefined();
     expect(screen.queryByRole('main')).toBeNull();
   });
 
