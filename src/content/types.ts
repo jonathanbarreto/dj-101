@@ -1,7 +1,7 @@
 export type Surface = 'hardware' | 'software';
 
 export type SectionId =
-  | 'deck-left' | 'deck-right' | 'mixer' | 'fx' | 'browser' | 'rear' | 'front'
+  | 'deck-left' | 'deck-right' | 'mixer' | 'fx' | 'browser'
   | 'rb-command' | 'rb-fx' | 'rb-waveform' | 'rb-deck' | 'rb-mixer'
   | 'rb-record' | 'rb-sampler' | 'rb-lighting' | 'rb-palette'
   | 'rb-sources' | 'rb-tracklist';

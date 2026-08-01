@@ -59,6 +59,8 @@ describe('routes', () => {
     const softwareSections = rekordboxParams().map(({section}) => section);
 
     expect(hardwareSections).toContain('deck-left');
+    expect(hardwareSections).toContain('rear');
+    expect(hardwareSections).toContain('front');
     expect(hardwareSections).not.toContain('rb-deck');
     expect(softwareSections).toContain('rb-deck');
     expect(softwareSections).not.toContain('deck-left');
@@ -79,6 +81,8 @@ describe('routes', () => {
     expect(screen.getByRole('heading', {level: 1, name: 'Rear connections'})).toBeDefined();
     expect(screen.getByRole('heading', {name: 'Dual-computer changeover'})).toBeDefined();
     expect(screen.getByRole('heading', {name: 'Beginner setup recipes'})).toBeDefined();
+    expect(screen.getByRole('note', {name: 'Connection safety'}).textContent)
+      .toMatch(/standby.*disconnect.*mains/i);
     expect(screen.getByRole('table', {name: 'Rear connection inventory'})).toBeDefined();
     expect(screen.getByRole('list', {name: 'Safe seven-step handoff'}).children).toHaveLength(7);
     expect(screen.queryByRole('img')).toBeNull();
@@ -87,7 +91,14 @@ describe('routes', () => {
     render(await ControllerSectionPage({params: Promise.resolve({section: 'front'})}));
     expect(screen.getByRole('heading', {level: 1, name: 'Front headphones'})).toBeDefined();
     expect(screen.getByText(/both sockets carry the same cue mix/i)).toBeDefined();
+    expect(screen.getByRole('note', {name: 'Connection safety'})).toBeDefined();
     expect(screen.queryByRole('img')).toBeNull();
+  });
+
+  it('uses the Astryx navigation contract for the controller backlink', async () => {
+    render(await ControllerSectionPage({params: Promise.resolve({section: 'rear'})}));
+    expect(screen.getByRole('link', {name: '← The controller'}).getAttribute('data-color'))
+      .toBe('accent');
   });
 
   it('rejects unknown and cross-surface rekordbox sections', async () => {

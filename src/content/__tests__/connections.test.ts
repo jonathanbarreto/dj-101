@@ -1,8 +1,10 @@
 import {describe, expect, it} from 'vitest';
 
-import {ALL_CONTROLS} from '../index';
+import {ALL_CONTROLS, SECTIONS} from '../index';
 import {
+  CONNECTION_PANELS,
   connectionLessons,
+  connectionSafetyWarning,
   dualUsbChangeoverSteps,
   dualUsbSignalFlow,
   setupRecipes,
@@ -102,6 +104,22 @@ describe('DDJ-1000 connection lessons', () => {
   });
 
   it('keeps text-only panel lessons out of the image hotspot registry', () => {
-    expect(ALL_CONTROLS.some(({section}) => section === 'rear' || section === 'front')).toBe(false);
+    expect(ALL_CONTROLS.some(({section}) => String(section) === 'rear' || String(section) === 'front')).toBe(false);
+    expect('rear' in SECTIONS).toBe(false);
+    expect('front' in SECTIONS).toBe(false);
+    expect(CONNECTION_PANELS).toEqual({
+      rear: {id: 'rear', label: 'Rear connections'},
+      front: {id: 'front', label: 'Front headphones'},
+    });
+    expect(Object.values(CONNECTION_PANELS).every(
+      (panel) => !('rect' in panel) && !('marker' in panel),
+    )).toBe(true);
+  });
+
+  it('requires power isolation before any component is connected or changed', () => {
+    expect(connectionSafetyWarning).toMatch(/before.*connect|before.*chang/i);
+    expect(connectionSafetyWarning).toMatch(/standby|turn.*off/i);
+    expect(connectionSafetyWarning).toMatch(/disconnect.*mains/i);
+    expect(connectionSafetyWarning).toMatch(/levels.*down/i);
   });
 });

@@ -2,6 +2,19 @@ import type {SourceTag} from '../types';
 
 export type ConnectionPanel = 'rear' | 'front';
 
+export interface ConnectionPanelSpec {
+  id: ConnectionPanel;
+  label: string;
+}
+
+export const CONNECTION_PANELS: Record<ConnectionPanel, ConnectionPanelSpec> = {
+  rear: {id: 'rear', label: 'Rear connections'},
+  front: {id: 'front', label: 'Front headphones'},
+};
+
+export const connectionSafetyWarning =
+  'Before connecting or changing any audio, microphone, speaker, or power component, put the controller in standby and disconnect the AC adapter from mains power. Keep channel faders and output levels down as additional pop protection when power is restored. The live dual-USB procedure below is the narrow exception: it changes only the unused computer connection while the audio and power cabling stays untouched.';
+
 export interface ConnectionLesson extends Record<string, unknown> {
   id: string;
   ref?: number;
@@ -35,7 +48,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Stereo headphone output; not a balanced line output',
     governedBy: 'HEADPHONES MIXING, HEADPHONES LEVEL, channel CUE and MASTER CUE',
     why: 'The two socket sizes carry the same cue mix, letting you use common DJ headphones without making an adapter the weak point of the performance.',
-    setup: 'Use one socket that matches your headphone plug, select a channel CUE, blend CUE and MASTER, then raise HEADPHONES LEVEL gradually.',
+    setup: 'With the controller in standby and mains disconnected, use the socket that matches your headphone plug; after power is restored, select CUE, blend CUE and MASTER, then raise LEVEL gradually.',
     failure: 'Both sockets carry the same headphone bus, so plugging into the second socket does not create a separate monitor mix.',
     safety: 'Start with HEADPHONES LEVEL down and protect your hearing from sudden peaks.',
     source: 'manual',
@@ -46,7 +59,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Balanced stereo line output',
     governedBy: 'MASTER LEVEL',
     why: 'This is the preferred long-cable feed to a professional PA or venue mixer because a balanced run rejects interference.',
-    setup: 'With MASTER LEVEL down, connect left and right XLR cables to balanced line inputs, power the destination, then raise level during soundcheck.',
+    setup: 'After putting the controller in standby and disconnecting mains, connect left and right XLR cables to balanced line inputs; restore power in source-to-speaker order, then raise level during soundcheck.',
     failure: 'Connecting only one side gives a mono-sided feed, while feeding microphone inputs can overload their more sensitive preamps.',
     safety: 'Never connect MASTER 1 to a terminal that can supply phantom power; the manual warns that equipment can be damaged.',
     source: 'manual',
@@ -57,7 +70,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Unbalanced stereo line output',
     governedBy: 'MASTER LEVEL',
     why: 'Use MASTER 2 for short runs to consumer speakers, recorders, or systems whose available line input is RCA.',
-    setup: 'With MASTER LEVEL down, connect the white left and red right RCA plugs to a line-level input, then bring up gain slowly.',
+    setup: 'After putting the controller in standby and disconnecting mains, connect the white left and red right RCA plugs to a line-level input; restore power, then bring up gain slowly.',
     failure: 'A long unbalanced RCA run can collect hum or interference, and a phono input will apply the wrong gain and equalization.',
     safety: 'Mute or lower the destination before plugging RCA connectors to avoid loud transients.',
     source: 'manual',
@@ -68,7 +81,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Balanced stereo line output',
     governedBy: 'BOOTH MONITOR LEVEL',
     why: 'Its independent level lets the DJ change booth loudness without disturbing the audience feed controlled by MASTER LEVEL.',
-    setup: 'Connect left and right TRS cables to powered booth monitors or their amplifier, start low, and set only enough level to cue accurately.',
+    setup: 'With the controller in standby, mains disconnected, and monitors off, connect left and right TRS cables; restore power safely and set only enough level to cue accurately.',
     failure: 'A TS cable may still pass audio but loses the noise rejection of the balanced TRS connection on a long run.',
     safety: 'Lower BOOTH MONITOR LEVEL before connecting or powering monitors to prevent a sudden blast.',
     source: 'manual',
@@ -79,7 +92,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Ground reference; it does not carry program audio',
     governedBy: 'No level control',
     why: 'A turntable ground wire gives the phono preamp a shared reference and commonly removes the low electrical hum heard otherwise.',
-    setup: 'Attach the turntable ground lead securely to SIGNAL GND before raising the channel, alongside its RCA connection to channel 3 or 4.',
+    setup: 'With the controller in standby and mains disconnected, attach the turntable ground lead securely to SIGNAL GND alongside its RCA connection to channel 3 or 4.',
     failure: 'A loose or missing turntable ground often produces steady hum even when the record itself is quiet.',
     safety: 'Use this terminal only for a turntable signal ground, never protective mains earth.',
     source: 'manual',
@@ -90,7 +103,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Unbalanced stereo input',
     governedBy: 'Rear LINE/PHONO selector, top-panel CH 4 input selector and CH 4 TRIM',
     why: 'Channel 4 can host either a normal line player or an MM turntable while leaving the central software decks available.',
-    setup: 'For a moving-magnet (MM) turntable, connect RCA and ground, set the rear switch to PHONO, then select PHONO/LINE on channel 4; use LINE for a line player.',
+    setup: 'With the controller in standby and mains disconnected, connect a moving-magnet (MM) turntable by RCA and ground and set PHONO; after power is restored, select PHONO/LINE on channel 4. Use LINE for a line player.',
     failure: 'A LINE/PHONO mismatch makes line audio painfully loud and distorted in PHONO, or makes a turntable extremely quiet and thin in LINE.',
     safety: 'Lower CH 4 before changing the rear selector or swapping the connected source.',
     source: 'manual',
@@ -101,7 +114,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Unbalanced stereo line input',
     governedBy: 'Top-panel CH 2 input selector and CH 2 TRIM',
     why: 'This dedicated line input accepts a CDJ, media player, or other line-level source on the central channel 2 strip.',
-    setup: 'Connect the player by RCA, set the channel 2 selector to LINE, start TRIM down, then gain-stage from the channel meter.',
+    setup: 'With the controller in standby and mains disconnected, connect the player by RCA; after power is restored, select LINE, start TRIM down, then meter it.',
     failure: 'Channel 2 is not a phono input; a turntable requires a separate phono preamp or the PHONO setting on channel 3 or 4.',
     safety: 'Lower the channel fader before changing sources or connecting an RCA cable.',
     source: 'manual',
@@ -112,7 +125,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Unbalanced stereo line input',
     governedBy: 'Top-panel CH 1 input selector and CH 1 TRIM',
     why: 'This dedicated line input accepts a CDJ, media player, or other line-level source on the central channel 1 strip.',
-    setup: 'Connect the player by RCA, set the channel 1 selector to LINE, start TRIM down, then gain-stage from the channel meter.',
+    setup: 'With the controller in standby and mains disconnected, connect the player by RCA; after power is restored, select LINE, start TRIM down, then meter it.',
     failure: 'Channel 1 is not a phono input; a turntable requires a separate phono preamp or the PHONO setting on channel 3 or 4.',
     safety: 'Lower the channel fader before changing sources or connecting an RCA cable.',
     source: 'manual',
@@ -123,7 +136,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Unbalanced stereo input',
     governedBy: 'Rear LINE/PHONO selector, top-panel CH 3 input selector and CH 3 TRIM',
     why: 'Channel 3 can host either a normal line player or an MM turntable, making it the natural outside strip for vinyl.',
-    setup: 'For a moving-magnet (MM) turntable, connect RCA and ground, set the rear switch to PHONO, then select PHONO/LINE on channel 3; use LINE for a line player.',
+    setup: 'With the controller in standby and mains disconnected, connect a moving-magnet (MM) turntable by RCA and ground and set PHONO; after power is restored, select PHONO/LINE on channel 3. Use LINE for a line player.',
     failure: 'A LINE/PHONO mismatch makes line audio painfully loud and distorted in PHONO, or makes a turntable extremely quiet and thin in LINE.',
     safety: 'Lower CH 3 before changing the rear selector or swapping the connected source.',
     source: 'manual',
@@ -156,7 +169,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Balanced microphone input',
     governedBy: 'MIC 2 LEVEL, shared MIC HI/LOW EQ and OFF/ON/TALK OVER switch',
     why: 'MIC 2 adds a second microphone with independent input level while sharing the final microphone EQ and operating mode.',
-    setup: 'Connect the microphone with MIC 2 LEVEL down, select ON only when needed, then raise its level while speaking at performance distance.',
+    setup: 'With the controller in standby and mains disconnected, connect the microphone; after power is restored, keep MIC 2 LEVEL down, select ON, then gain it at speaking distance.',
     failure: 'Plugging a line-level device here can overload the microphone input, while leaving the mic switch OFF produces no output.',
     safety: 'Keep microphone level down while connecting and aim speakers away from the mic to limit feedback.',
     source: 'manual',
@@ -167,7 +180,7 @@ export const connectionLessons: ConnectionLesson[] = [
     balance: 'Balanced microphone input',
     governedBy: 'MIC 1 LEVEL, shared MIC HI/LOW EQ and OFF/ON/TALK OVER switch',
     why: 'The combo socket accepts the two professional microphone plug formats without consuming a channel-strip line input.',
-    setup: 'Connect one XLR or 1/4-inch plug with MIC 1 LEVEL down, select ON only when needed, then gain it at speaking distance.',
+    setup: 'With the controller in standby and mains disconnected, connect one XLR or 1/4-inch plug; after power is restored, keep MIC 1 LEVEL down, select ON, then gain it.',
     failure: 'The combo opening is one input, not two simultaneous MIC 1 inputs, and the common mic switch must be ON or TALK OVER.',
     safety: 'The DDJ-1000 does not provide microphone phantom power; use a compatible microphone or external supply.',
     source: 'manual',

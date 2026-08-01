@@ -19,9 +19,8 @@ export const SURFACES: Record<Surface, SurfaceSpec> = {
 };
 
 // Hardware crops were measured from the 3129x1652 overhead DDJ-1000 master.
-// Rear/front retain full-image structural rects for routing only. Their pages are
-// text-first connection lessons because this top-down master does not depict those
-// elevations; they are deliberately excluded from overview-image markers/hotspots.
+// Rear/front are text-only routes defined in CONNECTION_PANELS, not image sections:
+// this top-down master does not depict those elevations.
 // rekordbox values were measured from the clean 1200x634 Performance-mode master.
 export const SECTIONS: Record<SectionId, SectionSpec> = {
   'deck-left':  {id:'deck-left',  surface:'hardware', label:'Left deck',  rect:{x:0.0070,y:0.0220,w:0.3240,h:0.9560}, marker:{x:0.1690,y:0.5000}},
@@ -29,8 +28,6 @@ export const SECTIONS: Record<SectionId, SectionSpec> = {
   'mixer':      {id:'mixer',      surface:'hardware', label:'Mixer',      rect:{x:0.3320,y:0.0220,w:0.2960,h:0.9560}, marker:{x:0.4800,y:0.5000}},
   'fx':         {id:'fx',         surface:'hardware', label:'Beat FX',    rect:{x:0.4500,y:0.4300,w:0.4000,h:0.5480}, marker:{x:0.6200,y:0.6850}},
   'browser':    {id:'browser',    surface:'hardware', label:'Browser',    rect:{x:0.2670,y:0.0340,w:0.0640,h:0.1440}, marker:{x:0.2990,y:0.1060}},
-  'rear':       {id:'rear',       surface:'hardware', label:'Rear panel', rect:{x:0,    y:0,    w:1,    h:1},    marker:{x:0.5,  y:0.05}},
-  'front':      {id:'front',      surface:'hardware', label:'Front panel',rect:{x:0,    y:0,    w:1,    h:1},    marker:{x:0.5,  y:0.95}},
   'rb-command':   {id:'rb-command',   surface:'software', label:'Command panel',    rect:{x:0,    y:0,     w:1,    h:0.047}, marker:{x:0.5,  y:0.024}},
   'rb-fx':        {id:'rb-fx',        surface:'software', label:'FX panel',         rect:{x:0,    y:0.047, w:1,    h:0.082}, marker:{x:0.5,  y:0.088}},
   'rb-waveform':  {id:'rb-waveform',  surface:'software', label:'Waveforms',        rect:{x:0,    y:0.129, w:1,    h:0.139}, marker:{x:0.5,  y:0.198}},

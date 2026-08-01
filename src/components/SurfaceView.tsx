@@ -85,9 +85,6 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const stageRect = crop.sectionId === sectionId ? crop.rect : FULL;
   const baseHref = surface === 'hardware' ? '/controller' : '/rekordbox';
   const sections = Object.values(SECTIONS).filter((candidate) => candidate.surface === surface);
-  const imageSections = sections.filter(
-    (candidate) => candidate.id !== 'rear' && candidate.id !== 'front',
-  );
   const isCompactHardware = isNarrow && section !== undefined && surface === 'hardware';
   const showControlIndex = (activeRegion !== undefined && controls.length > 0)
     || (isCompactHardware && controls.length > 0);
@@ -288,7 +285,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       )}
       <Stage surface={surface} rect={stageRect}>
         {section === undefined
-          ? imageSections.map((candidate) => (
+          ? sections.map((candidate) => (
               <Link
                 key={candidate.id}
                 href={`${baseHref}/${candidate.id}`}

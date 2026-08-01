@@ -4,6 +4,7 @@ import {Table, pixel, proportional, type TableColumn} from '@astryxdesign/core/T
 import {Heading, Text} from '@astryxdesign/core/Text';
 import {
   connectionsForPanel,
+  connectionSafetyWarning,
   dualUsbChangeoverSteps,
   dualUsbSignalFlow,
   setupRecipes,
@@ -209,6 +210,12 @@ export function ConnectionLessons({panel}: {panel: ConnectionPanel}) {
           </Text>
         </Stack>
       </div>
+      <aside className={styles.callout} role="note" aria-label="Connection safety">
+        <Stack direction="vertical" gap={1}>
+          <Heading level={2}>Power down before recabling</Heading>
+          <Text as="p">{connectionSafetyWarning}</Text>
+        </Stack>
+      </aside>
       {isRear ? <RearLessons /> : <FrontLessons />}
     </Stack>
   );
