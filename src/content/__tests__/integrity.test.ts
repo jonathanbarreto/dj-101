@@ -5,19 +5,44 @@ import {ALL_CONTROLS, SECTIONS, SURFACES} from '../index';
 const deckControls = ALL_CONTROLS.filter((control) => control.section === 'deck-left');
 
 describe('DDJ-1000 left deck content', () => {
-  it('registers exactly the complete numbered deck range (32–55)', () => {
+  it('uses the canonical deck numbering and keeps Browser controls out of this lesson', () => {
+    const expectedRefs = {
+      'deck-left-play-pause': 32,
+      'deck-left-cue': 33,
+      'deck-left-search': 34,
+      'deck-left-memory': 35,
+      'deck-left-deck-select': 36,
+      'deck-left-slip-reverse': 37,
+      'deck-left-loop-in': 38,
+      'deck-left-loop-out': 39,
+      'deck-left-loop-exit': 40,
+      'deck-left-quantize': 41,
+      'deck-left-slip': 42,
+      'deck-left-jog-dial': 43,
+      'deck-left-jog-feeling-adjust': 44,
+      'deck-left-beat-sync': 45,
+      'deck-left-tempo-slider': 46,
+      'deck-left-master-tempo': 47,
+      'deck-left-key-sync': 48,
+      'deck-left-key-reset': 49,
+      'deck-left-hot-cue': 50,
+      'deck-left-pad-fx-1': 50,
+      'deck-left-beat-jump': 50,
+      'deck-left-sampler': 50,
+      'deck-left-page': 51,
+      'deck-left-pad-grid': 52,
+    } as const;
+
     expect(deckControls).toHaveLength(24);
-    expect(deckControls.map((control) => control.ref).sort((a, b) => a! - b!)).toEqual(
-      Array.from({length: 24}, (_, index) => index + 32),
-    );
+    expect(Object.fromEntries(deckControls.map((control) => [control.id, control.ref]))).toEqual(expectedRefs);
+    expect(deckControls.some((control) => [53, 54, 55].includes(control.ref ?? -1))).toBe(false);
     expect(deckControls.every((control) => control.surface === 'hardware')).toBe(true);
     expect(deckControls.every((control) => control.section === 'deck-left')).toBe(true);
   });
 
   it('documents every printed second-layer control with its rekordbox behavior', () => {
     const expectedShiftLegends: Record<string, string> = {
-      'deck-left-search-back': 'CUE/LOOP CALL',
-      'deck-left-search-forward': 'CUE/LOOP CALL',
+      'deck-left-search': 'CUE/LOOP CALL',
       'deck-left-memory': 'DELETE',
       'deck-left-slip-reverse': 'REVERSE',
       'deck-left-loop-in': 'IN ADJUST',

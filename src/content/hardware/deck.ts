@@ -9,15 +9,15 @@ const manual = (summary: string, detail: string, why: string, extras: Partial<Be
 });
 
 /**
- * The left physical deck is numbered 32–55 in the DDJ-1000 layout. Browser
- * controls such as the rotary selector, BACK, and VIEW sit outside this
- * numbered deck range and are intentionally documented with the Browser area.
+ * This deck lesson covers canonical controls 32–52. Canonical references
+ * 53–55 are the Browser rotary selector, BACK, and VIEW, so they belong to
+ * the Browser area rather than this deck lesson.
  * These controls behave the same on the right deck; documenting one deck
  * avoids repeating a second, identical lesson.
  */
 export const deckControls: Control[] = [
   {
-    id: 'deck-left-jog-dial', ref: 32, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-jog-dial', ref: 43, surface: 'hardware', section: 'deck-left',
     label: 'JOG DIAL', shiftLegend: 'GRID ADJUST', kind: 'jog', at: {x: 0.1115, y: 0.4392},
     primary: manual(
       'Scratches from the top and bends pitch from the rim',
@@ -32,7 +32,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-quantize', ref: 33, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-quantize', ref: 41, surface: 'hardware', section: 'deck-left',
     label: 'QUANTIZE', shiftLegend: 'WAKE UP', kind: 'button', at: {x: 0.2176, y: 0.0794},
     primary: manual(
       'Snaps performance actions to the beat grid',
@@ -46,7 +46,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-slip', ref: 34, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-slip', ref: 42, surface: 'hardware', section: 'deck-left',
     label: 'SLIP', shiftLegend: 'VINYL', kind: 'button', at: {x: 0.2475, y: 0.0794},
     primary: manual(
       'Keeps the track running underneath your performance move',
@@ -62,7 +62,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-jog-feeling-adjust', ref: 35, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-jog-feeling-adjust', ref: 44, surface: 'hardware', section: 'deck-left',
     label: 'JOG ADJUST', kind: 'knob', at: {x: 0.2956, y: 0.0892},
     primary: manual(
       'Sets how lightly or heavily the jog platter turns',
@@ -71,7 +71,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-beat-sync', ref: 36, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-beat-sync', ref: 45, surface: 'hardware', section: 'deck-left',
     label: 'BEAT SYNC', shiftLegend: 'MASTER', kind: 'button', at: {x: 0.3066, y: 0.5692},
     primary: manual(
       'Matches this deck to the current master deck',
@@ -85,7 +85,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-master-tempo', ref: 37, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-master-tempo', ref: 47, surface: 'hardware', section: 'deck-left',
     label: 'MASTER TEMPO', shiftLegend: 'TEMPO RANGE', kind: 'button', at: {x: 0.2795, y: 0.7493},
     primary: manual(
       'Locks musical key while tempo changes',
@@ -99,7 +99,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-tempo-slider', ref: 38, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-tempo-slider', ref: 46, surface: 'hardware', section: 'deck-left',
     label: 'TEMPO', kind: 'fader', at: {x: 0.2977, y: 0.7991},
     primary: manual(
       'Changes playback speed with a full-length pitch fader',
@@ -108,7 +108,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-hot-cue', ref: 39, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-hot-cue', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'HOT CUE', shiftLegend: 'KEYBOARD', kind: 'button', at: {x: 0.1017, y: 0.6962},
     primary: manual(
       'Puts the pads into hot-cue mode',
@@ -123,7 +123,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-pad-fx-1', ref: 40, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-pad-fx-1', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'PAD FX1', shiftLegend: 'PAD FX2', kind: 'button', at: {x: 0.1326, y: 0.6962},
     primary: manual(
       'Puts the pads into the first bank of Pad FX',
@@ -138,7 +138,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-beat-jump', ref: 41, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-beat-jump', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'BEAT JUMP', shiftLegend: 'BEAT LOOP', kind: 'button', at: {x: 0.1646, y: 0.6962},
     primary: manual(
       'Puts the pads into beat-jump mode',
@@ -153,7 +153,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-sampler', ref: 42, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-sampler', ref: 50, surface: 'hardware', section: 'deck-left',
     label: 'SAMPLER', shiftLegend: 'KEY SHIFT', kind: 'button', at: {x: 0.1976, y: 0.6962},
     primary: manual(
       'Puts the pads into sampler mode',
@@ -168,7 +168,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-page', ref: 43, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-page', ref: 51, surface: 'hardware', section: 'deck-left',
     label: 'PAGE ◄ ►', shiftLegend: 'SAMPLER BANK', kind: 'button', at: {x: 0.2236, y: 0.6962},
     primary: manual(
       'Moves to the next or previous pad page',
@@ -183,7 +183,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-key-sync', ref: 44, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-key-sync', ref: 48, surface: 'hardware', section: 'deck-left',
     label: 'KEY SYNC', kind: 'button', at: {x: 0.2795, y: 0.8291},
     primary: manual(
       'Moves this deck toward a compatible musical key',
@@ -193,7 +193,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-key-reset', ref: 45, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-key-reset', ref: 49, surface: 'hardware', section: 'deck-left',
     label: 'KEY RESET', kind: 'button', at: {x: 0.2795, y: 0.8891},
     primary: manual(
       'Returns the track to its original key',
@@ -203,7 +203,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-play-pause', ref: 46, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-play-pause', ref: 32, surface: 'hardware', section: 'deck-left',
     label: 'PLAY/PAUSE', kind: 'button', at: {x: 0.0447, y: 0.8891},
     primary: manual(
       'Starts or pauses the selected deck',
@@ -212,7 +212,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-cue', ref: 47, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-cue', ref: 33, surface: 'hardware', section: 'deck-left',
     label: 'CUE', kind: 'button', at: {x: 0.0447, y: 0.7690},
     primary: manual(
       'Sets, recalls, and previews the cue point',
@@ -221,37 +221,22 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-search-back', ref: 48, surface: 'hardware', section: 'deck-left',
-    label: 'SEARCH ◄◄', shiftLegend: 'CUE/LOOP CALL', kind: 'button', at: {x: 0.0296, y: 0.6844},
+    id: 'deck-left-search', ref: 34, surface: 'hardware', section: 'deck-left',
+    label: 'SEARCH ◄◄ / ►►', shiftLegend: 'CUE/LOOP CALL', kind: 'button', at: {x: 0.0405, y: 0.6834},
     primary: manual(
-      'Searches backward through the track',
-      'Press SEARCH ◄◄ to move backward through the track; hold it to rewind quickly while monitoring the deck.',
-      'Use it in headphones to find the start of a spoken intro after loading an unfamiliar file, then set a cue. It is a search tool, not a four-beat performance jump.',
+      'Searches backward or forward through the track',
+      'Press SEARCH ◄◄ or ►► to move backward or forward; hold either button to rewind or fast-forward quickly while monitoring the deck. These buttons search the track, not a fixed beat amount.',
+      'Use the pair in headphones to find a spoken intro or a clean later outro in an unfamiliar track, then set a cue before bringing that deck to the audience instead of dragging through the waveform mid-mix.',
     ),
     shift: manual(
-      'Calls the previous saved cue or loop',
-      'Holding SHIFT and pressing SEARCH ◄◄ calls the preceding stored memory cue or loop point from rekordbox.',
-      'Step back through saved memory points when preparing a track live: you can audition a marked breakdown or outro without dragging the playhead across the whole waveform.',
+      'Calls the previous or next saved cue or loop',
+      'Holding SHIFT with SEARCH ◄◄ calls the preceding stored memory cue or loop; holding it with ►► calls the next one from rekordbox.',
+      'Step through a track’s stored phrase markers while planning a live transition. You can audition its breakdown, chorus, and outro in order without taking your attention from the controller to hunt on screen.',
       {source: 'rekordbox7'},
     ),
   },
   {
-    id: 'deck-left-search-forward', ref: 49, surface: 'hardware', section: 'deck-left',
-    label: 'SEARCH ►►', shiftLegend: 'CUE/LOOP CALL', kind: 'button', at: {x: 0.0525, y: 0.6844},
-    primary: manual(
-      'Searches forward through the track',
-      'Press SEARCH ►► to move forward through the track; hold it to fast-forward quickly while monitoring the deck.',
-      'Use it to locate a later clean outro in headphones when the planned mix point is not as long as you remembered, then set a cue before bringing the deck to the audience.',
-    ),
-    shift: manual(
-      'Calls the next saved cue or loop',
-      'Holding SHIFT and pressing SEARCH ►► calls the next stored memory cue or loop point from rekordbox.',
-      'Move through a track’s saved phrase markers in order while planning the next transition; this is much quicker than scrolling when the booth is dark and the laptop is not your focus.',
-      {source: 'rekordbox7'},
-    ),
-  },
-  {
-    id: 'deck-left-memory', ref: 50, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-memory', ref: 35, surface: 'hardware', section: 'deck-left',
     label: 'MEMORY', shiftLegend: 'DELETE', kind: 'button', at: {x: 0.0335, y: 0.6292},
     primary: manual(
       'Stores the current cue point or loop as memory',
@@ -267,7 +252,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-deck-select', ref: 51, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-deck-select', ref: 36, surface: 'hardware', section: 'deck-left',
     label: 'DECK SELECT 3/1', kind: 'button', at: {x: 0.0247, y: 0.2192},
     primary: manual(
       'Chooses whether this side controls deck 1 or deck 3',
@@ -276,7 +261,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-slip-reverse', ref: 52, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-slip-reverse', ref: 37, surface: 'hardware', section: 'deck-left',
     label: 'SLIP REVERSE', shiftLegend: 'REVERSE', kind: 'button', at: {x: 0.0317, y: 0.1493},
     primary: manual(
       'Reverses momentarily while the track advances underneath',
@@ -290,7 +275,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-loop-in', ref: 53, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-loop-in', ref: 38, surface: 'hardware', section: 'deck-left',
     label: 'LOOP IN · 1/2X', shiftLegend: 'IN ADJUST', kind: 'button', at: {x: 0.0247, y: 0.0725},
     primary: manual(
       'Sets the loop start or halves an active loop',
@@ -304,7 +289,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-loop-out', ref: 54, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-loop-out', ref: 39, surface: 'hardware', section: 'deck-left',
     label: 'LOOP OUT · 2X', shiftLegend: 'OUT ADJUST/RELOOP', kind: 'button', at: {x: 0.0595, y: 0.0725},
     primary: manual(
       'Sets the loop end and doubles an active loop',
@@ -318,7 +303,7 @@ export const deckControls: Control[] = [
     ),
   },
   {
-    id: 'deck-left-loop-exit', ref: 55, surface: 'hardware', section: 'deck-left',
+    id: 'deck-left-loop-exit', ref: 40, surface: 'hardware', section: 'deck-left',
     label: '4 BEAT LOOP / EXIT', shiftLegend: 'ACTIVE LOOP', kind: 'button', at: {x: 0.1017, y: 0.0784},
     primary: manual(
       'Creates a four-beat loop or exits the current loop',
@@ -330,6 +315,16 @@ export const deckControls: Control[] = [
       'Holding SHIFT and pressing 4 BEAT LOOP / EXIT toggles the track’s active-loop setting, so rekordbox automatically engages that saved loop when playback reaches it.',
       'Set an active loop as a safety net before an unusable outro: if you miss your planned exit while working another deck, the track repeats a musical section instead of falling into dead air.',
       {source: 'rekordbox7'},
+    ),
+  },
+  {
+    id: 'deck-left-pad-grid', ref: 52, surface: 'hardware', section: 'deck-left',
+    label: 'PERFORMANCE PADS', kind: 'pad', at: {x: 0.1547, y: 0.8143},
+    primary: manual(
+      'Triggers the eight actions selected by the current pad mode',
+      'The eight performance pads execute the assignments from the active pad mode: Hot Cue, Pad FX, Beat Jump, Sampler, or one of the SHIFT-selected modes. Their action depends on the mode button, not on a separate grey function printed on the pad grid.',
+      'Before a transition, glance at the lit mode button and mentally name what the pads will do. A pad that launches a safe hot cue in one moment can trigger a sampler sound or key shift in the next, which is a very different result over an exposed vocal.',
+      {tips: ['Set the pad mode before the phrase arrives; do not discover it by firing a pad on the master output.']},
     ),
   },
 ];
