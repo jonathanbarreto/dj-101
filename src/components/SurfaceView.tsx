@@ -1,16 +1,17 @@
 'use client';
 
 import {Link} from '@astryxdesign/core/Link';
+import {Button} from '@astryxdesign/core/Button';
 import {List, ListItem} from '@astryxdesign/core/List';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Tab, TabList} from '@astryxdesign/core/TabList';
 import {Text} from '@astryxdesign/core/Text';
 import {useMediaQuery} from '@astryxdesign/core/hooks';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {controlsInSection, SECTIONS} from '@/content';
 import {browserSectionIntro} from '@/content/hardware/browser';
 import {getBrowserVisualRect} from '@/content/hardware/browserVisual';
-import {mixerGainGuide, mixerSignalFlow} from '@/content/hardware/mixer';
+import {mixerGainControls, mixerSignalFlowSteps} from '@/content/hardware/mixer';
 import {
   getMixerRegion,
   getMixerRegionForControl,
@@ -53,6 +54,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const isRbDeck = sectionId === 'rb-deck';
   const isMixer = sectionId === 'mixer';
   const isNarrow = useMediaQuery('(max-width: 767px)', false);
+  const regionNavRef = useRef<HTMLDivElement>(null);
   const allControls = useMemo(
     () => (section === undefined ? [] : controlsInSection(section.id)),
     [section],
@@ -70,7 +72,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       ? getBrowserVisualRect(isNarrow)
       : section?.rect ?? FULL;
   const controls = activeRegion
-    ? allControls.filter((control) => activeRegion.controlIds.includes(control.id))
+    ? activeRegion.controlIds
+        .map((id) => allControls.find((control) => control.id === id))
+        .filter((control): control is Control => control !== undefined)
     : allControls;
   const [crop, setCrop] = useState<{sectionId?: SectionId; rect: Rect}>({
     sectionId,
@@ -164,6 +168,35 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     destination?.focus();
   }, [openControlId]);
 
+  useEffect(() => {
+    if (!isNarrow || !activeRegion) return;
+    const frame = window.requestAnimationFrame(() => {
+      const nav = regionNavRef.current;
+      const tab = nav?.querySelector<HTMLElement>(
+        `[data-tab-value="${activeRegion.id}"]`,
+      );
+      if (!nav || !tab) return;
+      nav.scrollTo({
+        left: tab.offsetLeft - (nav.clientWidth - tab.offsetWidth) / 2,
+        behavior: 'auto',
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeRegion, isNarrow]);
+
+  const closeCompactLesson = useCallback((controlId: string) => {
+    setOpenControlId(null);
+    setPendingControlId(null);
+    if (typeof window !== 'undefined' && window.location.hash) {
+      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+    }
+    queueMicrotask(() => {
+      document
+        .querySelector<HTMLElement>(`[data-control-id="${controlId}"] button`)
+        ?.focus();
+    });
+  }, []);
+
   function selectRegion(value: string) {
     if (isMixer) setActiveMixerRegionId(value as MixerRegionId);
     else setActiveRegionId(value as RbDeckRegionId);
@@ -179,7 +212,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       {surface === 'hardware' ? <ShiftToggle /> : null}
       {sectionId === 'browser' && <Text>{browserSectionIntro}</Text>}
       {activeRegion && (
-        <div className={styles.regionNav}>
+        <div className={styles.regionNav} ref={regionNavRef}>
           <TabList
             value={activeRegion.id}
             onChange={selectRegion}
@@ -194,24 +227,44 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           </TabList>
         </div>
       )}
-      {activeMixerRegion?.id === 'signal' && (
-        <Stack direction="vertical" gap={2} xstyle={undefined}>
-          <Text type="label">Follow one sound, then set one level at a time</Text>
-          <Text>{mixerSignalFlow}</Text>
-          <Text>{mixerGainGuide}</Text>
-          <Link href="/reference/sound-color-fx" isStandalone>
-            Learn how each Sound Color FX changes the COLOR knob →
-          </Link>
-        </Stack>
+      {activeMixerRegion && (
+        <div className={styles.regionHint}>
+          <Text type="supporting">Swipe horizontally for all mixer lessons →</Text>
+        </div>
       )}
-      <div
-        className={isMixer ? styles.mixerStageViewport : undefined}
-        role={isMixer ? 'region' : undefined}
-        aria-label={isMixer ? 'Scrollable mixer control image' : undefined}
-        tabIndex={isMixer ? 0 : undefined}
-      >
-        <Stage surface={surface} rect={stageRect}>
-          {section === undefined
+      {activeMixerRegion?.id === 'signal' && (
+        <div className={styles.signalGuide}>
+          <Stack direction="vertical" gap={3} xstyle={undefined}>
+            <Text type="label">Follow one sound, then set one level at a time</Text>
+            <List
+              listStyle="decimal"
+              hasDividers
+              header={<Text type="label">Signal flow</Text>}
+            >
+              {mixerSignalFlowSteps.map((step) => (
+                <ListItem key={step.label} label={step.label} description={step.description} />
+              ))}
+            </List>
+            <List
+              hasDividers
+              header={<Text type="label">Six different level jobs</Text>}
+            >
+              {mixerGainControls.map((control) => (
+                <ListItem
+                  key={control.label}
+                  label={control.label}
+                  description={control.description}
+                />
+              ))}
+            </List>
+            <Link href="/reference/sound-color-fx" isStandalone>
+              Learn how each Sound Color FX changes the COLOR knob →
+            </Link>
+          </Stack>
+        </div>
+      )}
+      <Stage surface={surface} rect={stageRect}>
+        {section === undefined
           ? sections.map((candidate) => (
               <Link
                 key={candidate.id}
@@ -242,8 +295,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                   : undefined}
               />
             ))}
-        </Stage>
-      </div>
+      </Stage>
       {showControlIndex && section && (
         <div className={styles.controlIndex}>
           <List
@@ -276,16 +328,17 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               tabIndex={-1}
               onKeyDown={(event) => {
                 if (event.key !== 'Escape') return;
-                setOpenControlId(null);
-                queueMicrotask(() => {
-                  document
-                    .querySelector<HTMLElement>(
-                      `[data-control-id="${openCompactControl.id}"] button`,
-                    )
-                    ?.focus();
-                });
+                closeCompactLesson(openCompactControl.id);
               }}
             >
+              <div className={styles.compactLessonClose}>
+                <Button
+                  label="Close lesson"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => closeCompactLesson(openCompactControl.id)}
+                />
+              </div>
               <ControlPopover
                 control={openCompactControl}
                 isShiftActive={isShiftActive}

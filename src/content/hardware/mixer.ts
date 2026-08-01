@@ -83,7 +83,7 @@ function behaviorFor(spec: ChannelSpec, slug: ChannelControlSlug): Behavior {
     case 'trim':
       return manual(
         `Sets channel ${channel}'s pre-fader input gain`,
-        `TRIM raises or lowers the signal before the channel fader. Start with the channel EQ and COLOR controls centred, play the track's loudest passage, then set TRIM so the pre-fader channel meter reaches the upper orange area without living at the top.`,
+        `TRIM raises or lowers the signal before the channel fader across its documented -∞ to +9 dB range. Start with the channel EQ and COLOR controls centred, play the track's loudest passage, then set TRIM so the pre-fader channel meter reaches the upper orange area without living at the top.`,
         `Use TRIM to make unlike recordings arrive at the mixer with comparable headroom. That gives the fader a predictable working range and leaves room for summed channels and effects; use the channel fader, not TRIM, for the musical fade during a blend.`,
         {gotcha: 'TRIM is input calibration, not a performance-volume control. Chasing every quiet phrase with it makes the next loud section jump.'},
       );
@@ -158,9 +158,9 @@ function shiftFor(channel: MixerChannel, slug: ChannelControlSlug): Behavior | u
   if (slug === 'fader') {
     return manual(
       `Uses channel ${channel}'s fader to start and back-cue a rekordbox deck`,
-      `For a rekordbox USB deck with a cue point set, hold SHIFT and raise the channel fader from fully closed to start playback from that cue. Return it fully closed while holding SHIFT to pause and back-cue; with no cue stored, playback starts from the track beginning.`,
+      `For a rekordbox USB deck with a cue point set, hold SHIFT and raise the channel fader from fully closed to start playback from that cue. Return it fully closed while holding SHIFT to pause and back-cue; with no cue stored, playback starts from the track beginning. This also depends on Preferences → Controller → Mixer → Fader Start, which is enabled by default.`,
       `Fader start can launch an incoming track at the exact moment its level begins to rise, which is useful for a hands-busy cut or a repeatable cue-drop. Rehearse the closed position and cue first so the gesture cannot launch an unprepared deck.`,
-      {gotcha: 'This shifted start command controls a rekordbox deck over USB; it does not remotely start an analogue PHONO or LINE source.'},
+      {gotcha: 'This shifted start command controls a rekordbox deck over USB; it does not remotely start an analogue PHONO or LINE source. If the deck does not start, check the Fader Start preference and confirm the fader began fully closed.'},
     );
   }
   return undefined;
@@ -206,9 +206,9 @@ const globalControls: Control[] = [
     ),
     shift: manual(
       'Starts or back-cues assigned rekordbox decks from the crossfader edge',
-      'With rekordbox USB decks assigned to A and B and cue points set, hold SHIFT and move away from a fully closed side; that closed side starts from its cue. Return fully to the edge while holding SHIFT to pause and back-cue it.',
+      'With rekordbox USB decks assigned to A and B and cue points set, hold SHIFT and move away from a fully closed side; that closed side starts from its cue. Return fully to the edge while holding SHIFT to pause and back-cue it. This also depends on Preferences → Controller → Mixer → Fader Start, which is enabled by default.',
       'Use crossfader start for a rehearsed cut where the audible edge and deck launch must be one gesture. Verify both assignments, cues, and the side that is closed before engaging it; an accidental route makes the wrong deck start.',
-      {gotcha: 'Crossfader start requires the A/B routing and a rekordbox USB deck. THRU or analogue sources do not gain remote transport control.'},
+      {gotcha: 'Crossfader start requires the A/B routing and a rekordbox USB deck. THRU or analogue sources do not gain remote transport control. If a deck does not start, check the Fader Start preference, its cue, assignment, and fully closed edge.'},
     ),
   },
   {
@@ -348,8 +348,22 @@ export const mixerControls: Control[] = [
   ...globalControls,
 ];
 
-export const mixerSignalFlow =
-  'Source → TRIM → EQ → Sound Color FX through COLOR → pre-fader meter and headphone CUE branch → channel fader → crossfader assign → crossfader when assigned A or B → master bus → MASTER LEVEL → MASTER 1 and MASTER 2. BOOTH branches independently before MASTER LEVEL. Channel, sampler, and master cue selections meet at HEADPHONES MIXING, then HEADPHONES LEVEL.';
+export const mixerSignalFlowSteps = [
+  {label: 'Choose the source', description: 'Route USB A, USB B, or the channel’s analogue input into the strip.'},
+  {label: 'Calibrate with TRIM', description: 'Set pre-fader gain from the loudest passage while EQ and COLOR are neutral.'},
+  {label: 'Shape the channel', description: 'Use HI, MID, LOW, then the selected Sound Color FX through COLOR.'},
+  {label: 'Check before air', description: 'The meter reads pre-fader level; CUE branches that signal privately to headphones.'},
+  {label: 'Perform the level', description: 'The channel fader controls how much of the prepared strip enters the mix.'},
+  {label: 'Choose the crossfader path', description: 'Assign A or B to use the crossfader, or THRU to bypass it.'},
+  {label: 'Feed the room', description: 'The summed master bus passes through MASTER LEVEL to MASTER 1 and MASTER 2.'},
+  {label: 'Monitor independently', description: 'BOOTH branches independently; cue sources meet at MIXING, then HEADPHONES LEVEL.'},
+] as const;
 
-export const mixerGainGuide =
-  'Six controls answer six different questions: TRIM calibrates one source before the fader; the channel fader performs that source’s level; the crossfader blends only A/B-assigned channels; MASTER LEVEL feeds the audience outputs; BOOTH MONITOR sets the DJ speaker independently; HEADPHONES LEVEL protects and sets your private monitor.';
+export const mixerGainControls = [
+  {label: 'TRIM', description: 'Calibrates one source before its fader.'},
+  {label: 'Channel fader', description: 'Performs that source’s level in the mix.'},
+  {label: 'Crossfader', description: 'Blends only channels assigned to A and B.'},
+  {label: 'MASTER LEVEL', description: 'Sets the audience feed at MASTER 1 and MASTER 2.'},
+  {label: 'BOOTH MONITOR', description: 'Sets the DJ monitor independently of MASTER LEVEL.'},
+  {label: 'HEADPHONES LEVEL', description: 'Sets your private monitoring volume safely.'},
+] as const;

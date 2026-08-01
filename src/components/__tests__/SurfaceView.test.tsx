@@ -72,11 +72,10 @@ describe('SurfaceView', () => {
     render(<SurfaceView surface="hardware" sectionId="mixer" />);
 
     expect(screen.getByRole('navigation', {name: 'Mixer lesson region'})).toBeDefined();
-    expect(screen.getByRole('region', {name: 'Scrollable mixer control image'}).tabIndex).toBe(0);
     expect(screen.getByRole('button', {name: 'Signal path'}).getAttribute('aria-current'))
       .toBe('page');
-    expect(screen.getByText(/Source → TRIM → EQ/)).toBeDefined();
-    expect(screen.getByText(/Six controls answer six different questions/)).toBeDefined();
+    expect(screen.getByText('Choose the source')).toBeDefined();
+    expect(screen.getByText('HEADPHONES LEVEL')).toBeDefined();
     expect(screen.queryByRole('button', {name: 'CH 3 TRIM'})).toBeNull();
 
     await user.click(screen.getByRole('button', {name: 'CH3'}));
@@ -273,5 +272,57 @@ describe('SurfaceView', () => {
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('region', {name: 'Test control lesson'})).toBeNull();
     expect(document.activeElement).toBe(shiftIndexButton);
+  });
+
+  it('presents signal flow and gain roles as scannable lists without a nested image scroller', () => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+    render(<SurfaceView surface="hardware" sectionId="mixer" />);
+
+    expect(screen.getAllByRole('list')).toHaveLength(2);
+    expect(screen.getByText('Choose the source')).toBeDefined();
+    expect(screen.getByText('TRIM')).toBeDefined();
+    expect(screen.queryByRole('region', {name: 'Scrollable mixer control image'})).toBeNull();
+  });
+
+  it('scrolls a deep-linked mobile tab into view and clears the hash on explicit close', async () => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(max-width: 767px)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    const originalScrollTo = HTMLElement.prototype.scrollTo;
+    const scrollTo = vi.fn();
+    HTMLElement.prototype.scrollTo = scrollTo;
+    window.history.replaceState(null, '', '/controller/mixer#mixer-mic-low');
+
+    render(<SurfaceView surface="hardware" sectionId="mixer" />);
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    expect(screen.getByRole('button', {name: 'Mic'}).getAttribute('aria-current')).toBe('page');
+    expect(scrollTo).toHaveBeenCalled();
+    expect(screen.getByRole('region', {name: 'MIC EQ LOW lesson'})).toBeDefined();
+
+    await userEvent.setup().click(screen.getByRole('button', {name: 'Close lesson'}));
+    expect(window.location.hash).toBe('');
+    expect(screen.queryByRole('region', {name: 'MIC EQ LOW lesson'})).toBeNull();
+
+    HTMLElement.prototype.scrollTo = originalScrollTo;
   });
 });

@@ -45,6 +45,7 @@ describe('DDJ-1000 four-channel mixer content', () => {
     for (const channel of MIXER_CHANNEL_ORDER) {
       const get = (slug: string) => mixerControls.find((control) => control.id === `mixer-ch${channel}-${slug}`)!;
       expect(get('trim').primary.detail).toMatch(/pre-fader/i);
+      expect(get('trim').primary.detail).toMatch(/-∞.*\+9 dB/i);
       expect(get('trim').primary.why).toMatch(/loudest passage|orange|headroom/i);
       expect(get('meter').primary.detail).toMatch(/pre-fader/i);
       expect(get('high').primary.why).toMatch(/cymbal|presence|space/i);
@@ -65,11 +66,18 @@ describe('DDJ-1000 four-channel mixer content', () => {
       expect(fader.shift?.detail).toMatch(/cue point/i);
       expect(fader.shift?.detail).toMatch(/raise.*closed.*start/i);
       expect(fader.shift?.detail).toMatch(/return.*closed.*back-cue|return.*closed.*cue/i);
+      expect(fader.shift?.detail).toMatch(/Preferences.*Controller.*Mixer.*Fader Start/i);
+      expect(fader.shift?.detail).toMatch(/enabled by default/i);
+      expect(`${fader.shift?.why} ${fader.shift?.gotcha}`).toMatch(/if.*does not start|troubleshoot|check.*setting/i);
       expect(fader.shift?.gotcha).toMatch(/USB|analogue/i);
     }
     const crossfader = mixerControls.find((control) => control.ref === 1)!;
     expect(crossfader.shift?.detail).toMatch(/A.*B.*cue/i);
     expect(crossfader.shift?.detail).toMatch(/closed side.*starts/i);
+    expect(crossfader.shift?.detail).toMatch(/Preferences.*Controller.*Mixer.*Fader Start/i);
+    expect(crossfader.shift?.detail).toMatch(/enabled by default/i);
+    expect(`${crossfader.shift?.why} ${crossfader.shift?.gotcha}`)
+      .toMatch(/if.*does not start|troubleshoot|check.*setting/i);
   });
 
   it('teaches master, booth, monitoring, sampler, mic, and talkover accurately', () => {

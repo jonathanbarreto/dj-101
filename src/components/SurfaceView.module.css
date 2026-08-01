@@ -40,27 +40,28 @@
   background: var(--color-background-muted);
 }
 
-.mixerStageViewport {
-  max-block-size: 72vh;
-  overflow-block: auto;
-  overscroll-behavior-block: contain;
-  border-radius: var(--radius-container);
-  scrollbar-width: thin;
+.signalGuide {
+  max-inline-size: 72ch;
 }
 
-.mixerStageViewport:focus-visible {
-  outline: 3px solid var(--color-border-focused);
-  outline-offset: var(--spacing-1);
+.regionHint {
+  display: none;
 }
 
-@media (max-width: 767px) {
-  .mixerStageViewport {
-    max-block-size: 62vh;
-  }
+.compactLessonClose {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-end: var(--spacing-2);
 }
 
 @media (min-width: 768px) {
   .controlIndex {
     display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .regionHint {
+    display: block;
   }
 }

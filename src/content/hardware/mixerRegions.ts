@@ -13,14 +13,14 @@ export interface MixerRegion {
   narrowRect: Rect;
 }
 
-const channelRegion = (channel: number, x: number): MixerRegion => ({
+const channelRegion = (channel: number): MixerRegion => ({
   id: `channel-${channel}` as MixerRegionId,
   label: `CH${channel}`,
   controlIds: mixerControls
     .filter((control) => control.id.startsWith(`mixer-ch${channel}-`))
     .map(({id}) => id),
-  rect: {x: x - 0.029, y: 0.045, w: 0.061, h: 0.835},
-  narrowRect: {x: x - 0.031, y: 0.045, w: 0.065, h: 0.835},
+  rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
+  narrowRect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
 });
 
 const ids = (...refs: number[]) => mixerControls
@@ -30,27 +30,27 @@ const ids = (...refs: number[]) => mixerControls
 export const MIXER_REGIONS: MixerRegion[] = [
   {
     id: 'signal', label: 'Signal path', controlIds: [],
-    rect: {x: 0.332, y: 0.022, w: 0.296, h: 0.956},
-    narrowRect: {x: 0.350, y: 0.040, w: 0.258, h: 0.900},
+    rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
+    narrowRect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
   },
-  ...MIXER_CHANNEL_ORDER.map((channel) => {
-    const x = mixerControls.find((control) => control.id === `mixer-ch${channel}-trim`)!.at.x;
-    return channelRegion(channel, x);
-  }),
+  ...MIXER_CHANNEL_ORDER.map(channelRegion),
   {
     id: 'outputs', label: 'Outputs', controlIds: ids(1, 12, 13, 14, 15),
-    rect: {x: 0.465, y: 0.045, w: 0.179, h: 0.918},
-    narrowRect: {x: 0.465, y: 0.045, w: 0.179, h: 0.918},
+    rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
+    narrowRect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
   },
   {
     id: 'monitoring', label: 'Headphones + sampler', controlIds: ids(16, 17, 18, 19),
-    rect: {x: 0.343, y: 0.545, w: 0.058, h: 0.335},
-    narrowRect: {x: 0.341, y: 0.545, w: 0.063, h: 0.335},
+    rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
+    narrowRect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
   },
   {
-    id: 'mic', label: 'Mic', controlIds: ids(21, 22, 23, 24, 25),
-    rect: {x: 0.343, y: 0.045, w: 0.058, h: 0.390},
-    narrowRect: {x: 0.341, y: 0.045, w: 0.063, h: 0.390},
+    id: 'mic', label: 'Mic', controlIds: [
+      'mixer-mic-mode', 'mixer-mic1-level', 'mixer-mic2-level',
+      'mixer-mic-high', 'mixer-mic-low',
+    ],
+    rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
+    narrowRect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956},
   },
 ];
 
