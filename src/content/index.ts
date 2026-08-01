@@ -2,9 +2,16 @@ import type {Control} from './types';
 import {deckControls} from './hardware/deck';
 import {browserControls} from './hardware/browser';
 import {rightDeckControls} from './hardware/right-deck';
+import {mixerControls} from './hardware/mixer';
 import {rbDeckControls} from './rekordbox/deck';
 
-const modules: Control[][] = [deckControls, rightDeckControls, browserControls, rbDeckControls];
+const modules: Control[][] = [
+  deckControls,
+  rightDeckControls,
+  browserControls,
+  mixerControls,
+  rbDeckControls,
+];
 
 export const ALL_CONTROLS: Control[] = modules.flat();
 

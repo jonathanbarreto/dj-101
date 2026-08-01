@@ -40,6 +40,25 @@
   background: var(--color-background-muted);
 }
 
+.mixerStageViewport {
+  max-block-size: 72vh;
+  overflow-block: auto;
+  overscroll-behavior-block: contain;
+  border-radius: var(--radius-container);
+  scrollbar-width: thin;
+}
+
+.mixerStageViewport:focus-visible {
+  outline: 3px solid var(--color-border-focused);
+  outline-offset: var(--spacing-1);
+}
+
+@media (max-width: 767px) {
+  .mixerStageViewport {
+    max-block-size: 62vh;
+  }
+}
+
 @media (min-width: 768px) {
   .controlIndex {
     display: none;

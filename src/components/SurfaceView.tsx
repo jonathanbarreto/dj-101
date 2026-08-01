@@ -10,6 +10,14 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import {controlsInSection, SECTIONS} from '@/content';
 import {browserSectionIntro} from '@/content/hardware/browser';
 import {getBrowserVisualRect} from '@/content/hardware/browserVisual';
+import {mixerGainGuide, mixerSignalFlow} from '@/content/hardware/mixer';
+import {
+  getMixerRegion,
+  getMixerRegionForControl,
+  getMixerVisualRect,
+  MIXER_REGIONS,
+  type MixerRegionId,
+} from '@/content/hardware/mixerRegions';
 import {
   getRbDeckMarkerOffset,
   getRbDeckRegion,
@@ -43,15 +51,21 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const {isShiftActive} = useShift();
   const section = sectionId === undefined ? undefined : SECTIONS[sectionId];
   const isRbDeck = sectionId === 'rb-deck';
+  const isMixer = sectionId === 'mixer';
   const isNarrow = useMediaQuery('(max-width: 767px)', false);
   const allControls = useMemo(
     () => (section === undefined ? [] : controlsInSection(section.id)),
     [section],
   );
   const [activeRegionId, setActiveRegionId] = useState<RbDeckRegionId>('info');
-  const activeRegion = isRbDeck ? getRbDeckRegion(activeRegionId) : undefined;
-  const targetRect = activeRegion
-    ? getRbDeckVisualRect(activeRegion.id, isNarrow)
+  const [activeMixerRegionId, setActiveMixerRegionId] = useState<MixerRegionId>('signal');
+  const activeRbRegion = isRbDeck ? getRbDeckRegion(activeRegionId) : undefined;
+  const activeMixerRegion = isMixer ? getMixerRegion(activeMixerRegionId) : undefined;
+  const activeRegion = activeRbRegion ?? activeMixerRegion;
+  const targetRect = activeRbRegion
+    ? getRbDeckVisualRect(activeRbRegion.id, isNarrow)
+    : activeMixerRegion
+      ? getMixerVisualRect(activeMixerRegion.id, isNarrow)
     : sectionId === 'browser'
       ? getBrowserVisualRect(isNarrow)
       : section?.rect ?? FULL;
@@ -68,8 +82,8 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const baseHref = surface === 'hardware' ? '/controller' : '/rekordbox';
   const sections = Object.values(SECTIONS).filter((candidate) => candidate.surface === surface);
   const isCompactHardware = isNarrow && section !== undefined && surface === 'hardware';
-  const showControlIndex = activeRegion !== undefined
-    || isCompactHardware;
+  const showControlIndex = (activeRegion !== undefined && controls.length > 0)
+    || (isCompactHardware && controls.length > 0);
   const openCompactControl = isCompactHardware
     ? controls.find((control) => control.id === openControlId)
     : undefined;
@@ -78,9 +92,11 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     const control = allControls.find((candidate) => candidate.id === controlId);
     if (!control) return false;
 
-    const region = isRbDeck ? getRbDeckRegionForControl(control.id) : undefined;
-    if (isRbDeck && !region) return false;
-    if (region) setActiveRegionId(region.id);
+    const rbRegion = isRbDeck ? getRbDeckRegionForControl(control.id) : undefined;
+    const mixerRegion = isMixer ? getMixerRegionForControl(control.id) : undefined;
+    if ((isRbDeck && !rbRegion) || (isMixer && !mixerRegion)) return false;
+    if (rbRegion) setActiveRegionId(rbRegion.id);
+    if (mixerRegion) setActiveMixerRegionId(mixerRegion.id);
     setOpenControlId(isCompactHardware ? control.id : null);
     setPendingControlId(control.id);
 
@@ -91,7 +107,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       }
     }
     return true;
-  }, [allControls, isCompactHardware, isRbDeck]);
+  }, [allControls, isCompactHardware, isMixer, isRbDeck]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -137,7 +153,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       window.cancelAnimationFrame(firstFrame);
       if (secondFrame) window.cancelAnimationFrame(secondFrame);
     };
-  }, [pendingControlId, activeRegionId, isCompactHardware]);
+  }, [pendingControlId, activeRegionId, activeMixerRegionId, isCompactHardware]);
 
   useEffect(() => {
     if (!openControlId) return;
@@ -149,7 +165,8 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   }, [openControlId]);
 
   function selectRegion(value: string) {
-    setActiveRegionId(value as RbDeckRegionId);
+    if (isMixer) setActiveMixerRegionId(value as MixerRegionId);
+    else setActiveRegionId(value as RbDeckRegionId);
     setOpenControlId(null);
     setPendingControlId(null);
     if (typeof window !== 'undefined' && window.location.hash) {
@@ -167,18 +184,34 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             value={activeRegion.id}
             onChange={selectRegion}
             size="sm"
-            layout="fill"
+            layout={isMixer ? 'hug' : 'fill'}
             hasDivider
-            aria-label="Player deck region"
+            aria-label={isMixer ? 'Mixer lesson region' : 'Player deck region'}
           >
-            {RB_DECK_REGIONS.map((region) => (
+            {(isMixer ? MIXER_REGIONS : RB_DECK_REGIONS).map((region) => (
               <Tab key={region.id} value={region.id} label={region.label} />
             ))}
           </TabList>
         </div>
       )}
-      <Stage surface={surface} rect={stageRect}>
-        {section === undefined
+      {activeMixerRegion?.id === 'signal' && (
+        <Stack direction="vertical" gap={2} xstyle={undefined}>
+          <Text type="label">Follow one sound, then set one level at a time</Text>
+          <Text>{mixerSignalFlow}</Text>
+          <Text>{mixerGainGuide}</Text>
+          <Link href="/reference/sound-color-fx" isStandalone>
+            Learn how each Sound Color FX changes the COLOR knob →
+          </Link>
+        </Stack>
+      )}
+      <div
+        className={isMixer ? styles.mixerStageViewport : undefined}
+        role={isMixer ? 'region' : undefined}
+        aria-label={isMixer ? 'Scrollable mixer control image' : undefined}
+        tabIndex={isMixer ? 0 : undefined}
+      >
+        <Stage surface={surface} rect={stageRect}>
+          {section === undefined
           ? sections.map((candidate) => (
               <Link
                 key={candidate.id}
@@ -204,12 +237,13 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 onOpenChange={(nextIsOpen) => {
                   setOpenControlId(nextIsOpen ? control.id : null);
                 }}
-                markerOffset={activeRegion
+                markerOffset={activeRbRegion
                   ? getRbDeckMarkerOffset(control.id, isNarrow)
                   : undefined}
               />
             ))}
-      </Stage>
+        </Stage>
+      </div>
       {showControlIndex && section && (
         <div className={styles.controlIndex}>
           <List

@@ -67,6 +67,40 @@ afterEach(() => {
 });
 
 describe('SurfaceView', () => {
+  it('organizes the mixer into an accessible signal-flow-first lesson', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="hardware" sectionId="mixer" />);
+
+    expect(screen.getByRole('navigation', {name: 'Mixer lesson region'})).toBeDefined();
+    expect(screen.getByRole('region', {name: 'Scrollable mixer control image'}).tabIndex).toBe(0);
+    expect(screen.getByRole('button', {name: 'Signal path'}).getAttribute('aria-current'))
+      .toBe('page');
+    expect(screen.getByText(/Source → TRIM → EQ/)).toBeDefined();
+    expect(screen.getByText(/Six controls answer six different questions/)).toBeDefined();
+    expect(screen.queryByRole('button', {name: 'CH 3 TRIM'})).toBeNull();
+
+    await user.click(screen.getByRole('button', {name: 'CH3'}));
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+    expect(screen.getByRole('button', {name: 'CH 3 TRIM'})).toBeDefined();
+    expect(screen.queryByRole('button', {name: 'CH 1 TRIM'})).toBeNull();
+  });
+
+  it('selects and opens a mixer hash destination in its owning region', () => {
+    window.history.replaceState(null, '', '/controller/mixer#mixer-headphones-mixing');
+    render(<SurfaceView surface="hardware" sectionId="mixer" />);
+
+    act(() => {
+      while (animationFrames.length > 0) animationFrames.shift()!(0);
+    });
+
+    expect(screen.getByRole('button', {name: 'Headphones + sampler'}).getAttribute('aria-current'))
+      .toBe('page');
+    expect(screen.getByRole('button', {name: 'HEADPHONES MIXING'}).getAttribute('aria-expanded'))
+      .toBe('true');
+  });
+
   it('server-renders the deterministic Info region even when the URL has a valid hash', () => {
     window.history.replaceState(null, '', '/rekordbox/rb-deck#rb-deck-slip');
 
