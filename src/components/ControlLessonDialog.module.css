@@ -4,6 +4,6 @@
 
 .dialogContent {
   display: grid;
-  gap: var(--spacing-3);
-  padding: var(--spacing-4) var(--spacing-4) var(--spacing-2);
+  gap: var(--spacing-4);
+  padding: var(--spacing-5) var(--spacing-5) var(--spacing-6);
 }

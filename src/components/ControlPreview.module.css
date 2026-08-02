@@ -1,11 +1,16 @@
 .preview {
   display: grid;
-  min-inline-size: min(18rem, calc(100vw - 2 * var(--spacing-3)));
-  gap: var(--spacing-3);
-  padding: var(--spacing-3);
+  min-inline-size: min(22rem, calc(100vw - 2 * var(--spacing-4)));
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+  line-height: 1.45;
 }
 
 .physicalAction {
+  margin-block: 0;
+  padding: var(--spacing-3);
+  border-inline-start: var(--border-width) solid var(--color-accent);
+  background: var(--color-background-muted);
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;

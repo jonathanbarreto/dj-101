@@ -132,18 +132,19 @@ describe('SurfaceView', () => {
     expect(html).not.toMatch(/data-tab-value="jog"[^>]*data-selected="selected"/);
   });
 
-  it('shows only hardware section links with controller hrefs on the hardware overview', () => {
+  it('shows hardware section beacons on the controller overview', async () => {
+    const user = userEvent.setup();
     render(<SurfaceView surface="hardware" />);
 
-    const deckLink = screen.getByRole('link', {name: 'Left deck'});
-    expect(deckLink.getAttribute('href')).toBe('/controller/deck-left');
-    expect(deckLink.style.left).not.toBe('');
+    const deckBeacon = screen.getByRole('button', {name: 'Explore Left deck'});
+    expect(deckBeacon).toBeDefined();
+    await user.click(deckBeacon);
+    expect(screen.getByRole('heading', {name: 'Left deck'})).toBeDefined();
+    expect(screen.getByRole('button', {name: /LOOP IN/})).toBeDefined();
     const rearLink = screen.getByRole('link', {name: /Rear connections/});
     const frontLink = screen.getByRole('link', {name: /Front headphones/});
     expect(rearLink.getAttribute('href')).toBe('/controller/rear');
     expect(frontLink.getAttribute('href')).toBe('/controller/front');
-    expect(rearLink.style.left).toBe('');
-    expect(frontLink.style.left).toBe('');
     expect(screen.queryByRole('link', {name: 'Player deck'})).toBeNull();
     expect(screen.getByRole('switch', {name: /shift/i})).toBeDefined();
   });
@@ -158,8 +159,7 @@ describe('SurfaceView', () => {
 
     expect(screen.getByRole('img', {name: /DDJ-1000/i})).toBeDefined();
     expect(screen.queryByTestId('overview-overlay-link')).toBeNull();
-    expect(screen.getByRole('link', {name: /Left deck/i}).getAttribute('href'))
-      .toBe('/controller/deck-left');
+    expect(screen.getByRole('listitem', {name: /Left deck/i})).toBeDefined();
     expect(screen.getByRole('link', {name: /Rear connections/i}).getAttribute('href'))
       .toBe('/controller/rear');
   });

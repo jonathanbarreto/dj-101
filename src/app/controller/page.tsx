@@ -25,7 +25,7 @@ export default function ControllerPage() {
         <PageBreadcrumbs items={[{label: 'Start Djing', href: '/'}, {label: 'Controller'}]} />
         <Text as="h1" type="display-1">Pioneer DJ DDJ-1000</Text>
         <Text type="large" as="p">
-          Tap the controller map to jump directly to the controls you want. The map then focuses your chosen area and shows lessons in that context.
+          Start with the controller map. Tap a pulsing beacon to progressively reveal a section, then tap any control to zoom in and open its lesson.
         </Text>
         <SurfaceView surface="hardware" />
       </Stack>

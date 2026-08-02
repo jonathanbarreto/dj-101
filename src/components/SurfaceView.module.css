@@ -20,6 +20,31 @@
   white-space: nowrap;
 }
 
+.overviewBeacon {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.overviewBeaconLabel {
+  position: absolute;
+  top: calc(100% - var(--spacing-1));
+  left: 50%;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-element);
+  background: var(--color-background-surface);
+  box-shadow: var(--shadow-med);
+  color: var(--color-text-primary);
+  font-size: var(--text-supporting-size);
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
 .overviewLabel {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -52,7 +77,16 @@
 }
 
 .sectionHeading {
-  margin-block-end: var(--spacing-1);
+  margin-block: 0;
+}
+
+.sectionIntro {
+  max-inline-size: 52rem;
+  padding-block: var(--spacing-1) var(--spacing-2);
+}
+
+.learningFocus {
+  max-inline-size: 66ch;
 }
 
 .signalGuide {
@@ -93,5 +127,9 @@
 @media (max-width: 767px) {
   .regionHint {
     display: block;
+  }
+
+  .overviewBeaconLabel {
+    font-size: var(--text-label-size);
   }
 }

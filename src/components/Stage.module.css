@@ -18,9 +18,11 @@
   max-block-size: 100%;
   overflow: hidden;
   isolation: isolate;
+  transform: translateZ(0);
+  will-change: transform;
   transition:
     filter var(--duration-medium) var(--ease-standard),
-    transform var(--duration-medium) var(--ease-standard);
+    transform var(--duration-slow) var(--ease-entrance);
 }
 
 .canvas[data-stage-mode='overview'] {
@@ -32,11 +34,12 @@
 }
 
 .image {
+  will-change: width, height, left, top;
   transition:
-    width var(--duration-medium) var(--ease-standard),
-    height var(--duration-medium) var(--ease-standard),
-    left var(--duration-medium) var(--ease-standard),
-    top var(--duration-medium) var(--ease-standard);
+    width var(--duration-slow) var(--ease-entrance),
+    height var(--duration-slow) var(--ease-entrance),
+    left var(--duration-slow) var(--ease-entrance),
+    top var(--duration-slow) var(--ease-entrance);
 }
 
 .hotspots {
@@ -48,8 +51,8 @@
 .hotspots > * {
   pointer-events: auto;
   transition:
-    left var(--duration-medium) var(--ease-standard),
-    top var(--duration-medium) var(--ease-standard);
+    left var(--duration-slow) var(--ease-entrance),
+    top var(--duration-slow) var(--ease-entrance);
 }
 
 @media (max-width: 47.99rem) {
