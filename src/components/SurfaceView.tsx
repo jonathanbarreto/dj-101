@@ -78,6 +78,12 @@ const SECTION_PROMPTS: Partial<Record<SectionId, {goal: string; cue: string}>> =
 };
 
 const SECTION_FLOW: SectionId[] = ['deck-left', 'deck-right', 'mixer', 'fx', 'browser'];
+
+const MIXER_ORIENTATION_CONTROL_IDS = new Set([
+  'mixer-ch1-input', 'mixer-ch2-input', 'mixer-ch3-input', 'mixer-ch4-input',
+  'mixer-ch1-trim', 'mixer-ch2-trim', 'mixer-ch3-trim', 'mixer-ch4-trim',
+  'mixer-master-meter-clip', 'mixer-headphones-mixing', 'mixer-crossfader',
+]);
 function nextSection(currentId: SectionId): SectionId | null {
   const index = SECTION_FLOW.indexOf(currentId);
   if (index === -1) return null;
@@ -132,7 +138,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const activeRegion = activeRbRegion ?? activeMixerRegion ?? activeDeckRegion;
   const shouldScopeToRegion = !isHardwareSection || selectedControlId !== null;
   const targetRect = isHardwareSection
-    ? activeSection?.rect ?? FULL
+    ? activeSection?.id === 'mixer'
+      ? getMixerVisualRect('signal', isNarrow)
+      : activeSection?.rect ?? FULL
     : activeRbRegion
     ? getRbDeckVisualRect(activeRbRegion.id, isNarrow)
     : activeMixerRegion
@@ -143,15 +151,24 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       ? getBrowserVisualRect(isNarrow)
       : activeSection?.rect ?? FULL;
   const activeControlIds = shouldScopeToRegion && (activeRbRegion?.controlIds
-    ?? activeMixerRegion?.controlIds
+    ?? (isMixer && selectedControlId?.match(/^mixer-(ch[1-4])-./)
+      ? allControls
+          .filter((control) => control.id.startsWith(`mixer-${selectedControlId.match(/^mixer-(ch[1-4])-./)?.[1]}-`))
+          .map((control) => control.id)
+      : activeMixerRegion?.controlIds)
     ?? (activeDeckRegion && isDeck
       ? controlsForDeckRegion(activeDeckRegion, activeSection?.id as 'deck-left' | 'deck-right')
       : undefined));
-  const controls = activeControlIds
+  const scopedControls = activeControlIds
     ? activeControlIds
         .map((id) => allControls.find((control) => control.id === id))
         .filter((control): control is Control => control !== undefined)
     : allControls;
+  const controls = isHardwareSection
+    && activeSection?.id === 'mixer'
+    && selectedControlId === null
+    ? scopedControls.filter((control) => MIXER_ORIENTATION_CONTROL_IDS.has(control.id))
+    : scopedControls;
   const [crop, setCrop] = useState<{sectionId?: SectionId; rect: Rect}>({
     sectionId: activeSection?.id,
     rect: targetRect,
@@ -178,8 +195,13 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     setFocusedSectionId(nextSectionId);
     setSelectedControlId(null);
     setOverlayMode('none');
-    setCrop({sectionId: nextSectionId, rect: nextSectionSpec.rect});
-  }, [section, surface]);
+    setCrop({
+      sectionId: nextSectionId,
+      rect: nextSectionId === 'mixer'
+        ? getMixerVisualRect('signal', isNarrow)
+        : nextSectionSpec.rect,
+    });
+  }, [isNarrow, section, surface]);
 
   const activateControl = useCallback((controlId: string, updateHash: boolean) => {
     const control = allControls.find((candidate) => candidate.id === controlId);
@@ -267,10 +289,15 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     setOverlayMode('none');
     setSelectedControlId(null);
     if (isHardwareSection && activeSection) {
-      setCrop({sectionId: activeSection.id, rect: activeSection.rect});
+      setCrop({
+        sectionId: activeSection.id,
+        rect: activeSection.id === 'mixer'
+          ? getMixerVisualRect('signal', isNarrow)
+          : activeSection.rect,
+      });
     }
     queueMicrotask(() => initiatorRef.current?.focus());
-  }, [activeSection, isHardwareSection, selectedControlId]);
+  }, [activeSection, isHardwareSection, isNarrow, selectedControlId]);
 
   const resetSectionView = useCallback(() => {
     if (!isHardwareSection || !activeSection) return;
@@ -280,8 +307,13 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (section === undefined) setFocusedSectionId(null);
     setCrop(section === undefined
       ? {sectionId: undefined, rect: FULL}
-      : {sectionId: activeSection.id, rect: activeSection.rect});
-  }, [activeSection, isHardwareSection, section, selectedControlId]);
+      : {
+          sectionId: activeSection.id,
+          rect: activeSection.id === 'mixer'
+            ? getMixerVisualRect('signal', isNarrow)
+            : activeSection.rect,
+        });
+  }, [activeSection, isHardwareSection, isNarrow, section, selectedControlId]);
 
   function selectRegion(value: string) {
     if (isMixer) setActiveMixerRegionId(value as MixerRegionId);

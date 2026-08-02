@@ -45,7 +45,7 @@ describe('SurfaceView lesson coordination', () => {
     window.history.replaceState(null, '', '/controller/mixer#mixer-ch1-trim');
     render(<SurfaceView surface="hardware" sectionId="mixer" />);
     expect(document.querySelectorAll('dialog')).toHaveLength(1);
-    expect(screen.getByRole('heading', {name: 'CH 1 TRIM'})).toBeDefined();
+    expect(screen.getAllByRole('heading', {name: 'CH 1 TRIM'})).toHaveLength(2);
   });
 
   it('keeps malformed hashes safe and clears only the matching hash when closing', async () => {
