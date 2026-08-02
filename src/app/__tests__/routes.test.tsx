@@ -62,7 +62,8 @@ describe('routes', () => {
 
   it('renders the overview page titles', () => {
     const controller = render(<ControllerPage />);
-    expect(screen.getByRole('heading', {name: 'Pioneer DJ DDJ-1000'})).toBeDefined();
+    expect(screen.getByRole('img', {name: 'Pioneer DJ DDJ-1000'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Explore EQ'})).toBeDefined();
     controller.unmount();
 
     render(<RekordboxPage />);
@@ -70,11 +71,11 @@ describe('routes', () => {
     expect(screen.queryByRole('main')).toBeNull();
   });
 
-  it('uses SurfaceView orientation and breadcrumbs across controller and rekordbox routes', async () => {
+  it('keeps controller hardware map-only while rekordbox retains its orientation UI', async () => {
     const controller = render(<ControllerPage />);
-    expect(screen.getByRole('navigation', {name: 'Surface orientation'})).toBeDefined();
-    expect(screen.getByRole('navigation', {name: 'Breadcrumb'})).toBeDefined();
-    expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1);
+    expect(screen.queryByRole('navigation', {name: 'Surface orientation'})).toBeNull();
+    expect(screen.queryByRole('navigation', {name: 'Breadcrumb'})).toBeNull();
+    expect(screen.queryByRole('heading')).toBeNull();
     controller.unmount();
 
     const section = render(await RekordboxSectionPage({
@@ -88,13 +89,12 @@ describe('routes', () => {
     section.unmount();
   });
 
-  it('offers Resume from each map only after a valid same-surface target is stored', () => {
+  it('offers Resume from the rekordbox map only after a valid same-surface target is stored', () => {
     window.sessionStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify({
       surface: 'hardware', sectionId: 'deck-left', controlId: 'deck-left-play-pause',
     }));
     const controller = render(<ControllerPage />);
-    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href'))
-      .toBe('/controller/deck-left#deck-left-play-pause');
+    expect(screen.queryByRole('link', {name: 'Resume'})).toBeNull();
     controller.unmount();
 
     window.sessionStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify({

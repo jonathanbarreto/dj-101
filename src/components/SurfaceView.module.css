@@ -45,6 +45,17 @@
   transform: translateX(-50%);
 }
 
+.beaconPopover {
+  padding: var(--spacing-4);
+}
+
+.resetBeacon {
+  position: absolute;
+  z-index: 2;
+  right: var(--spacing-3);
+  bottom: var(--spacing-3);
+}
+
 .overviewLabel {
   position: absolute;
   transform: translate(-50%, -50%);

@@ -1,8 +1,5 @@
 import type {Metadata} from 'next';
-import {Text} from '@astryxdesign/core/Text';
-import {Stack} from '@astryxdesign/core/Stack';
 import {SurfaceView} from '@/components/SurfaceView';
-import {PageBreadcrumbs} from '@/components/PageBreadcrumbs';
 import {PageFrame} from '@/components/PageFrame';
 
 export const metadata: Metadata = {
@@ -21,14 +18,7 @@ export const metadata: Metadata = {
 export default function ControllerPage() {
   return (
     <PageFrame>
-      <Stack direction="vertical" gap={4} xstyle={undefined}>
-        <PageBreadcrumbs items={[{label: 'Start Djing', href: '/'}, {label: 'Controller'}]} />
-        <Text as="h1" type="display-1">Pioneer DJ DDJ-1000</Text>
-        <Text type="large" as="p">
-          Start with the controller map. Tap a pulsing beacon to progressively reveal a section, then tap any control to zoom in and open its lesson.
-        </Text>
-        <SurfaceView surface="hardware" />
-      </Stack>
+      <SurfaceView surface="hardware" />
     </PageFrame>
   );
 }

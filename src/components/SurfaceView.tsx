@@ -1,7 +1,6 @@
 'use client';
 
 import {Link} from '@astryxdesign/core/Link';
-import {Button} from '@astryxdesign/core/Button';
 import {List, ListItem} from '@astryxdesign/core/List';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Tab, TabList} from '@astryxdesign/core/TabList';
@@ -37,7 +36,8 @@ import {
   RB_DECK_REGIONS,
   type RbDeckRegionId,
 } from '@/content/rekordbox/deckRegions';
-import type {Control, Rect, SectionId, Surface} from '@/content/types';
+import type {Control, Point, Rect, SectionId, Surface} from '@/content/types';
+import {isVisible, toViewport} from '@/lib/geometry';
 import {Hotspot} from './Hotspot';
 import {HotspotMarker} from './HotspotMarker';
 import {ControlLessonDialog} from './ControlLessonDialog';
@@ -45,7 +45,6 @@ import {ControlIndex} from './ControlIndex';
 import {SurfaceNavigator} from './SurfaceNavigator';
 import {readResumeTarget, saveResumeTarget, type ResumeTarget} from '@/lib/resume-state';
 import {ShiftProvider, useShift} from './ShiftContext';
-import {ShiftToggle} from './ShiftToggle';
 import {Stage} from './Stage';
 import styles from './SurfaceView.module.css';
 import {DetailGallery} from './DetailGallery';
@@ -79,11 +78,67 @@ const SECTION_PROMPTS: Partial<Record<SectionId, {goal: string; cue: string}>> =
 
 const SECTION_FLOW: SectionId[] = ['deck-left', 'deck-right', 'mixer', 'fx', 'browser'];
 
-const MIXER_ORIENTATION_CONTROL_IDS = new Set([
-  'mixer-ch1-input', 'mixer-ch2-input', 'mixer-ch3-input', 'mixer-ch4-input',
-  'mixer-ch1-trim', 'mixer-ch2-trim', 'mixer-ch3-trim', 'mixer-ch4-trim',
-  'mixer-master-meter-clip', 'mixer-headphones-mixing', 'mixer-crossfader',
-]);
+interface SectionArea {
+  id: string;
+  label: string;
+  at: Point;
+  rect: Rect;
+  controlIds: string[];
+  targetSectionId?: SectionId;
+}
+
+const SECTION_AREAS: Partial<Record<SectionId, SectionArea[]>> = {
+  'deck-left': [
+    {id: 'transport', label: 'Loop & transport', at: {x: 0.17, y: 0.15}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [...DECK_REGIONS[0].leftControlIds]},
+    {id: 'jog', label: 'Jog & tempo', at: {x: 0.17, y: 0.43}, rect: DECK_REGIONS[1].rect['deck-left'], controlIds: [...DECK_REGIONS[1].leftControlIds]},
+    {id: 'pads', label: 'Pads & key', at: {x: 0.17, y: 0.75}, rect: DECK_REGIONS[2].rect['deck-left'], controlIds: [...DECK_REGIONS[2].leftControlIds]},
+  ],
+  'deck-right': [
+    {id: 'transport', label: 'Loop & transport', at: {x: 0.83, y: 0.15}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: DECK_REGIONS[0].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'jog', label: 'Jog & tempo', at: {x: 0.83, y: 0.43}, rect: DECK_REGIONS[1].rect['deck-right'], controlIds: DECK_REGIONS[1].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'pads', label: 'Pads & key', at: {x: 0.83, y: 0.75}, rect: DECK_REGIONS[2].rect['deck-right'], controlIds: DECK_REGIONS[2].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+  ],
+  mixer: [
+    {id: 'input-gain', label: 'Input & gain', at: {x: 0.49, y: 0.13}, rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956}, controlIds: ['mixer-ch1-input', 'mixer-ch2-input', 'mixer-ch3-input', 'mixer-ch4-input', 'mixer-ch1-trim', 'mixer-ch2-trim', 'mixer-ch3-trim', 'mixer-ch4-trim']},
+    {id: 'eq', label: 'Channel EQ', at: {x: 0.49, y: 0.3}, rect: {x: 0.32, y: 0.16, w: 0.16, h: 0.46}, controlIds: ['mixer-ch1-high', 'mixer-ch1-mid', 'mixer-ch1-low']},
+    {id: 'color-fx', label: 'Color FX', at: {x: 0.37, y: 0.49}, rect: {x: 0.32, y: 0.42, w: 0.15, h: 0.24}, controlIds: ['mixer-sound-color-fx-select', 'mixer-ch1-color']},
+    {id: 'headphone-cue', label: 'Headphone cue', at: {x: 0.37, y: 0.74}, rect: {x: 0.31, y: 0.55, w: 0.16, h: 0.36}, controlIds: ['mixer-ch1-cue', 'mixer-headphones-mixing', 'mixer-headphones-level']},
+    {id: 'master-booth', label: 'Master & booth', at: {x: 0.62, y: 0.24}, rect: {x: 0.58, y: 0.04, w: 0.11, h: 0.43}, controlIds: ['mixer-master-level', 'mixer-master-meter-clip', 'mixer-booth-monitor', 'mixer-master-cue']},
+    {id: 'crossfader', label: 'Crossfader', at: {x: 0.5, y: 0.93}, rect: {x: 0.42, y: 0.72, w: 0.2, h: 0.26}, controlIds: ['mixer-crossfader', 'mixer-ch1-crossfader-assign', 'mixer-ch2-crossfader-assign']},
+    {id: 'beat-fx', label: 'Beat FX', at: {x: 0.62, y: 0.76}, rect: {x: 0.56, y: 0.48, w: 0.13, h: 0.49}, controlIds: [], targetSectionId: 'fx'},
+  ],
+  fx: [
+    {id: 'effect', label: 'Choose effect', at: {x: 0.62, y: 0.65}, rect: {x: 0.56, y: 0.49, w: 0.13, h: 0.23}, controlIds: ['fx-display', 'fx-selector']},
+    {id: 'timing', label: 'Set timing', at: {x: 0.62, y: 0.58}, rect: {x: 0.56, y: 0.49, w: 0.13, h: 0.16}, controlIds: ['fx-display', 'fx-beat-arrows']},
+    {id: 'routing', label: 'Route effect', at: {x: 0.62, y: 0.74}, rect: {x: 0.56, y: 0.68, w: 0.13, h: 0.15}, controlIds: ['fx-channel-selector']},
+    {id: 'perform', label: 'Depth & release', at: {x: 0.62, y: 0.88}, rect: {x: 0.56, y: 0.78, w: 0.13, h: 0.2}, controlIds: ['fx-level-depth', 'fx-on-off']},
+  ],
+  browser: [
+    {id: 'browse', label: 'Browse library', at: {x: 0.307, y: 0.094}, rect: {x: 0.26, y: 0.04, w: 0.12, h: 0.18}, controlIds: ['browser-rotary-selector']},
+    {id: 'views', label: 'Views & back', at: {x: 0.303, y: 0.152}, rect: {x: 0.26, y: 0.1, w: 0.12, h: 0.14}, controlIds: ['browser-back', 'browser-view']},
+  ],
+};
+
+interface ControllerEntryPoint {
+  id: string;
+  label: string;
+  at: Point;
+  sectionId: SectionId;
+  areaId: string;
+  summary: string;
+}
+
+const CONTROLLER_ENTRY_POINTS: ControllerEntryPoint[] = [
+  {id: 'eq', label: 'EQ', at: {x: 0.46, y: 0.34}, sectionId: 'mixer', areaId: 'eq', summary: 'Shape the frequencies of a representative channel.'},
+  {id: 'color-fx', label: 'Sound Color FX', at: {x: 0.43, y: 0.55}, sectionId: 'mixer', areaId: 'color-fx', summary: 'Choose a color effect, then add it to the channel.'},
+  {id: 'beat-fx', label: 'Beat FX', at: {x: 0.63, y: 0.68}, sectionId: 'fx', areaId: 'effect', summary: 'Choose, time, route, and perform a Beat FX.'},
+  {id: 'crossfader', label: 'Crossfader', at: {x: 0.5, y: 0.9}, sectionId: 'mixer', areaId: 'crossfader', summary: 'Assign channels, then blend or cut between them.'},
+  {id: 'master', label: 'Master volume', at: {x: 0.63, y: 0.19}, sectionId: 'mixer', areaId: 'master-booth', summary: 'Set the room and booth monitor independently.'},
+  {id: 'pads', label: 'Pads', at: {x: 0.19, y: 0.83}, sectionId: 'deck-left', areaId: 'pads', summary: 'Use performance pads, pad modes, and key controls.'},
+  {id: 'jog', label: 'Jog wheel', at: {x: 0.19, y: 0.52}, sectionId: 'deck-left', areaId: 'jog', summary: 'Control jog feel, tempo, sync, and vinyl behavior.'},
+  {id: 'loops', label: 'Loop controls', at: {x: 0.08, y: 0.12}, sectionId: 'deck-left', areaId: 'transport', summary: 'Work with loops, cue calls, and deck transport.'},
+  {id: 'deck-select', label: 'Deck select', at: {x: 0.07, y: 0.28}, sectionId: 'deck-left', areaId: 'transport', summary: 'Select the deck pair before using deck-specific controls.'},
+];
 function nextSection(currentId: SectionId): SectionId | null {
   const index = SECTION_FLOW.indexOf(currentId);
   if (index === -1) return null;
@@ -132,15 +187,19 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const [activeMixerRegionId, setActiveMixerRegionId] = useState<MixerRegionId>('signal');
   const [activeDeckRegionId, setActiveDeckRegionId] = useState<DeckRegionId>('transport');
   const [selectedControlId, setSelectedControlId] = useState<string | null>(null);
+  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
+  const sectionAreas = activeSection === undefined ? [] : SECTION_AREAS[activeSection.id] ?? [];
+  const selectedArea = sectionAreas.find((area) => area.id === selectedAreaId);
   const activeRbRegion = isRbDeck ? getRbDeckRegion(activeRegionId) : undefined;
   const activeMixerRegion = isMixer ? getMixerRegion(activeMixerRegionId) : undefined;
   const activeDeckRegion = isDeck ? getDeckRegion(activeDeckRegionId) : undefined;
   const activeRegion = activeRbRegion ?? activeMixerRegion ?? activeDeckRegion;
   const shouldScopeToRegion = !isHardwareSection || selectedControlId !== null;
   const targetRect = isHardwareSection
-    ? activeSection?.id === 'mixer'
+    ? selectedArea?.rect
+      ?? (activeSection?.id === 'mixer'
       ? getMixerVisualRect('signal', isNarrow)
-      : activeSection?.rect ?? FULL
+      : activeSection?.rect ?? FULL)
     : activeRbRegion
     ? getRbDeckVisualRect(activeRbRegion.id, isNarrow)
     : activeMixerRegion
@@ -164,10 +223,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         .map((id) => allControls.find((control) => control.id === id))
         .filter((control): control is Control => control !== undefined)
     : allControls;
-  const controls = isHardwareSection
-    && activeSection?.id === 'mixer'
-    && selectedControlId === null
-    ? scopedControls.filter((control) => MIXER_ORIENTATION_CONTROL_IDS.has(control.id))
+  const controls = selectedArea !== undefined
+    ? selectedArea.controlIds
+        .map((id) => allControls.find((control) => control.id === id))
+        .filter((control): control is Control => control !== undefined)
     : scopedControls;
   const [crop, setCrop] = useState<{sectionId?: SectionId; rect: Rect}>({
     sectionId: activeSection?.id,
@@ -193,6 +252,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     const nextSectionSpec = SECTIONS[nextSectionId];
     if (surface !== 'hardware' || section !== undefined || nextSectionSpec.surface !== 'hardware') return;
     setFocusedSectionId(nextSectionId);
+    setSelectedAreaId(null);
     setSelectedControlId(null);
     setOverlayMode('none');
     setCrop({
@@ -202,6 +262,28 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         : nextSectionSpec.rect,
     });
   }, [isNarrow, section, surface]);
+
+  const focusArea = useCallback((area: SectionArea) => {
+    if (area.targetSectionId) {
+      focusSection(area.targetSectionId);
+      return;
+    }
+    if (!activeSection) return;
+    setSelectedAreaId(area.id);
+    setSelectedControlId(null);
+    setOverlayMode('none');
+    setCrop({sectionId: activeSection.id, rect: area.rect});
+  }, [activeSection, focusSection]);
+
+  const focusEntryPoint = useCallback((entry: ControllerEntryPoint) => {
+    const area = SECTION_AREAS[entry.sectionId]?.find((candidate) => candidate.id === entry.areaId);
+    if (!area || surface !== 'hardware' || section !== undefined) return;
+    setFocusedSectionId(entry.sectionId);
+    setSelectedAreaId(area.id);
+    setSelectedControlId(null);
+    setOverlayMode('none');
+    setCrop({sectionId: entry.sectionId, rect: area.rect});
+  }, [section, surface]);
 
   const activateControl = useCallback((controlId: string, updateHash: boolean) => {
     const control = allControls.find((candidate) => candidate.id === controlId);
@@ -291,19 +373,30 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (isHardwareSection && activeSection) {
       setCrop({
         sectionId: activeSection.id,
-        rect: activeSection.id === 'mixer'
+        rect: selectedArea?.rect
+          ?? (activeSection.id === 'mixer'
           ? getMixerVisualRect('signal', isNarrow)
-          : activeSection.rect,
+          : activeSection.rect),
       });
     }
     queueMicrotask(() => initiatorRef.current?.focus());
-  }, [activeSection, isHardwareSection, isNarrow, selectedControlId]);
+  }, [activeSection, isHardwareSection, isNarrow, selectedArea?.rect, selectedControlId]);
 
   const resetSectionView = useCallback(() => {
     if (!isHardwareSection || !activeSection) return;
     clearMatchingControlHash(selectedControlId ?? '');
     setSelectedControlId(null);
     setOverlayMode('none');
+    if (selectedArea) {
+      setSelectedAreaId(null);
+      setCrop({
+        sectionId: activeSection.id,
+        rect: activeSection.id === 'mixer'
+          ? getMixerVisualRect('signal', isNarrow)
+          : activeSection.rect,
+      });
+      return;
+    }
     if (section === undefined) setFocusedSectionId(null);
     setCrop(section === undefined
       ? {sectionId: undefined, rect: FULL}
@@ -313,7 +406,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             ? getMixerVisualRect('signal', isNarrow)
             : activeSection.rect,
         });
-  }, [activeSection, isHardwareSection, isNarrow, section, selectedControlId]);
+  }, [activeSection, isHardwareSection, isNarrow, section, selectedArea, selectedControlId]);
 
   function selectRegion(value: string) {
     if (isMixer) setActiveMixerRegionId(value as MixerRegionId);
@@ -337,8 +430,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
 
   return (
     <Stack direction="vertical" gap={3} xstyle={undefined}>
-      {surface === 'hardware' ? <ShiftToggle /> : null}
-      <div ref={regionNavRef}>
+      {surface !== 'hardware' && <div ref={regionNavRef}>
         <SurfaceNavigator
           surface={surface}
           section={activeSection}
@@ -346,7 +438,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           activeRegionLabel={activeRegion?.label}
           selectedControlLabel={selectedControl?.label}
           regions={regions}
-          showRegionTabs={surface === 'hardware' ? activeSection === undefined : true}
+          showRegionTabs
           isCompact={isNarrow}
           overflowRegionIds={isMixer ? ['color-fx', 'outputs', 'monitoring', 'mic'] : undefined}
           onViewMap={() => {
@@ -366,17 +458,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           }}
           resumeTarget={resumeTarget ?? undefined}
         />
-      </div>
-      {isHardwareSection ? (
-        <Stack direction="vertical" gap={1} className={styles.sectionIntro}>
-          <Text as="h1" type="display-1" className={styles.sectionHeading}>
-            {activeSection.label}
-          </Text>
-          <Text as="p" type="supporting" textWrap="pretty">
-            Explore the map, then tap a pulsing marker to zoom in and open its lesson.
-          </Text>
-        </Stack>
-      ) : null}
+      </div>}
       {activeMixerRegion && surface === 'software' && (
         <div className={styles.regionHint}>
           <Text type="supporting">Swipe horizontally for all mixer lessons →</Text>
@@ -414,32 +496,30 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         </div>
       )}
       {activeMixerRegion?.id === 'channels' && <Text>{mixerChannelOverview}</Text>}
-      {isHardwareSection && selectedControlId ? (
-        <Stack direction="horizontal" gap={2} align="center" wrap="wrap">
-          <Text type="supporting" color="secondary">
-            Focused on {selectedControl?.label ?? 'this control'}.
-          </Text>
-          <Button label="Zoom out to section map" variant="ghost" onClick={resetSectionView} />
-        </Stack>
-      ) : null}
       <Stage surface={surface} rect={stageRect}>
         {activeSection === undefined
           ? (
               <>
-                {populatedSections.map((candidate) => (
+                {surface === 'hardware' ? CONTROLLER_ENTRY_POINTS.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className={styles.overviewBeacon}
+                    style={{left: `${entry.at.x * 100}%`, top: `${entry.at.y * 100}%`}}
+                  >
+                    <HotspotMarker aria-label={`Explore ${entry.label}`} onClick={() => focusEntryPoint(entry)} />
+                    <span className={styles.overviewBeaconLabel}>{entry.label}</span>
+                  </div>
+                )) : populatedSections.map((candidate) => (
                   <div
                     key={candidate.id}
                     className={styles.overviewBeacon}
                     style={{left: `${candidate.marker.x * 100}%`, top: `${candidate.marker.y * 100}%`}}
                   >
-                    <HotspotMarker
-                      aria-label={`Explore ${candidate.label}`}
-                      onClick={() => focusSection(candidate.id)}
-                    />
+                    <HotspotMarker aria-label={`Explore ${candidate.label}`} onClick={() => focusSection(candidate.id)} />
                     <span className={styles.overviewBeaconLabel}>{candidate.label}</span>
                   </div>
                 ))}
-                {unavailableSections.map((candidate) => (
+                {surface !== 'hardware' && unavailableSections.map((candidate) => (
                   <span
                     key={candidate.id}
                     className={styles.overviewLabel}
@@ -450,8 +530,23 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 ))}
               </>
             )
-          : isCompactSection
+          : isCompactSection && !isHardwareSection
             ? null
+            : isHardwareSection && sectionAreas.length > 0 && selectedArea === undefined && selectedControlId === null
+              ? sectionAreas.map((area) => {
+                if (!isVisible(area.at, stageRect)) return null;
+                const position = toViewport(area.at, stageRect);
+                return (
+                  <div
+                    key={area.id}
+                    className={styles.overviewBeacon}
+                    style={{left: `${position.x * 100}%`, top: `${position.y * 100}%`}}
+                  >
+                    <HotspotMarker aria-label={`Explore ${area.label}`} onClick={() => focusArea(area)} />
+                    <span className={styles.overviewBeaconLabel}>{area.label}</span>
+                  </div>
+                );
+              })
             : controls.map((control) => (
               <Hotspot
                 key={control.id}
@@ -475,8 +570,16 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                   : undefined}
               />
               ))}
+        {isHardwareSection && activeSection !== undefined && (
+          <div className={styles.resetBeacon}>
+            <HotspotMarker
+              aria-label={selectedArea || selectedControlId ? 'Back to section map' : 'Back to full controller'}
+              onClick={resetSectionView}
+            />
+          </div>
+        )}
       </Stage>
-      {activeSection && (
+      {activeSection && !isHardwareSection && (
         <Stack direction="vertical" gap={2}>
           <div className={styles.learningFocus}>
             <Text type="label" color="accent">Learning focus</Text>
@@ -502,8 +605,8 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           ) : null}
         </Stack>
       )}
-      {activeSection?.id === 'browser' && <Text>{browserSectionIntro}</Text>}
-      {activeSection?.id === 'fx' && (
+      {activeSection?.id === 'browser' && !isHardwareSection && <Text>{browserSectionIntro}</Text>}
+      {activeSection?.id === 'fx' && !isHardwareSection && (
         <Stack direction="vertical" gap={2}>
           <Text>
             Prepare Beat FX in signal order: choose the effect, route its target, set the
@@ -529,7 +632,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           else closeOverlay();
         }}
       />
-      {activeSection === undefined && isNarrow && (
+      {activeSection === undefined && isNarrow && surface !== 'hardware' && (
         <List
           hasDividers
           density="spacious"
@@ -539,20 +642,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             <ListItem
               key={candidate.id}
               label={candidate.label}
-              description={surface === 'hardware'
-                ? `Open the ${candidate.label.toLowerCase()} controls and practical lessons.`
-                : 'Learn the visible deck fields and their hardware counterparts.'}
-              {...(surface === 'hardware'
-                ? {onClick: () => focusSection(candidate.id)}
-                : {href: `${baseHref}/${candidate.id}`})}
+              description="Learn the visible deck fields and their hardware counterparts."
+              href={`${baseHref}/${candidate.id}`}
             />
           ))}
-          {surface === 'hardware' && (
-            <>
-              <ListItem href="/controller/rear" label="Rear connections" description="Audio, microphones, power, dual USB routing, safe changeovers, and setup recipes" />
-              <ListItem href="/controller/front" label="Front headphones" description="The shared cue bus and its two headphone plug sizes" />
-            </>
-          )}
         </List>
       )}
       {activeSection === undefined && surface === 'software' && unavailableSections.length > 0 && (
@@ -562,7 +655,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             : 'Muted zone names are orientation only; their lesson routes are not published yet.'}
         </Text>
       )}
-      {activeSection === undefined && surface === 'hardware' && !isNarrow && (
+      {activeSection === undefined && surface === 'hardware' && !isNarrow && false && (
         <List
           hasDividers
           header={<Text type="label">Connections beyond the overhead view</Text>}
@@ -579,7 +672,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           />
           </List>
       )}
-      {showControlIndex && activeSection && (
+      {showControlIndex && activeSection && !isHardwareSection && (
         <div className={styles.controlIndex}>
           <ControlIndex
             controls={controls}
@@ -590,7 +683,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           />
         </div>
       )}
-      {(detailAssets.length > 0 || tutorialVideos.length > 0) && (
+      {!isHardwareSection && (detailAssets.length > 0 || tutorialVideos.length > 0) && (
         <details className={styles.supportingDetails}>
           <summary>
             {detailAssets.length > 0 && tutorialVideos.length > 0

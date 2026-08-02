@@ -78,14 +78,7 @@ export default async function ControllerSectionPage({
             </Text>
           </>
         ) : (
-          <>
-            <PageBreadcrumbs items={[
-              {label: 'Start Djing', href: '/'},
-              {label: 'Controller', href: '/controller'},
-              {label: section!.label},
-            ]} />
-            <SurfaceView surface="hardware" sectionId={section!.id} />
-          </>
+          <SurfaceView surface="hardware" sectionId={section!.id} />
         )}
       </Stack>
     </PageFrame>
