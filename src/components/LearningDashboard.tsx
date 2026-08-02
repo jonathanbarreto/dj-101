@@ -27,7 +27,7 @@ export function LearningDashboard() {
 
       <Grid columns={{minWidth: 260, repeat: 'fit'}} gap={4} align="start" className={styles.learningGrid}>
         <ClickableCard
-          href="/controller"
+          href="/gear"
           label="Learn the gear"
           padding={0}
           className={styles.learningCard}
@@ -47,7 +47,7 @@ export function LearningDashboard() {
             <Text as="p" color="secondary" textWrap="pretty">
               Build muscle memory across the DDJ-1000, then connect each control to rekordbox 7 Performance mode.
             </Text>
-            <Text type="label" color="accent">Start with the controller →</Text>
+            <Text type="label" color="accent">Choose a gear lesson →</Text>
           </Stack>
         </ClickableCard>
 

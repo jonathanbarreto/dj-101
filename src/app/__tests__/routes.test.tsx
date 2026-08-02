@@ -3,6 +3,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {notFound} from 'next/navigation';
 import Home from '../page';
 import ControllerPage from '../controller/page';
+import GearPage from '../gear/page';
 import ControllerSectionPage, {
   generateStaticParams as controllerParams,
 } from '../controller/[section]/page';
@@ -43,11 +44,20 @@ describe('routes', () => {
     expect(screen.getByRole('heading', {name: 'Mixed'})).toBeDefined();
     expect(screen.getByText(/Learn the controls where they live/i)).toBeDefined();
     expect(screen.getByRole('link', {name: 'Learn the gear'}).getAttribute('href'))
-      .toBe('/controller');
+      .toBe('/gear');
     expect(screen.getByRole('link', {name: 'Mixing Tutorials'}).getAttribute('href'))
       .toBe('/mixing-tutorials');
     expect(screen.getByTestId('page-frame')).toBeDefined();
     expect(screen.queryByRole('main')).toBeNull();
+  });
+
+  it('offers the two gear learning destinations from the gear hub', () => {
+    render(<GearPage />);
+    expect(screen.getByRole('heading', {name: 'Choose your starting point'})).toBeDefined();
+    expect(screen.getByRole('link', {name: 'Explore the DDJ-1000'}).getAttribute('href'))
+      .toBe('/controller');
+    expect(screen.getByRole('link', {name: 'Get to know rekordbox 7'}).getAttribute('href'))
+      .toBe('/rekordbox');
   });
 
   it('renders the overview page titles', () => {

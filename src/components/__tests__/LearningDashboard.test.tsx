@@ -8,7 +8,7 @@ describe('LearningDashboard', () => {
     render(<LearningDashboard />);
 
     expect(screen.getByRole('link', {name: 'Learn the gear'}).getAttribute('href'))
-      .toBe('/controller');
+      .toBe('/gear');
     expect(screen.getByRole('link', {name: 'Mixing Tutorials'}).getAttribute('href'))
       .toBe('/mixing-tutorials');
 
