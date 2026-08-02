@@ -58,6 +58,7 @@ describe('SiteShell', () => {
   it('marks product routes active including their nested pages', () => {
     expect(isRouteActive('/rekordbox/rb-deck', '/rekordbox')).toBe(true);
     expect(isRouteActive('/rekordbox/rb-deck', '/controller')).toBe(false);
+    expect(isRouteActive('/mixing-tutorials', '/mixing-tutorials')).toBe(true);
   });
 
   it('uses the native Astryx mobile drawer and closes it on navigation', async () => {
@@ -75,6 +76,15 @@ describe('SiteShell', () => {
     drawerLink.addEventListener('click', (event) => event.preventDefault(), {once: true});
     await user.click(drawerLink);
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('includes Mixing Tutorials in the primary navigation', async () => {
+    const user = userEvent.setup();
+    render(<SiteShell><div>Lesson</div></SiteShell>);
+    await user.click(screen.getByRole('button', {name: 'Open navigation'}));
+    const drawer = screen.getAllByRole('dialog')[0];
+    expect(within(drawer).getByRole('link', {name: 'Mixing Tutorials'}).getAttribute('href'))
+      .toBe('/mixing-tutorials');
   });
 
   it('renders the required attribution and scope footer', () => {

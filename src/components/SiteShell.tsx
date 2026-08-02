@@ -8,6 +8,7 @@ import {SiteFooter} from './SiteFooter';
 const NAV_ITEMS = [
   {label: 'Controller', href: '/controller'},
   {label: 'rekordbox 7', href: '/rekordbox'},
+  {label: 'Mixing Tutorials', href: '/mixing-tutorials'},
   {label: 'Reference', href: '/reference'},
 ] as const;
 
