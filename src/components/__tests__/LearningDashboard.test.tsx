@@ -42,12 +42,7 @@ describe('LearningDashboard', () => {
     const referenceLibrary = screen.getByRole('list', {name: 'Reference library'});
     const links = within(referenceLibrary).getAllByRole('link');
 
-    expect(links).toHaveLength(4);
-    expect(links.map((link) => link.getAttribute('href'))).toEqual([
-      '/reference/beat-fx',
-      '/reference/sound-color-fx',
-      '/reference/eq-mixing',
-      '/reference/phrase-mixing',
-    ]);
+    expect(links).toHaveLength(1);
+    expect(links[0].getAttribute('href')).toBe('/reference');
   });
 });

@@ -168,6 +168,7 @@ describe('production release integrity', () => {
       'http://localhost:3000/controller/front',
       'http://localhost:3000/rekordbox',
       'http://localhost:3000/rekordbox/rb-deck',
+      'http://localhost:3000/reference',
       'http://localhost:3000/reference/beat-fx',
       'http://localhost:3000/reference/sound-color-fx',
       'http://localhost:3000/reference/eq-mixing',

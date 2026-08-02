@@ -14,7 +14,7 @@ export function SiteFooter() {
             <Link href="/controller" isStandalone>Controller</Link>
             <Link href="/rekordbox" isStandalone>rekordbox 7</Link>
             <Link href="/mixing-tutorials" isStandalone>Mixing Tutorials</Link>
-            <Link href="/reference/beat-fx" isStandalone>Reference</Link>
+            <Link href="/reference" isStandalone>Reference</Link>
           </Stack>
           <Stack direction="horizontal" gap={3} wrap="wrap" as="nav" aria-label="Quick references">
             <Text type="label" color="secondary">Quick references</Text>

@@ -13,6 +13,7 @@ export function LearningDashboard() {
       <Stack direction="vertical" gap={3} maxWidth="760px">
         <Text type="label" color="accent">DDJ-1000 + rekordbox 7 learning hub</Text>
         <Heading level={1} type="display-1">Mixed</Heading>
+        <Heading level={2} type="display-2">Learn the gear. Then make better mixes.</Heading>
         <Text type="large" as="p" textWrap="pretty">
           Learn the controls where they live, then connect each move to what you hear and see. Mixed gives you two focused ways in: learn the gear, or start practicing your mix.
         </Text>
@@ -83,10 +84,7 @@ export function LearningDashboard() {
         aria-label="Reference library"
         header={<Heading level={2}>Reference library</Heading>}
       >
-        <ListItem href="/reference/beat-fx" label="Beat FX" />
-        <ListItem href="/reference/sound-color-fx" label="Sound Color FX" />
-        <ListItem href="/reference/eq-mixing" label="EQ mixing" description="Quickly make space between two tracks." />
-        <ListItem href="/reference/phrase-mixing" label="Phrase mixing" description="Line up beats, bars, and musical changes." />
+        <ListItem href="/reference" label="Browse all references" description="Effects, EQ, and phrase-mixing quick guides." />
       </List>
     </Stack>
   );

@@ -72,7 +72,7 @@ describe('SiteShell', () => {
 
     const drawers = screen.getAllByRole('dialog');
     expect(drawers).toHaveLength(1);
-    const drawerLink = within(drawers[0]).getByRole('link', {name: 'Controller'});
+    const drawerLink = within(drawers[0]).getByRole('link', {name: 'Learn the gear'});
     drawerLink.addEventListener('click', (event) => event.preventDefault(), {once: true});
     await user.click(drawerLink);
     expect(toggle.getAttribute('aria-expanded')).toBe('false');

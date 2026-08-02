@@ -13,6 +13,7 @@ export const PUBLISHED_ROUTES = [
   '/controller/front',
   '/rekordbox',
   '/rekordbox/rb-deck',
+  '/reference',
   '/reference/beat-fx',
   '/reference/sound-color-fx',
   '/reference/eq-mixing',

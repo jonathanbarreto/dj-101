@@ -89,15 +89,12 @@ describe('reference routes', () => {
     const referenceLibrary = screen.getByRole('list', {name: 'Reference library'});
     const links = within(referenceLibrary).getAllByRole('link');
 
-    expect(links).toHaveLength(4);
+    expect(links).toHaveLength(1);
     expect(links.map((link) => ({
       name: link.textContent,
       href: link.getAttribute('href'),
     }))).toEqual([
-      {name: 'Beat FX', href: '/reference/beat-fx'},
-      {name: 'Sound Color FX', href: '/reference/sound-color-fx'},
-      {name: 'EQ mixingQuickly make space between two tracks.', href: '/reference/eq-mixing'},
-      {name: 'Phrase mixingLine up beats, bars, and musical changes.', href: '/reference/phrase-mixing'},
+      {name: 'Browse all referencesEffects, EQ, and phrase-mixing quick guides.', href: '/reference'},
     ]);
   });
 });

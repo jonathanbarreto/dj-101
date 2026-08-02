@@ -6,8 +6,7 @@ import {usePathname} from 'next/navigation';
 import {SiteFooter} from './SiteFooter';
 
 const NAV_ITEMS = [
-  {label: 'Controller', href: '/controller'},
-  {label: 'rekordbox 7', href: '/rekordbox'},
+  {label: 'Learn the gear', href: '/gear'},
   {label: 'Mixing Tutorials', href: '/mixing-tutorials'},
   {label: 'Reference', href: '/reference'},
 ] as const;
@@ -22,7 +21,7 @@ export function SiteShell({children}: {children: React.ReactNode}) {
     <TopNavItem
       key={item.href}
       label={item.label}
-      href={item.href === '/reference' ? '/reference/beat-fx' : item.href}
+      href={item.href}
       isSelected={isRouteActive(pathname, item.href)}
     />
   ));
