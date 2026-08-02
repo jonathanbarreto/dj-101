@@ -70,10 +70,10 @@ describe('routes', () => {
     expect(screen.queryByRole('main')).toBeNull();
   });
 
-  it('uses SurfaceView orientation for map and taught-section routes without duplicate breadcrumbs', async () => {
+  it('uses SurfaceView orientation and breadcrumbs across controller and rekordbox routes', async () => {
     const controller = render(<ControllerPage />);
     expect(screen.getByRole('navigation', {name: 'Surface orientation'})).toBeDefined();
-    expect(screen.queryByRole('navigation', {name: 'Breadcrumb'})).toBeNull();
+    expect(screen.getByRole('navigation', {name: 'Breadcrumb'})).toBeDefined();
     expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1);
     controller.unmount();
 

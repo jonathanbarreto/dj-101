@@ -53,6 +53,29 @@ import {tutorialVideosForLesson} from '@/content/videos';
 
 const FULL: Rect = {x: 0, y: 0, w: 1, h: 1};
 
+const SECTION_PROMPTS: Partial<Record<SectionId, {goal: string; cue: string}>> = {
+  'deck-left': {
+    goal: 'Learn how one side moves between transport, cueing, and phrase control.',
+    cue: 'Start with jog mode awareness, then build one phrase-long transition before touching multiple knobs.',
+  },
+  'deck-right': {
+    goal: 'Mirror deck flow and compare behavior with the left side under load.',
+    cue: 'Use deck-to-deck symmetry in the same phrase to keep channel timing honest during swaps.',
+  },
+  mixer: {
+    goal: 'Understand gain structure before creative moves so you never chase clipping.',
+    cue: 'Set trim, routing, and one level first; add EQ and effects only after a clean gain structure is set.',
+  },
+  fx: {
+    goal: 'Choose and tune effects only after the phrase transition is already set.',
+    cue: 'Prepare route, rate, and depth while tracks are aligned, then switch on at the exact transfer point.',
+  },
+  browser: {
+    goal: 'Prepare source material quickly without losing visual focus on mix flow.',
+    cue: 'Move between source, cue, and loop planning before you open hardware-level changes.',
+  },
+};
+
 export interface SurfaceViewProps {
   surface: Surface;
   sectionId?: SectionId;
@@ -81,6 +104,8 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const isDeck = isDeckSection(sectionId);
   const isNarrow = useMediaQuery('(max-width: 767px)', false);
   const regionNavRef = useRef<HTMLDivElement>(null);
+  const sectionPrompt = section?.id === undefined ? undefined : SECTION_PROMPTS[section.id];
+
   const allControls = useMemo(
     () => (section === undefined ? [] : controlsInSection(section.id)),
     [section],
@@ -230,29 +255,6 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   return (
     <Stack direction="vertical" gap={3} xstyle={undefined}>
       {surface === 'hardware' ? <ShiftToggle /> : null}
-      {section && (
-        <Text as="p" type="supporting" textWrap="pretty">
-          Choose a region to narrow the map, then select a control to read what it does,
-          how it behaves, and when to reach for it.
-        </Text>
-      )}
-      {sectionId === 'browser' && <Text>{browserSectionIntro}</Text>}
-      {sectionId === 'fx' && (
-        <Stack direction="vertical" gap={2}>
-          <Text>
-            Prepare Beat FX in signal order: choose the effect, route its target, set the
-            beat or parameter, start LEVEL/DEPTH low, then switch it on at the phrase.
-          </Text>
-          <Stack direction="horizontal" gap={3} wrap="wrap">
-            <Link href="/reference/beat-fx" isStandalone>
-              Compare all 14 Beat FX →
-            </Link>
-            <Link href="/reference/sound-color-fx" isStandalone>
-              Sound Color FX directions →
-            </Link>
-          </Stack>
-        </Stack>
-      )}
       <div ref={regionNavRef}>
         <SurfaceNavigator
           surface={surface}
@@ -365,8 +367,47 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                   ? getRbDeckMarkerOffset(control.id, isNarrow)
                   : undefined}
               />
-            ))}
+              ))}
       </Stage>
+      {section && (
+        <Stack direction="vertical" gap={2}>
+          <Text as="p" type="supporting" textWrap="pretty">
+            Choose a region to narrow the map, then select a control to read what it does,
+            how it behaves, and when to reach for it.
+          </Text>
+          <div>
+            <Text type="label" color="accent">Learning focus</Text>
+            <Text as="p" textWrap="pretty">
+              {sectionPrompt?.goal
+                ?? `Focus on ${section.label} controls and what they change in context.`}
+            </Text>
+          </div>
+          {sectionPrompt?.cue ? (
+            <Text type="supporting" color="secondary">{sectionPrompt.cue}</Text>
+          ) : (
+            <Text type="supporting" color="secondary">
+              Learn one control, practice one transition in it, then move to the next control.
+            </Text>
+          )}
+        </Stack>
+      )}
+      {sectionId === 'browser' && <Text>{browserSectionIntro}</Text>}
+      {sectionId === 'fx' && (
+        <Stack direction="vertical" gap={2}>
+          <Text>
+            Prepare Beat FX in signal order: choose the effect, route its target, set the
+            beat or parameter, start LEVEL/DEPTH low, then switch it on at the phrase.
+          </Text>
+          <Stack direction="horizontal" gap={3} wrap="wrap">
+            <Link href="/reference/beat-fx" isStandalone>
+              Compare all 14 Beat FX →
+            </Link>
+            <Link href="/reference/sound-color-fx" isStandalone>
+              Sound Color FX directions →
+            </Link>
+          </Stack>
+        </Stack>
+      )}
       <ControlLessonDialog
         control={selectedControl}
         isShiftActive={isShiftActive}
