@@ -6,6 +6,7 @@ import type {Control, Point, Rect} from '@/content/types';
 import {isVisible, toViewport} from '@/lib/geometry';
 import {ControlPreview} from './ControlPreview';
 import {HotspotMarker} from './HotspotMarker';
+import styles from './Hotspot.module.css';
 
 export interface HotspotProps {
   control: Control;
@@ -89,20 +90,23 @@ export function Hotspot({
         />}
       >
         {(triggerProps) => (
-          <HotspotMarker
-            markerRef={(node) => {
-              triggerRef.current = node;
-              if (typeof triggerProps.ref === 'function') triggerProps.ref(node);
-            }}
-            onClick={() => {
-              onPreviewOpenChange?.(true, triggerRef.current);
-            }}
-            aria-haspopup={triggerProps['aria-haspopup']}
-            aria-expanded={triggerProps['aria-expanded']}
-            aria-controls={triggerProps['aria-controls']}
-            aria-label={label}
-            isOpen={(isPreviewOpen ?? isOpen ?? false) && (isSelected ?? true)}
-          />
+          <>
+            <HotspotMarker
+              markerRef={(node) => {
+                triggerRef.current = node;
+                if (typeof triggerProps.ref === 'function') triggerProps.ref(node);
+              }}
+              onClick={() => {
+                onPreviewOpenChange?.(true, triggerRef.current);
+              }}
+              aria-haspopup={triggerProps['aria-haspopup']}
+              aria-expanded={triggerProps['aria-expanded']}
+              aria-controls={triggerProps['aria-controls']}
+              aria-label={label}
+              isOpen={(isPreviewOpen ?? isOpen ?? false) && (isSelected ?? true)}
+            />
+            <span className={styles.label} aria-hidden="true">{label}</span>
+          </>
         )}
       </Popover>
     </div>

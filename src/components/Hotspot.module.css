@@ -1,0 +1,28 @@
+.label {
+  position: absolute;
+  top: 1.55rem;
+  left: 0;
+  z-index: 1;
+  max-inline-size: 13rem;
+  padding: var(--spacing-1) var(--spacing-2);
+  border: var(--border-width) solid color-mix(in srgb, var(--color-border) 78%, transparent);
+  border-radius: var(--radius-element);
+  background: color-mix(in srgb, var(--color-background-surface) 94%, transparent);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-primary);
+  font-size: var(--text-label-size);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+  transform: translateX(-50%);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+@media (max-width: 47.99rem) {
+  .label {
+    max-inline-size: 10rem;
+    font-size: var(--text-supporting-size);
+  }
+}

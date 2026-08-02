@@ -104,7 +104,7 @@ const SECTION_AREAS: Partial<Record<SectionId, SectionArea[]>> = {
     {id: 'color-fx', label: 'Color FX', at: {x: 0.37, y: 0.49}, rect: {x: 0.32, y: 0.42, w: 0.15, h: 0.24}, controlIds: ['mixer-sound-color-fx-select', 'mixer-ch1-color']},
     {id: 'headphone-cue', label: 'Headphone cue', at: {x: 0.37, y: 0.74}, rect: {x: 0.31, y: 0.55, w: 0.16, h: 0.36}, controlIds: ['mixer-ch1-cue', 'mixer-headphones-mixing', 'mixer-headphones-level']},
     {id: 'master-booth', label: 'Master & booth', at: {x: 0.62, y: 0.24}, rect: {x: 0.58, y: 0.04, w: 0.11, h: 0.43}, controlIds: ['mixer-master-level', 'mixer-master-meter-clip', 'mixer-booth-monitor', 'mixer-master-cue']},
-    {id: 'crossfader', label: 'Crossfader', at: {x: 0.5, y: 0.93}, rect: {x: 0.42, y: 0.72, w: 0.2, h: 0.26}, controlIds: ['mixer-crossfader', 'mixer-ch1-crossfader-assign', 'mixer-ch2-crossfader-assign']},
+    {id: 'crossfader', label: 'Crossfader', at: {x: 0.5, y: 0.93}, rect: {x: 0.34, y: 0.68, w: 0.34, h: 0.3}, controlIds: ['mixer-crossfader', 'mixer-ch1-crossfader-assign', 'mixer-ch2-crossfader-assign']},
     {id: 'beat-fx', label: 'Beat FX', at: {x: 0.62, y: 0.76}, rect: {x: 0.56, y: 0.48, w: 0.13, h: 0.49}, controlIds: [], targetSectionId: 'fx'},
   ],
   fx: [
@@ -297,7 +297,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (mixerRegion) setActiveMixerRegionId(mixerRegion.id);
     if (deckRegion) setActiveDeckRegionId(deckRegion.id);
     if (isHardwareSection && activeSection) {
-      const focusedRect = rbRegion
+      const regionRect = rbRegion
         ? getRbDeckVisualRect(rbRegion.id, isNarrow)
         : mixerRegion
           ? getMixerVisualRect(mixerRegion.id, isNarrow)
@@ -306,6 +306,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               ? getDeckVisualRect(deckRegion.id, activeSection.id as 'deck-left' | 'deck-right')
               : activeSection.rect
             : activeSection.rect;
+      const focusedRect = selectedArea?.rect ?? regionRect;
       setCrop({sectionId: activeSection.id, rect: focusedRect});
     }
     setSelectedControlId(control.id);
@@ -319,7 +320,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       }
     }
     return true;
-  }, [activeSection, allControls, isDeck, isHardwareSection, isMixer, isNarrow, isRbDeck, sectionId, surface]);
+  }, [activeSection, allControls, isDeck, isHardwareSection, isMixer, isNarrow, isRbDeck, sectionId, selectedArea?.rect, surface]);
 
   useEffect(() => {
     setCrop({sectionId: activeSection?.id, rect: targetRect});

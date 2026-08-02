@@ -1,15 +1,20 @@
 .preview {
   display: grid;
-  min-inline-size: min(22rem, calc(100vw - 2 * var(--spacing-4)));
-  gap: var(--spacing-4);
-  padding: var(--spacing-5);
-  line-height: 1.45;
+  inline-size: min(20rem, calc(100vw - 2 * var(--spacing-4)));
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-surface);
+  box-shadow: var(--shadow-lg);
+  line-height: 1.5;
 }
 
 .physicalAction {
   margin-block: 0;
   padding: var(--spacing-3);
   border-inline-start: var(--border-width) solid var(--color-accent);
+  border-radius: var(--radius-element);
   background: var(--color-background-muted);
   display: -webkit-box;
   overflow: hidden;
