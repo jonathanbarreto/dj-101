@@ -3,11 +3,15 @@
 }
 
 .learningGrid {
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .learningCard {
   overflow: hidden;
+}
+
+.referenceCard {
+  min-block-size: 100%;
 }
 
 .masterImage {

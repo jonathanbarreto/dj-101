@@ -7,10 +7,10 @@ describe('LearningDashboard', () => {
   it('presents the two visual learning paths from the existing master images', () => {
     render(<LearningDashboard />);
 
-    expect(screen.getByRole('link', {name: 'Learn the controller'}).getAttribute('href'))
+    expect(screen.getByRole('link', {name: 'Learn the gear'}).getAttribute('href'))
       .toBe('/controller');
-    expect(screen.getByRole('link', {name: 'Learn rekordbox 7'}).getAttribute('href'))
-      .toBe('/rekordbox');
+    expect(screen.getByRole('link', {name: 'Mixing Tutorials'}).getAttribute('href'))
+      .toBe('/mixing-tutorials');
 
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(2);

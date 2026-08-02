@@ -8,24 +8,24 @@ import {getSiteUrl} from '@/lib/site-url';
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
   title: {
-    default: 'dj-101 — DDJ-1000 & rekordbox 7',
-    template: '%s — dj-101',
+    default: 'Mixed — DDJ-1000 & rekordbox 7',
+    template: '%s — Mixed',
   },
-  applicationName: 'dj-101',
+  applicationName: 'Mixed',
   description:
     'An interactive guide to the Pioneer DDJ-1000 and rekordbox 7 — what every control does and when to reach for it.',
   alternates: {canonical: '/'},
   icons: {icon: '/icon.svg'},
   openGraph: {
     type: 'website',
-    siteName: 'dj-101',
-    title: 'dj-101 — DDJ-1000 & rekordbox 7',
+    siteName: 'Mixed',
+    title: 'Mixed — DDJ-1000 & rekordbox 7',
     description: 'Learn what every DDJ-1000 and rekordbox 7 Performance mode control does, when to use it, and why.',
     url: '/',
   },
   twitter: {
     card: 'summary',
-    title: 'dj-101 — DDJ-1000 & rekordbox 7',
+    title: 'Mixed — DDJ-1000 & rekordbox 7',
     description: 'A practical, interactive guide to the DDJ-1000 and rekordbox 7 Performance mode.',
   },
 };

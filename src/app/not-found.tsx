@@ -13,7 +13,7 @@ export default function NotFound() {
           This lesson does not exist, or its control has moved. Return to the
           guide and choose a controller or rekordbox surface.
         </Text>
-        <Link href="/" isStandalone>Return to dj-101 →</Link>
+        <Link href="/" isStandalone>Return to Mixed →</Link>
       </Stack>
     </PageFrame>
   );

@@ -20,6 +20,34 @@ interface MixingVideo {
   category: Exclude<Filter, 'all'>;
 }
 
+const TECHNIQUES = [
+  {
+    title: '01 · Basic key mixing',
+    body: 'Blend tracks in the same musical key, such as 8A → 8A. Shared tonal centers keep melodies, chords, and basslines sounding like one continuous story.',
+    use: 'Best for warm-ups, long transitions, melodic house, progressive, trance, and radio-style mixes.',
+  },
+  {
+    title: '02 · Adjacent key mixing',
+    body: 'Move one step around the Camelot Wheel (8A → 7A or 9A), or switch between relative minor and major (8A ↔ 8B). The notes stay close while the emotional color shifts.',
+    use: 'Use it to brighten, deepen, or gently change mood without a harmonic jolt.',
+  },
+  {
+    title: '03 · Power block mixing',
+    body: 'Use compatible keys and energy levels to move quickly between hooks instead of playing full intros and outros. Cue the memorable phrases and make each short blend deliberate.',
+    use: 'A high-impact approach for club and festival moments when the dancefloor needs constant momentum.',
+  },
+  {
+    title: '04 · Live mashup remixing',
+    body: 'Layer vocals, instrumentals, hot cues, and loops across decks, then use echo, reverb, or filters to make the hand-off feel intentional. Keep phrases aligned before adding complexity.',
+    use: 'Save your best experiments as recordings so you can recreate the idea later in a DAW.',
+  },
+  {
+    title: '05 · Energy boost mixing',
+    body: 'A two-semitone key lift (for example, 5A → 7A) creates tension before a drop or peak-time entrance. Treat it as a color effect, not a default rule.',
+    use: 'Try it when energy is dipping, and use a filter sweep, echo freeze, or riser to make the change feel earned.',
+  },
+];
+
 const MIXING_VIDEOS: MixingVideo[] = [
   {id: 'rpiKaf9DIDI', title: 'Mixing tutorial 01', description: 'A mixing lesson from the supplied YouTube playlist.', category: 'playlist'},
   {id: 'h0VQEEj--_U', title: 'Mixing tutorial 02', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
@@ -28,6 +56,7 @@ const MIXING_VIDEOS: MixingVideo[] = [
   {id: 'DRnYmuxv6Gs', title: 'Mixing tutorial 05', description: 'A mixing lesson from the supplied YouTube playlist.', category: 'playlist'},
   {id: 'feH8dwYoRkQ', title: 'Mixing tutorial 06', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
   {id: 'nhrHoaDzmp0', title: 'Mixing tutorial 07', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
+  {id: '23Xcgc_9eZQ', title: 'Harmonic & energy mixing techniques', description: 'Five practical approaches: same-key blends, adjacent keys, power blocks, live mashups, and energy lifts.', category: 'standalone'},
 ];
 
 export default function MixingTutorialsPage() {
@@ -45,7 +74,7 @@ export default function MixingTutorialsPage() {
               <Section variant="transparent" maxWidth={680} padding={0}>
                 <VStack gap={4} hAlign="center" style={{textAlign: 'center'}}>
                   <VStack gap={2} hAlign="center">
-                    <Text type="label" color="accent">DJ-101 video library</Text>
+                    <Text type="label" color="accent">Mixed · video library</Text>
                     <Heading level={1}>Mixing Tutorials</Heading>
                     <Text type="body" color="secondary">
                       A focused watch list for building better transitions. Open a lesson here,
@@ -81,6 +110,28 @@ export default function MixingTutorialsPage() {
                 </article>
               ))}
             </Grid>
+
+            <Section variant="transparent" padding={0}>
+              <VStack gap={4}>
+                <VStack gap={2}>
+                  <Heading level={2}>What you’ll practice</Heading>
+                  <Text color="secondary" textWrap="pretty">
+                    Use rekordbox 7 key analysis as a starting point, then let phrasing, energy, and what you hear guide the final decision.
+                  </Text>
+                </VStack>
+                <Grid columns={{minWidth: 280, repeat: 'fit'}} gap={3}>
+                  {TECHNIQUES.map((technique) => (
+                    <article className={styles.techniqueCard} key={technique.title}>
+                      <VStack gap={2}>
+                        <Heading level={3}>{technique.title}</Heading>
+                        <Text>{technique.body}</Text>
+                        <Text type="supporting" color="secondary">{technique.use}</Text>
+                      </VStack>
+                    </article>
+                  ))}
+                </Grid>
+              </VStack>
+            </Section>
           </VStack>
         </Center>
       </div>
