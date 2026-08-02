@@ -8,12 +8,13 @@ describe('mixing tutorials route', () => {
     expect(screen.getByRole('heading', {name: 'Mixing Tutorials'})).toBeDefined();
     expect(screen.getByRole('textbox', {name: 'Search tutorials'})).toBeDefined();
     expect(screen.getByRole('button', {name: 'Playlist lessons'})).toBeDefined();
-    expect(screen.getAllByRole('article')).toHaveLength(10);
-    expect(screen.getAllByTitle(/./)).toHaveLength(10);
+    expect(screen.getAllByRole('article')).toHaveLength(11);
+    expect(screen.getAllByTitle(/./)).toHaveLength(11);
     expect(screen.getByTitle('5 Ways to Mix Between Genres').getAttribute('src'))
       .toContain('youtube-nocookie.com/embed/rpiKaf9DIDI');
     expect(screen.getByText('Looping Techniques That Change Your Mixes')).toBeDefined();
     expect(screen.getByText('7:36 · YouTube lesson')).toBeDefined();
+    expect(screen.getByText('Phrasing Can Make or Break a DJ Set')).toBeDefined();
   });
 
   it('filters the library by search and category', () => {
@@ -25,6 +26,6 @@ describe('mixing tutorials route', () => {
 
     fireEvent.change(search, {target: {value: ''}});
     fireEvent.click(screen.getByRole('button', {name: 'Playlist lessons'}));
-    expect(screen.getAllByRole('article')).toHaveLength(3);
+    expect(screen.getAllByRole('article')).toHaveLength(4);
   });
 });

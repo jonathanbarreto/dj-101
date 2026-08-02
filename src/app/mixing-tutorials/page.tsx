@@ -35,6 +35,7 @@ const MIXING_VIDEOS: MixingVideo[] = [
   {id: '23Xcgc_9eZQ', title: '5 Ways to Mix in Key', description: 'Learn same-key, adjacent-key, power-block, mashup, and energy-lift ideas for more musical transitions.', category: 'standalone', duration: '22:14'},
   {id: 'j9Ky8zpsqvY', title: 'Looping Techniques That Change Your Mixes', description: 'Use loops with intention to extend phrases, create tension, and make transitions feel more controlled.', category: 'standalone', duration: '7:36'},
   {id: 'znNKYw0nKII', title: 'Creative DJ Sets on the DDJ-1000', description: 'Explore performance techniques that turn the DDJ-1000 into a more expressive instrument.', category: 'playlist', duration: '10:33'},
+  {id: 'Kn_1BSsz4Vw', title: 'Phrasing Can Make or Break a DJ Set', description: 'Learn how musical phrases are structured and where to bring in, blend, and exit a track so transitions feel natural.', category: 'playlist', duration: '9:24'},
 ];
 
 export default function MixingTutorialsPage() {
