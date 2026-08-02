@@ -13,6 +13,8 @@ import {
   type ConnectionPanel,
 } from '@/content/hardware/connections';
 import styles from './ConnectionLessons.module.css';
+import {DetailGallery} from './DetailGallery';
+import {detailAssetsForLesson} from '@/content/assets';
 
 interface ConnectionRow extends Record<string, unknown> {
   id: string;
@@ -216,6 +218,7 @@ export function ConnectionLessons({panel}: {panel: ConnectionPanel}) {
           <Text as="p">{connectionSafetyWarning}</Text>
         </Stack>
       </aside>
+      <DetailGallery assets={detailAssetsForLesson(panel)} />
       {isRear ? <RearLessons /> : <FrontLessons />}
     </Stack>
   );

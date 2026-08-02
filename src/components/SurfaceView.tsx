@@ -10,6 +10,7 @@ import {useMediaQuery} from '@astryxdesign/core/hooks';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {controlsInSection, SECTIONS} from '@/content';
 import {browserSectionIntro} from '@/content/hardware/browser';
+import {detailAssetsForLesson} from '@/content/assets';
 import {getBrowserVisualRect} from '@/content/hardware/browserVisual';
 import {
   controlsForDeckRegion,
@@ -46,6 +47,7 @@ import {ShiftProvider, useShift} from './ShiftContext';
 import {ShiftToggle} from './ShiftToggle';
 import {Stage} from './Stage';
 import styles from './SurfaceView.module.css';
+import {DetailGallery} from './DetailGallery';
 
 const FULL: Rect = {x: 0, y: 0, w: 1, h: 1};
 
@@ -240,6 +242,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             </Link>
           </Stack>
         </Stack>
+      )}
+      {sectionId !== undefined && (sectionId === 'deck-left' || sectionId === 'deck-right' || sectionId === 'mixer' || sectionId === 'fx' || sectionId === 'rb-deck') && (
+        <DetailGallery assets={detailAssetsForLesson(sectionId)} />
       )}
       <div ref={regionNavRef}>
         <SurfaceNavigator
