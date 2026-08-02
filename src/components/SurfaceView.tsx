@@ -104,6 +104,7 @@ const SECTION_AREAS: Partial<Record<SectionId, SectionArea[]>> = {
     {id: 'color-fx', label: 'Color FX', at: {x: 0.37, y: 0.49}, rect: {x: 0.32, y: 0.42, w: 0.15, h: 0.24}, controlIds: ['mixer-sound-color-fx-select', 'mixer-ch1-color']},
     {id: 'headphone-cue', label: 'Headphone cue', at: {x: 0.37, y: 0.74}, rect: {x: 0.31, y: 0.55, w: 0.16, h: 0.36}, controlIds: ['mixer-ch1-cue', 'mixer-headphones-mixing', 'mixer-headphones-level']},
     {id: 'master-booth', label: 'Master & booth', at: {x: 0.62, y: 0.24}, rect: {x: 0.58, y: 0.04, w: 0.11, h: 0.43}, controlIds: ['mixer-master-level', 'mixer-master-meter-clip', 'mixer-booth-monitor', 'mixer-master-cue']},
+    {id: 'channel-faders', label: 'Channel faders', at: {x: 0.5, y: 0.72}, rect: {x: 0.34, y: 0.56, w: 0.3, h: 0.3}, controlIds: ['mixer-ch1-fader', 'mixer-ch2-fader', 'mixer-ch3-fader', 'mixer-ch4-fader']},
     {id: 'crossfader', label: 'Crossfader', at: {x: 0.5, y: 0.93}, rect: {x: 0.34, y: 0.68, w: 0.34, h: 0.3}, controlIds: ['mixer-crossfader', 'mixer-ch1-crossfader-assign', 'mixer-ch2-crossfader-assign']},
     {id: 'beat-fx', label: 'Beat FX', at: {x: 0.62, y: 0.76}, rect: {x: 0.56, y: 0.48, w: 0.13, h: 0.49}, controlIds: [], targetSectionId: 'fx'},
   ],
@@ -129,15 +130,30 @@ interface ControllerEntryPoint {
 }
 
 const CONTROLLER_ENTRY_POINTS: ControllerEntryPoint[] = [
-  {id: 'eq', label: 'EQ', at: {x: 0.46, y: 0.34}, sectionId: 'mixer', areaId: 'eq', summary: 'Shape the frequencies of a representative channel.'},
-  {id: 'color-fx', label: 'Sound Color FX', at: {x: 0.43, y: 0.55}, sectionId: 'mixer', areaId: 'color-fx', summary: 'Choose a color effect, then add it to the channel.'},
-  {id: 'beat-fx', label: 'Beat FX', at: {x: 0.63, y: 0.68}, sectionId: 'fx', areaId: 'effect', summary: 'Choose, time, route, and perform a Beat FX.'},
-  {id: 'crossfader', label: 'Crossfader', at: {x: 0.5, y: 0.9}, sectionId: 'mixer', areaId: 'crossfader', summary: 'Assign channels, then blend or cut between them.'},
-  {id: 'master', label: 'Master volume', at: {x: 0.63, y: 0.19}, sectionId: 'mixer', areaId: 'master-booth', summary: 'Set the room and booth monitor independently.'},
-  {id: 'pads', label: 'Pads', at: {x: 0.19, y: 0.83}, sectionId: 'deck-left', areaId: 'pads', summary: 'Use performance pads, pad modes, and key controls.'},
-  {id: 'jog', label: 'Jog wheel', at: {x: 0.19, y: 0.52}, sectionId: 'deck-left', areaId: 'jog', summary: 'Control jog feel, tempo, sync, and vinyl behavior.'},
-  {id: 'loops', label: 'Loop controls', at: {x: 0.08, y: 0.12}, sectionId: 'deck-left', areaId: 'transport', summary: 'Work with loops, cue calls, and deck transport.'},
-  {id: 'deck-select', label: 'Deck select', at: {x: 0.07, y: 0.28}, sectionId: 'deck-left', areaId: 'transport', summary: 'Select the deck pair before using deck-specific controls.'},
+  {id: 'left-loop', label: 'Loop Controls', at: {x: 0.042, y: 0.08}, sectionId: 'deck-left', areaId: 'transport', summary: 'Work with loops, cue calls, and deck transport.'},
+  {id: 'left-quantize', label: 'Quantize', at: {x: 0.227, y: 0.08}, sectionId: 'deck-left', areaId: 'jog', summary: 'Keep cue and loop actions aligned to the beat grid.'},
+  {id: 'left-browser', label: 'Browser', at: {x: 0.305, y: 0.08}, sectionId: 'browser', areaId: 'browse', summary: 'Find and load the next track from the library.'},
+  {id: 'right-loop', label: 'Loop Controls', at: {x: 0.674, y: 0.08}, sectionId: 'deck-right', areaId: 'transport', summary: 'Work with loops, cue calls, and deck transport.'},
+  {id: 'right-quantize', label: 'Quantize', at: {x: 0.844, y: 0.08}, sectionId: 'deck-right', areaId: 'jog', summary: 'Keep cue and loop actions aligned to the beat grid.'},
+  {id: 'right-browser', label: 'Browser', at: {x: 0.93, y: 0.08}, sectionId: 'browser', areaId: 'browse', summary: 'Find and load the next track from the library.'},
+  {id: 'master', label: 'Master', at: {x: 0.62, y: 0.09}, sectionId: 'mixer', areaId: 'master-booth', summary: 'Set the room and booth monitor independently.'},
+  {id: 'eq', label: 'EQ', at: {x: 0.49, y: 0.28}, sectionId: 'mixer', areaId: 'eq', summary: 'Shape the frequencies of a representative channel.'},
+  {id: 'color-fx', label: 'Sound Color FX', at: {x: 0.4, y: 0.48}, sectionId: 'mixer', areaId: 'color-fx', summary: 'Choose a color effect, then add it to the channel.'},
+  {id: 'headphones', label: 'Headphones', at: {x: 0.37, y: 0.68}, sectionId: 'mixer', areaId: 'headphone-cue', summary: 'Prepare the next track privately before bringing it into the mix.'},
+  {id: 'beat-fx', label: 'Beat FX', at: {x: 0.62, y: 0.66}, sectionId: 'fx', areaId: 'effect', summary: 'Choose, time, route, and perform a Beat FX.'},
+  {id: 'channel-faders', label: 'Channel Faders', at: {x: 0.49, y: 0.72}, sectionId: 'mixer', areaId: 'channel-faders', summary: 'Set the balance of each channel in the mix.'},
+  {id: 'crossfader', label: 'Cross Fader', at: {x: 0.49, y: 0.94}, sectionId: 'mixer', areaId: 'crossfader', summary: 'Assign channels, then blend or cut between them.'},
+  {id: 'left-deck-select', label: 'Deck Select', at: {x: 0.04, y: 0.22}, sectionId: 'deck-left', areaId: 'transport', summary: 'Select the deck pair before using deck-specific controls.'},
+  {id: 'left-jog', label: 'Jog Wheel', at: {x: 0.17, y: 0.43}, sectionId: 'deck-left', areaId: 'jog', summary: 'Control jog feel, tempo, sync, and vinyl behavior.'},
+  {id: 'left-sync', label: 'Sync', at: {x: 0.31, y: 0.6}, sectionId: 'deck-left', areaId: 'jog', summary: 'Align the selected deck to the current sync master.'},
+  {id: 'left-key-sync', label: 'Key Sync', at: {x: 0.27, y: 0.77}, sectionId: 'deck-left', areaId: 'pads', summary: 'Match the musical key with the master deck.'},
+  {id: 'left-pads', label: 'Pads', at: {x: 0.17, y: 0.84}, sectionId: 'deck-left', areaId: 'pads', summary: 'Use performance pads, pad modes, and key controls.'},
+  {id: 'left-tempo', label: 'Tempo', at: {x: 0.31, y: 0.92}, sectionId: 'deck-left', areaId: 'jog', summary: 'Adjust playback speed with the tempo fader.'},
+  {id: 'right-deck-select', label: 'Deck Select', at: {x: 0.675, y: 0.22}, sectionId: 'deck-right', areaId: 'transport', summary: 'Select the deck pair before using deck-specific controls.'},
+  {id: 'right-jog', label: 'Jog Wheel', at: {x: 0.83, y: 0.43}, sectionId: 'deck-right', areaId: 'jog', summary: 'Control jog feel, tempo, sync, and vinyl behavior.'},
+  {id: 'right-sync', label: 'Sync', at: {x: 0.94, y: 0.6}, sectionId: 'deck-right', areaId: 'jog', summary: 'Align the selected deck to the current sync master.'},
+  {id: 'right-pads', label: 'Pads', at: {x: 0.83, y: 0.84}, sectionId: 'deck-right', areaId: 'pads', summary: 'Use performance pads, pad modes, and key controls.'},
+  {id: 'right-tempo', label: 'Tempo', at: {x: 0.94, y: 0.92}, sectionId: 'deck-right', areaId: 'jog', summary: 'Adjust playback speed with the tempo fader.'},
 ];
 function nextSection(currentId: SectionId): SectionId | null {
   const index = SECTION_FLOW.indexOf(currentId);
@@ -508,7 +524,11 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                     style={{left: `${entry.at.x * 100}%`, top: `${entry.at.y * 100}%`}}
                   >
                     <HotspotMarker aria-label={`Explore ${entry.label}`} onClick={() => focusEntryPoint(entry)} />
-                    <span className={styles.overviewBeaconLabel}>{entry.label}</span>
+                    <span className={[
+                      styles.overviewBeaconLabel,
+                      entry.at.x < 0.1 ? styles.overviewBeaconLabelStart : '',
+                      entry.at.x > 0.9 ? styles.overviewBeaconLabelEnd : '',
+                    ].filter(Boolean).join(' ')}>{entry.label}</span>
                   </div>
                 )) : populatedSections.map((candidate) => (
                   <div

@@ -36,13 +36,30 @@
   left: 50%;
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-element);
-  background: var(--color-background-surface);
-  box-shadow: var(--shadow-med);
+  max-inline-size: 12rem;
+  border: var(--border-width) solid color-mix(in srgb, var(--color-border) 78%, transparent);
+  background: color-mix(in srgb, var(--color-background-surface) 94%, transparent);
+  box-shadow: var(--shadow-sm);
   color: var(--color-text-primary);
   font-size: var(--text-supporting-size);
   font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
   white-space: nowrap;
   transform: translateX(-50%);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.overviewBeaconLabelStart {
+  left: 0;
+  transform: none;
+}
+
+.overviewBeaconLabelEnd {
+  right: 0;
+  left: auto;
+  transform: none;
 }
 
 .beaconPopover {

@@ -20,7 +20,7 @@ export function Stage({surface, rect, children}: StageProps) {
   const isOverview = rect.x === 0 && rect.y === 0 && rect.w === 1 && rect.h === 1;
 
   return (
-    <div className={styles.stage} data-testid="stage" data-stable-stage="true">
+    <div className={styles.stage} data-testid="stage" data-stable-stage="true" data-surface={surface}>
       <div
         className={styles.canvas}
         data-testid="stage-canvas"

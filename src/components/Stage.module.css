@@ -10,6 +10,11 @@
   border-radius: var(--radius-container);
 }
 
+.stage[data-surface='hardware'] {
+  block-size: clamp(26rem, 70dvh, 58rem);
+  min-block-size: clamp(26rem, 70dvh, 58rem);
+}
+
 .canvas {
   position: relative;
   inline-size: min(100cqi, calc(100cqb * var(--crop-aspect-ratio)));
@@ -59,6 +64,11 @@
   .stage {
     block-size: clamp(16rem, 44dvh, 28rem);
     min-block-size: clamp(16rem, 44dvh, 28rem);
+  }
+
+  .stage[data-surface='hardware'] {
+    block-size: clamp(20rem, 58dvh, 34rem);
+    min-block-size: clamp(20rem, 58dvh, 34rem);
   }
 }
 
