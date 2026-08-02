@@ -7,7 +7,7 @@ describe('mixing tutorials route', () => {
     render(<MixingTutorialsPage />);
     expect(screen.getByRole('heading', {name: 'Mixing Tutorials'})).toBeDefined();
     expect(screen.getByRole('textbox', {name: 'Search tutorials'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'Playlist lessons'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Mixing basics'})).toBeDefined();
     expect(screen.getAllByRole('article')).toHaveLength(11);
     expect(screen.getAllByTitle(/./)).toHaveLength(11);
     expect(screen.getByTitle('5 Ways to Mix Between Genres').getAttribute('src'))
@@ -25,7 +25,7 @@ describe('mixing tutorials route', () => {
     expect(screen.getByText('Looping Techniques That Change Your Mixes')).toBeDefined();
 
     fireEvent.change(search, {target: {value: ''}});
-    fireEvent.click(screen.getByRole('button', {name: 'Playlist lessons'}));
-    expect(screen.getAllByRole('article')).toHaveLength(4);
+    fireEvent.click(screen.getByRole('button', {name: 'Mixing basics'}));
+    expect(screen.getAllByRole('article')).toHaveLength(5);
   });
 });
