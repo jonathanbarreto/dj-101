@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   alternates: {canonical: '/controller'},
   openGraph: {
     type: 'website',
-    siteName: 'Mixed',
+    siteName: 'Start Djing',
     title: 'Pioneer DJ DDJ-1000',
     description: 'Explore every taught section of the DDJ-1000, from both decks and the four-channel mixer to effects, browsing, and connections.',
     url: '/controller',

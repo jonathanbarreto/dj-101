@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Reference library',
   description: 'Quick references for DDJ-1000 effects, EQ mixing, and phrase mixing in rekordbox 7.',
   alternates: {canonical: '/reference'},
-  openGraph: {type: 'website', siteName: 'Mixed', title: 'Reference library', description: 'Quick references for DDJ-1000 effects, EQ mixing, and phrase mixing in rekordbox 7.', url: '/reference'},
+  openGraph: {type: 'website', siteName: 'Start Djing', title: 'Reference library', description: 'Quick references for DDJ-1000 effects, EQ mixing, and phrase mixing in rekordbox 7.', url: '/reference'},
 };
 
 const REFERENCES = [

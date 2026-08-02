@@ -73,7 +73,7 @@ export async function generateMetadata({params}: {params: Promise<{topic: string
     title,
     description,
     alternates: {canonical: url},
-    openGraph: {type: 'article', siteName: 'Mixed', title, description, url},
+    openGraph: {type: 'article', siteName: 'Start Djing', title, description, url},
   };
 }
 
@@ -251,7 +251,7 @@ export default async function ReferencePage({
     <PageFrame>
       <Stack direction="vertical" gap={6}>
         <PageBreadcrumbs items={[
-          {label: 'Mixed', href: '/'},
+          {label: 'Start Djing', href: '/'},
           {label: 'Reference', href: '/reference/beat-fx'},
           {label: TOPIC_LABELS[topic]},
         ]} />

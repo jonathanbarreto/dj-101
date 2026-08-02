@@ -10,7 +10,7 @@ export function SiteFooter() {
       <PageFrame>
         <Stack direction="vertical" gap={3} xstyle={undefined}>
           <Stack direction="horizontal" gap={3} wrap="wrap" as="nav" aria-label="Footer">
-            <Link href="/" isStandalone>Mixed</Link>
+            <Link href="/" isStandalone>Start Djing</Link>
             <Link href="/controller" isStandalone>Controller</Link>
             <Link href="/rekordbox" isStandalone>rekordbox 7</Link>
             <Link href="/mixing-tutorials" isStandalone>Mixing Tutorials</Link>

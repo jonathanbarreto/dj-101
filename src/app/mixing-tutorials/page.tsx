@@ -71,7 +71,7 @@ export default function MixingTutorialsPage() {
               <Section variant="transparent" maxWidth={680} padding={0}>
                 <VStack gap={4} hAlign="center" style={{textAlign: 'center'}}>
                   <VStack gap={2} hAlign="center">
-                    <Text type="label" color="accent">Mixed · video library</Text>
+                    <Text type="label" color="accent">Start Djing · video library</Text>
                     <Heading level={1}>Mixing Tutorials</Heading>
                     <Text type="body" color="secondary">
                       Choose a focused session, then practice one move at a time. Every lesson opens in place so you can learn without losing your path.

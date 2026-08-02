@@ -37,7 +37,7 @@ export async function generateMetadata({params}: {params: Promise<{section: stri
     alternates: {canonical: url},
     openGraph: {
       type: 'article',
-      siteName: 'Mixed',
+      siteName: 'Start Djing',
       title: `${label} — DDJ-1000`,
       description,
       url,
@@ -68,7 +68,7 @@ export default async function ControllerSectionPage({
         {connectionPanel ? (
           <>
             <PageBreadcrumbs items={[
-              {label: 'Mixed', href: '/'},
+              {label: 'Start Djing', href: '/'},
               {label: 'Controller', href: '/controller'},
               {label: connectionPanel.label},
             ]} />

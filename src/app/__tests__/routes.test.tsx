@@ -41,8 +41,8 @@ describe('routes', () => {
   it('renders the visual learning dashboard inside the shared page frame', () => {
     render(<Home />);
 
-    expect(screen.getByRole('heading', {name: 'Mixed'})).toBeDefined();
-    expect(screen.getByText(/Learn the controls where they live/i)).toBeDefined();
+    expect(screen.getByRole('heading', {name: 'Start Djing'})).toBeDefined();
+    expect(screen.getByText(/Practical lessons for the DDJ-1000/i)).toBeDefined();
     expect(screen.getByRole('link', {name: 'Learn the gear'}).getAttribute('href'))
       .toBe('/gear');
     expect(screen.getByRole('link', {name: 'Mixing Tutorials'}).getAttribute('href'))
@@ -168,7 +168,7 @@ describe('routes', () => {
   it('renders a polished not-found recovery path', () => {
     render(<NotFound />);
     expect(screen.getByRole('heading', {name: /lost the beat/i})).toBeDefined();
-    expect(screen.getByRole('link', {name: /return to Mixed/i}).getAttribute('href'))
+    expect(screen.getByRole('link', {name: /return to Start Djing/i}).getAttribute('href'))
       .toBe('/');
   });
 

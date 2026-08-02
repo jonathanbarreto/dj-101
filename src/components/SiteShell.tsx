@@ -36,7 +36,7 @@ export function SiteShell({children}: {children: React.ReactNode}) {
         topNav={(
           <TopNav
             label="Primary navigation"
-            heading={<TopNavHeading heading="Mixed" headingHref="/" />}
+            heading={<TopNavHeading heading="Start Djing" headingHref="/" />}
             startContent={navItems}
           />
         )}

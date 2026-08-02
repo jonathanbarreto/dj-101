@@ -26,7 +26,7 @@ export async function generateMetadata({params}: {params: Promise<{section: stri
     title,
     description,
     alternates: {canonical: url},
-    openGraph: {type: 'article', siteName: 'Mixed', title, description, url},
+    openGraph: {type: 'article', siteName: 'Start Djing', title, description, url},
   };
 }
 

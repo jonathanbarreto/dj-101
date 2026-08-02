@@ -11,9 +11,7 @@ export function LearningDashboard() {
   return (
     <Stack direction="vertical" gap={8} className={styles.dashboard}>
       <Stack direction="vertical" gap={3} maxWidth="760px">
-        <Text type="label" color="accent">DDJ-1000 + rekordbox 7 learning hub</Text>
-        <Heading level={1} type="display-1">Mixed</Heading>
-        <Heading level={2} type="display-2">Learn the gear. Then make better mixes.</Heading>
+        <Heading level={1} type="display-1">Start Djing</Heading>
         <Text type="large" as="p" color="secondary" textWrap="pretty">
           Practical lessons for the DDJ-1000, rekordbox 7, and the moves that make a mix flow.
         </Text>

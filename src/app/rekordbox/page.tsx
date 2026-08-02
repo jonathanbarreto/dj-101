@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   alternates: {canonical: '/rekordbox'},
   openGraph: {
     type: 'website',
-    siteName: 'Mixed',
+    siteName: 'Start Djing',
     title: 'rekordbox 7',
     description: 'Learn the rekordbox 7 Performance mode player deck and how it corresponds to the DDJ-1000 hardware.',
     url: '/rekordbox',

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   alternates: {canonical: '/gear'},
   openGraph: {
     type: 'website',
-    siteName: 'Mixed',
+    siteName: 'Start Djing',
     title: 'Learn the gear',
     description: 'Choose whether to explore the Pioneer DJ DDJ-1000 controller or get to know rekordbox 7 Performance mode.',
     url: '/gear',
