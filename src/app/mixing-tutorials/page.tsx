@@ -37,6 +37,7 @@ const MIXING_VIDEOS: MixingVideo[] = [
   {id: 'j9Ky8zpsqvY', title: 'Looping Techniques That Change Your Mixes', description: 'Use loops with intention to extend phrases, create tension, and make transitions feel more controlled.', category: 'basics', categoryLabel: 'Mixing basics · Looping', duration: '7:36'},
   {id: 'znNKYw0nKII', title: 'Creative DJ Sets on the DDJ-1000', description: 'Explore performance techniques that turn the DDJ-1000 into a more expressive instrument.', category: 'performance', categoryLabel: 'Performance', duration: '10:33'},
   {id: 'Kn_1BSsz4Vw', title: 'Phrasing Can Make or Break a DJ Set', description: 'Learn how musical phrases are structured and where to bring in, blend, and exit a track so transitions feel natural.', category: 'basics', categoryLabel: 'Mixing basics · Phrasing', duration: '9:24'},
+  {id: 'z0mFNt1ZTBw', title: '5 DJ EQ Techniques That Instantly Improve Your Mixes', description: 'Learn five practical EQ moves for clearing space, trading low end, and keeping transitions punchy without over-processing.', category: 'basics', categoryLabel: 'Mixing basics · EQing', duration: '14:17'},
 ];
 
 export default function MixingTutorialsPage() {
