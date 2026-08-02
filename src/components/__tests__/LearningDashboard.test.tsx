@@ -36,17 +36,18 @@ describe('LearningDashboard', () => {
     expect(container.querySelector('.astryx-grid')?.getAttribute('data-align')).toBe('start');
   });
 
-  it('offers the complete reference library as three direct routes', () => {
+  it('offers the practical reference library as direct routes', () => {
     render(<LearningDashboard />);
 
     const referenceLibrary = screen.getByRole('list', {name: 'Reference library'});
     const links = within(referenceLibrary).getAllByRole('link');
 
-    expect(links).toHaveLength(3);
+    expect(links).toHaveLength(4);
     expect(links.map((link) => link.getAttribute('href'))).toEqual([
       '/reference/beat-fx',
       '/reference/sound-color-fx',
-      '/reference/specs',
+      '/reference/eq-mixing',
+      '/reference/phrase-mixing',
     ]);
   });
 });

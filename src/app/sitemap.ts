@@ -15,7 +15,8 @@ export const PUBLISHED_ROUTES = [
   '/rekordbox/rb-deck',
   '/reference/beat-fx',
   '/reference/sound-color-fx',
-  '/reference/specs',
+  '/reference/eq-mixing',
+  '/reference/phrase-mixing',
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

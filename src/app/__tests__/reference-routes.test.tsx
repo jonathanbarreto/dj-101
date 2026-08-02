@@ -31,11 +31,12 @@ describe('reference routes', () => {
     );
   });
 
-  it('generates only the three published topics', () => {
+  it('generates only the practical published topics', () => {
     expect(generateStaticParams()).toEqual([
       {topic: 'beat-fx'},
       {topic: 'sound-color-fx'},
-      {topic: 'specs'},
+      {topic: 'eq-mixing'},
+      {topic: 'phrase-mixing'},
     ]);
   });
 
@@ -69,7 +70,7 @@ describe('reference routes', () => {
     expect(screen.getByRole('table').getAttribute('aria-describedby')).toBe(scrollHint.id);
   });
 
-  it('renders Sound Color FX and specifications as semantic tables', async () => {
+  it('renders Sound Color FX and quick references', async () => {
     const color = render(
       await ReferencePage({params: Promise.resolve({topic: 'sound-color-fx'})}),
     );
@@ -77,11 +78,9 @@ describe('reference routes', () => {
     expect(screen.getByRole('columnheader', {name: 'Turn left'})).toBeDefined();
     color.unmount();
 
-    render(await ReferencePage({params: Promise.resolve({topic: 'specs'})}));
-    expect(screen.getByRole('heading', {level: 1, name: 'DDJ-1000 specifications'}))
-      .toBeDefined();
-    expect(screen.getAllByRole('table').length).toBeGreaterThanOrEqual(3);
-    expect(screen.getByText(/32-bit figure is the D\/A converter/i)).toBeDefined();
+    render(await ReferencePage({params: Promise.resolve({topic: 'phrase-mixing'})}));
+    expect(screen.getByRole('heading', {level: 1, name: 'Phrase mixing'})).toBeDefined();
+    expect(screen.getByText(/Four beats make a bar/i)).toBeDefined();
   });
 
   it('makes the reference library discoverable from home', () => {
@@ -90,14 +89,15 @@ describe('reference routes', () => {
     const referenceLibrary = screen.getByRole('list', {name: 'Reference library'});
     const links = within(referenceLibrary).getAllByRole('link');
 
-    expect(links).toHaveLength(3);
+    expect(links).toHaveLength(4);
     expect(links.map((link) => ({
       name: link.textContent,
       href: link.getAttribute('href'),
     }))).toEqual([
       {name: 'Beat FX', href: '/reference/beat-fx'},
       {name: 'Sound Color FX', href: '/reference/sound-color-fx'},
-      {name: 'DDJ-1000 specifications', href: '/reference/specs'},
+      {name: 'EQ mixingQuickly make space between two tracks.', href: '/reference/eq-mixing'},
+      {name: 'Phrase mixingLine up beats, bars, and musical changes.', href: '/reference/phrase-mixing'},
     ]);
   });
 });

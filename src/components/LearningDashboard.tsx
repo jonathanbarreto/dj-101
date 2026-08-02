@@ -85,16 +85,8 @@ export function LearningDashboard() {
       >
         <ListItem href="/reference/beat-fx" label="Beat FX" />
         <ListItem href="/reference/sound-color-fx" label="Sound Color FX" />
-        <ListItem href="/reference/specs" label="DDJ-1000 specifications" />
-      </List>
-
-      <List
-        density="spacious"
-        hasDividers
-        aria-label="Continue learning"
-        header={<Heading level={2}>Continue learning</Heading>}
-      >
-        <ListItem href="/rekordbox" label="Open rekordbox 7" description="Start in Performance mode if the software is your first stop." />
+        <ListItem href="/reference/eq-mixing" label="EQ mixing" description="Quickly make space between two tracks." />
+        <ListItem href="/reference/phrase-mixing" label="Phrase mixing" description="Line up beats, bars, and musical changes." />
       </List>
     </Stack>
   );

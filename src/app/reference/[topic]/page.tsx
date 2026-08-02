@@ -11,22 +11,17 @@ import {
 } from '@astryxdesign/core/Table';
 import {beatFx} from '@/content/reference/beat-fx';
 import {soundColorFx} from '@/content/reference/sound-color-fx';
-import {
-  specifications,
-  specificationGroups,
-  type IoPort,
-  type SpecificationRow,
-} from '@/content/reference/specs';
 import styles from './ReferencePage.module.css';
 import {PageBreadcrumbs} from '@/components/PageBreadcrumbs';
 import {PageFrame} from '@/components/PageFrame';
 
-const TOPICS = ['beat-fx', 'sound-color-fx', 'specs'] as const;
+const TOPICS = ['beat-fx', 'sound-color-fx', 'eq-mixing', 'phrase-mixing'] as const;
 type ReferenceTopic = (typeof TOPICS)[number];
 const TOPIC_LABELS: Record<ReferenceTopic, string> = {
   'beat-fx': 'Beat FX',
   'sound-color-fx': 'Sound Color FX',
-  specs: 'Specifications',
+  'eq-mixing': 'EQ mixing',
+  'phrase-mixing': 'Phrase mixing',
 };
 
 interface BeatFxRow extends Record<string, unknown> {
@@ -57,19 +52,6 @@ const soundColorFxColumns: TableColumn<SoundColorFxRow>[] = [
   {key: 'turnLeft', header: 'Turn left', width: proportional(1, {minWidth: 210})},
   {key: 'center', header: 'Center', width: proportional(1, {minWidth: 180})},
   {key: 'turnRight', header: 'Turn right', width: proportional(1, {minWidth: 210})},
-];
-
-const specificationColumns: TableColumn<SpecificationRow>[] = [
-  {key: 'specification', header: 'Specification', width: proportional(1, {minWidth: 190})},
-  {key: 'value', header: 'Value', width: proportional(2, {minWidth: 280})},
-  {key: 'note', header: 'What it means', width: proportional(2, {minWidth: 260})},
-];
-
-const ioColumns: TableColumn<IoPort>[] = [
-  {key: 'name', header: 'Connection', width: proportional(2, {minWidth: 260})},
-  {key: 'count', header: 'Sets', width: pixel(80)},
-  {key: 'location', header: 'Panel', width: pixel(100)},
-  {key: 'note', header: 'Use', width: proportional(2, {minWidth: 260})},
 ];
 
 function isReferenceTopic(topic: string): topic is ReferenceTopic {
@@ -110,12 +92,8 @@ function ReferenceNav({topic}: {topic: ReferenceTopic}) {
         aria-current={topic === 'sound-color-fx' ? 'page' : undefined}>
         Sound Color FX
       </Link>
-      <Link
-        href="/reference/specs"
-        isStandalone
-        aria-current={topic === 'specs' ? 'page' : undefined}>
-        Specifications
-      </Link>
+      <Link href="/reference/eq-mixing" isStandalone aria-current={topic === 'eq-mixing' ? 'page' : undefined}>EQ mixing</Link>
+      <Link href="/reference/phrase-mixing" isStandalone aria-current={topic === 'phrase-mixing' ? 'page' : undefined}>Phrase mixing</Link>
     </Stack>
   );
 }
@@ -219,65 +197,32 @@ function SoundColorFxReference() {
   );
 }
 
-function SpecificationsReference() {
+function QuickReference({topic}: {topic: 'eq-mixing' | 'phrase-mixing'}) {
+  const isEq = topic === 'eq-mixing';
   return (
     <>
-      <ReferenceIntro title="DDJ-1000 specifications">
-        The practical hardware limits, audio figures, level ranges, and every
-        physical audio or computer connection in one place.
+      <ReferenceIntro title={isEq ? 'EQ mixing' : 'Phrase mixing'}>
+        {isEq
+          ? 'Use the three channel EQ knobs to make space, not to make the mix louder. Cut competing frequencies before boosting anything.'
+          : 'Line up the musical blocks of two tracks so beats, bars, and phrases change together. This is the fastest route to transitions that feel intentional.'}
       </ReferenceIntro>
-      <aside className={styles.callout} aria-label="Bit-depth clarification">
-        <Stack direction="vertical" gap={1}>
-          <Heading level={2}>What “32-bit” means here</Heading>
-          <Text as="p">{specifications.bitDepthCorrection}</Text>
-        </Stack>
-      </aside>
-      {specificationGroups.map((group) => (
-        <section
-          key={group.title}
-          className={styles.tableSection}
-          aria-labelledby={`spec-${group.title.toLowerCase().replaceAll(' ', '-')}`}>
-          <Stack direction="vertical" gap={3}>
-            <Heading
-              level={2}
-              id={`spec-${group.title.toLowerCase().replaceAll(' ', '-')}`}>
-              {group.title}
-            </Heading>
-            <TableScrollHint
-              id={`spec-${group.title.toLowerCase().replaceAll(' ', '-')}-scroll-hint`}
-            />
-            <Table
-              data={group.rows}
-              columns={specificationColumns}
-              idKey="specification"
-              density="balanced"
-              dividers="rows"
-              verticalAlign="top"
-              textOverflow="wrap"
-              aria-describedby={`spec-${group.title.toLowerCase().replaceAll(' ', '-')}-scroll-hint`}
-            />
-          </Stack>
-        </section>
-      ))}
-      <section className={styles.tableSection} aria-labelledby="spec-connections">
-        <Stack direction="vertical" gap={3}>
-          <Heading level={2} id="spec-connections">Inputs and outputs</Heading>
-          <Text as="p">
-            “Sets” follows the manual: one stereo RCA pair counts as one set.
-            USB A/B labels on the panel are two USB-B computer terminals.
-          </Text>
-          <TableScrollHint id="spec-connections-scroll-hint" />
-          <Table
-            data={[...specifications.io]}
-            columns={ioColumns}
-            idKey="name"
-            density="balanced"
-            dividers="rows"
-            verticalAlign="top"
-            textOverflow="wrap"
-            aria-describedby="spec-connections-scroll-hint"
-          />
-        </Stack>
+      <section className={styles.quickReference} aria-label={isEq ? 'EQ mixing rules' : 'Phrase mixing rules'}>
+        {isEq ? <>
+          <Heading level={2}>Three moves to remember</Heading>
+          <Text as="p"><strong>Low:</strong> own the kick and bass. During a blend, decide which track carries the sub energy and trim the other.</Text>
+          <Text as="p"><strong>Mid:</strong> make room for vocals, snares, and chords. If two parts fight, cut one before raising the other.</Text>
+          <Text as="p"><strong>High:</strong> control hats and brightness. Small cuts prevent harshness when both tracks are busy.</Text>
+          <Heading level={2}>A clean EQ hand-off</Heading>
+          <Text as="p">Start flat, bring in the incoming track quietly, then trade the low end over one or two phrases. Return knobs toward center before the next transition.</Text>
+        </> : <>
+          <Heading level={2}>Count the structure</Heading>
+          <Text as="p">A beat is one tap. Four beats make a bar. Most house and techno phrases are 4 or 8 bars—16 or 32 beats.</Text>
+          <Heading level={2}>Core rules</Heading>
+          <Text as="p"><strong>Watch the waveform:</strong> use new drums, breakdowns, and drops as visual phrase markers.</Text>
+          <Text as="p"><strong>Hit beat one:</strong> launch the incoming track at the start of a new phrase in the playing track.</Text>
+          <Text as="p"><strong>Intro to outro:</strong> bring the next intro in as the current track reaches its outro.</Text>
+          <Text as="p"><strong>Correct with a loop:</strong> hold an 8-bar loop when an intro or outro ends too early.</Text>
+        </>}
       </section>
     </>
   );
@@ -302,7 +247,7 @@ export default async function ReferencePage({
         <ReferenceNav topic={topic} />
         {topic === 'beat-fx' ? <BeatFxReference /> : null}
         {topic === 'sound-color-fx' ? <SoundColorFxReference /> : null}
-        {topic === 'specs' ? <SpecificationsReference /> : null}
+        {topic === 'eq-mixing' || topic === 'phrase-mixing' ? <QuickReference topic={topic} /> : null}
       </Stack>
     </PageFrame>
   );

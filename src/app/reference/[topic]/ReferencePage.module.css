@@ -12,6 +12,16 @@
   background: var(--color-background-muted);
 }
 
+.quickReference {
+  display: grid;
+  gap: var(--spacing-3);
+  max-inline-size: 760px;
+  padding: var(--spacing-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-muted);
+}
+
 .tableSection {
   min-width: 0;
 }

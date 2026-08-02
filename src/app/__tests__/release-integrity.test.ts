@@ -170,7 +170,8 @@ describe('production release integrity', () => {
       'http://localhost:3000/rekordbox/rb-deck',
       'http://localhost:3000/reference/beat-fx',
       'http://localhost:3000/reference/sound-color-fx',
-      'http://localhost:3000/reference/specs',
+      'http://localhost:3000/reference/eq-mixing',
+      'http://localhost:3000/reference/phrase-mixing',
     ]);
     expect(urls.every((url) => !url.includes('/dev/') && !url.includes('undefined'))).toBe(true);
   });
