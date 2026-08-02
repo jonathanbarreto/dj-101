@@ -14,15 +14,8 @@ export function LearningDashboard() {
         <Text type="label" color="accent">DDJ-1000 + rekordbox 7 learning hub</Text>
         <Heading level={1} type="display-1">Mixed</Heading>
         <Heading level={2} type="display-2">Learn the gear. Then make better mixes.</Heading>
-        <Text type="large" as="p" textWrap="pretty">
-          Learn the controls where they live, then connect each move to what you hear and see. Mixed gives you two focused ways in: learn the gear, or start practicing your mix.
-        </Text>
-      </Stack>
-
-      <Stack direction="vertical" gap={2}>
-        <Heading level={2}>Start here</Heading>
-        <Text as="p" color="secondary" textWrap="pretty">
-          Begin with the controller and rekordbox 7, or jump straight into mixing lessons.
+        <Text type="large" as="p" color="secondary" textWrap="pretty">
+          Practical lessons for the DDJ-1000, rekordbox 7, and the moves that make a mix flow.
         </Text>
       </Stack>
 
@@ -45,9 +38,7 @@ export function LearningDashboard() {
           <Stack direction="vertical" gap={2} padding={5}>
             <Text type="label" color="accent">01 · Hardware + software</Text>
             <Heading level={2}>Learn the gear</Heading>
-            <Text as="p" color="secondary" textWrap="pretty">
-              Build muscle memory across the DDJ-1000, then connect each control to rekordbox 7 Performance mode.
-            </Text>
+            <Text as="p" color="secondary" textWrap="pretty">Explore the DDJ-1000 and rekordbox 7 together.</Text>
             <Text type="label" color="accent">Choose a gear lesson →</Text>
           </Stack>
         </ClickableCard>
@@ -69,9 +60,7 @@ export function LearningDashboard() {
           <Stack direction="vertical" gap={2} padding={5}>
             <Text type="label" color="accent">02 · Listen + practice</Text>
             <Heading level={2}>Mixing tutorials</Heading>
-            <Text as="p" color="secondary" textWrap="pretty">
-              Watch focused lessons, then bring the technique back to your own decks and transitions.
-            </Text>
+            <Text as="p" color="secondary" textWrap="pretty">Practice EQ, phrasing, loops, and transitions.</Text>
             <Text type="label" color="accent">Open the video library →</Text>
           </Stack>
         </ClickableCard>
