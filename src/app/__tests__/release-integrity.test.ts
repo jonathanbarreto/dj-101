@@ -198,10 +198,12 @@ describe('production release integrity', () => {
   });
 
   it('ships only the two referenced AVIF master images', () => {
-    expect(readdirSync(resolve(root, 'public/images')).sort()).toEqual([
+    const imageEntries = readdirSync(resolve(root, 'public/images')).sort();
+    expect(imageEntries.filter((entry) => entry.endsWith('.avif'))).toEqual([
       'ddj1000-master.avif',
       'rekordbox-master.avif',
     ]);
+    expect(imageEntries).toContain('details');
     expect(read('scripts/optimize-images.mjs')).not.toMatch(/\.webp|webpPath|\.webp\(/);
   });
 });

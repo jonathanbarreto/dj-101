@@ -244,7 +244,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         </Stack>
       )}
       {sectionId !== undefined && (sectionId === 'deck-left' || sectionId === 'deck-right' || sectionId === 'mixer' || sectionId === 'fx' || sectionId === 'rb-deck') && (
-        <DetailGallery assets={detailAssetsForLesson(sectionId)} />
+        <DetailGallery
+          assets={detailAssetsForLesson(sectionId)}
+          label={sectionId === 'rb-deck' ? 'rekordbox 7 reference views' : 'DDJ-1000 detail views'}
+        />
       )}
       <div ref={regionNavRef}>
         <SurfaceNavigator

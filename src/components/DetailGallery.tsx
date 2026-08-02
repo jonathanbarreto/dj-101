@@ -2,11 +2,11 @@ import Image from 'next/image';
 import type {SupplementalAsset} from '@/content/assets';
 import styles from './DetailGallery.module.css';
 
-export function DetailGallery({assets}: {assets: SupplementalAsset[]}) {
+export function DetailGallery({assets, label = 'Detail views'}: {assets: SupplementalAsset[]; label?: string}) {
   if (assets.length === 0) return null;
 
   return (
-    <section className={styles.gallery} aria-label="Hardware detail views">
+    <section className={styles.gallery} aria-label={label}>
       {assets.map((asset) => (
         <figure className={styles.card} key={asset.id}>
           <div className={styles.imageFrame}>

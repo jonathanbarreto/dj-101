@@ -88,6 +88,30 @@ export const DETAIL_ASSETS: Record<string, SupplementalAsset[]> = {
     caption: 'This screen is the software counterpart to the controller: learn where deck state, waveforms, mixer levels, and browser actions meet.',
     width: 2940,
     height: 1842,
+  }, {
+    id: 'rekordbox-waveforms',
+    src: '/images/details/rekordbox-waveforms.png',
+    alt: 'rekordbox 7 enlarged waveform view with beat grid and phrase colors',
+    label: 'Read the waveform before you touch the jog',
+    caption: 'The enlarged waveform gives you phrase, beat-grid, and energy context; use it to choose a safe entry point.',
+    width: 2940,
+    height: 530,
+  }, {
+    id: 'rekordbox-tracklist',
+    src: '/images/details/rekordbox-tracklist.png',
+    alt: 'rekordbox 7 track browser with waveform previews, BPM, key, genre, and comments columns',
+    label: 'The browser is part of the instrument',
+    caption: 'Track choice is a performance action: scan waveform shape, BPM, key, genre, and comments before loading a deck.',
+    width: 2540,
+    height: 952,
+  }, {
+    id: 'rekordbox-sources',
+    src: '/images/details/rekordbox-sources.png',
+    alt: 'rekordbox 7 Collection sources panel with All Tracks and playlists',
+    label: 'Find music without losing your place',
+    caption: 'The Sources panel keeps collections and playlists one step away while the player remains visible above.',
+    width: 410,
+    height: 942,
   }],
 };
 

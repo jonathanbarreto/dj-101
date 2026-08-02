@@ -115,7 +115,7 @@ describe('routes', () => {
     expect(notFound).toHaveBeenCalledTimes(2);
   });
 
-  it('renders rear and front as text-first connection lessons without a false overhead image', async () => {
+  it('renders rear and front as text-first connection lessons with contextual detail views', async () => {
     const rear = render(await ControllerSectionPage({
       params: Promise.resolve({section: 'rear'}),
     }));
@@ -126,14 +126,14 @@ describe('routes', () => {
       .toMatch(/standby.*disconnect.*mains/i);
     expect(screen.getByRole('table', {name: 'Rear connection inventory'})).toBeDefined();
     expect(screen.getByRole('list', {name: 'Safe seven-step handoff'}).children).toHaveLength(7);
-    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getByRole('img', {name: /DDJ-1000 rear panel/i})).toBeDefined();
     rear.unmount();
 
     render(await ControllerSectionPage({params: Promise.resolve({section: 'front'})}));
     expect(screen.getByRole('heading', {level: 1, name: 'Front headphones'})).toBeDefined();
     expect(screen.getByText(/both sockets carry the same cue mix/i)).toBeDefined();
     expect(screen.getByRole('note', {name: 'Connection safety'})).toBeDefined();
-    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.getByRole('img', {name: /DDJ-1000 front edge/i})).toBeDefined();
   });
 
   it('uses Astryx breadcrumbs with a non-linked current page', async () => {
