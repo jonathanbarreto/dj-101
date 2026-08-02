@@ -14,14 +14,14 @@ export function LearningDashboard() {
         <Text type="label" color="accent">DDJ-1000 + rekordbox 7 learning hub</Text>
         <Heading level={1} type="display-1">Mixed</Heading>
         <Text type="large" as="p" textWrap="pretty">
-          Learn the controls where they live, then connect each move to what you hear and see. Mixed is your launch point for learning the gear, building your mix, and finding the right reference when you get stuck.
+          Learn the controls where they live, then connect each move to what you hear and see. Mixed gives you two focused ways in: learn the gear, or start practicing your mix.
         </Text>
       </Stack>
 
       <Stack direction="vertical" gap={2}>
-        <Heading level={2}>Choose a path</Heading>
+        <Heading level={2}>Start here</Heading>
         <Text as="p" color="secondary" textWrap="pretty">
-          Start with the outcome you want. Each path stays focused, then points you to the next useful step.
+          Begin with the controller and rekordbox 7, or jump straight into mixing lessons.
         </Text>
       </Stack>
 
@@ -75,21 +75,6 @@ export function LearningDashboard() {
           </Stack>
         </ClickableCard>
 
-        <ClickableCard
-          href="/reference/beat-fx"
-          label="Open the reference library"
-          padding={5}
-          className={styles.referenceCard}
-        >
-          <Stack direction="vertical" gap={2}>
-            <Text type="label" color="accent">03 · Look it up</Text>
-            <Heading level={2}>Reference</Heading>
-            <Text as="p" color="secondary" textWrap="pretty">
-              Compare Beat FX, Sound Color FX, and DDJ-1000 specifications without leaving the guide.
-            </Text>
-            <Text type="label" color="accent">Browse the references →</Text>
-          </Stack>
-        </ClickableCard>
       </Grid>
 
       <List
