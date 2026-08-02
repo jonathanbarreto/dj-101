@@ -48,6 +48,8 @@ import {ShiftToggle} from './ShiftToggle';
 import {Stage} from './Stage';
 import styles from './SurfaceView.module.css';
 import {DetailGallery} from './DetailGallery';
+import {VideoLessons} from './VideoLessons';
+import {tutorialVideosForLesson} from '@/content/videos';
 
 const FULL: Rect = {x: 0, y: 0, w: 1, h: 1};
 
@@ -249,6 +251,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           label={sectionId === 'rb-deck' ? 'rekordbox 7 reference views' : 'DDJ-1000 detail views'}
         />
       )}
+      {sectionId !== undefined && <VideoLessons videos={tutorialVideosForLesson(sectionId)} />}
       <div ref={regionNavRef}>
         <SurfaceNavigator
           surface={surface}
