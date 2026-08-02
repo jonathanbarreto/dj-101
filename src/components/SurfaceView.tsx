@@ -128,6 +128,8 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const showControlIndex = (activeRegion !== undefined && controls.length > 0)
     || (isCompactSection && controls.length > 0);
   const selectedControl = allControls.find((control) => control.id === selectedControlId) ?? null;
+  const detailAssets = sectionId === undefined ? [] : detailAssetsForLesson(sectionId);
+  const tutorialVideos = sectionId === undefined ? [] : tutorialVideosForLesson(sectionId);
 
   const activateControl = useCallback((controlId: string, updateHash: boolean) => {
     const control = allControls.find((candidate) => candidate.id === controlId);
@@ -228,6 +230,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   return (
     <Stack direction="vertical" gap={3} xstyle={undefined}>
       {surface === 'hardware' ? <ShiftToggle /> : null}
+      {section && (
+        <Text as="p" type="supporting" textWrap="pretty">
+          Choose a region to narrow the map, then select a control to read what it does,
+          how it behaves, and when to reach for it.
+        </Text>
+      )}
       {sectionId === 'browser' && <Text>{browserSectionIntro}</Text>}
       {sectionId === 'fx' && (
         <Stack direction="vertical" gap={2}>
@@ -245,13 +253,6 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           </Stack>
         </Stack>
       )}
-      {sectionId !== undefined && (sectionId === 'deck-left' || sectionId === 'deck-right' || sectionId === 'mixer' || sectionId === 'fx' || sectionId === 'rb-deck') && (
-        <DetailGallery
-          assets={detailAssetsForLesson(sectionId)}
-          label={sectionId === 'rb-deck' ? 'rekordbox 7 reference views' : 'DDJ-1000 detail views'}
-        />
-      )}
-      {sectionId !== undefined && <VideoLessons videos={tutorialVideosForLesson(sectionId)} />}
       <div ref={regionNavRef}>
         <SurfaceNavigator
           surface={surface}
@@ -434,6 +435,24 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             onSelect={(controlId, trigger) => selectControl(controlId, trigger, 'lesson')}
           />
         </div>
+      )}
+      {(detailAssets.length > 0 || tutorialVideos.length > 0) && (
+        <details className={styles.supportingDetails}>
+          <summary>
+            {detailAssets.length > 0 && tutorialVideos.length > 0
+              ? 'See detailed photos and watch tutorials'
+              : detailAssets.length > 0
+                ? 'See detailed photos'
+                : 'Watch tutorials'}
+          </summary>
+          {detailAssets.length > 0 && (
+            <DetailGallery
+              assets={detailAssets}
+              label={sectionId === 'rb-deck' ? 'rekordbox 7 reference views' : 'DDJ-1000 detail views'}
+            />
+          )}
+          {tutorialVideos.length > 0 && <VideoLessons videos={tutorialVideos} />}
+        </details>
       )}
     </Stack>
   );

@@ -12,6 +12,18 @@
   background: var(--color-background-muted);
 }
 
+.supportingDetails {
+  border-block: var(--border-width) solid var(--color-border);
+}
+
+.supportingDetails summary {
+  cursor: pointer;
+  padding-block: var(--spacing-3);
+  color: var(--color-foreground);
+  font-size: var(--text-label-size);
+  font-weight: 600;
+}
+
 .desktopInventory {
   display: block;
   min-inline-size: 0;

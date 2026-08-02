@@ -218,7 +218,10 @@ export function ConnectionLessons({panel}: {panel: ConnectionPanel}) {
           <Text as="p">{connectionSafetyWarning}</Text>
         </Stack>
       </aside>
-      <DetailGallery assets={detailAssetsForLesson(panel)} />
+      <details className={styles.supportingDetails}>
+        <summary>See connection detail photo</summary>
+        <DetailGallery assets={detailAssetsForLesson(panel)} />
+      </details>
       {isRear ? <RearLessons /> : <FrontLessons />}
     </Stack>
   );

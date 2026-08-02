@@ -65,6 +65,27 @@
   margin-block-end: var(--spacing-2);
 }
 
+.supportingDetails {
+  margin-block-start: var(--spacing-3);
+  border-block: var(--border-width) solid var(--color-border);
+}
+
+.supportingDetails summary {
+  cursor: pointer;
+  padding-block: var(--spacing-3);
+  color: var(--color-foreground);
+  font-size: var(--text-label-size);
+  font-weight: 600;
+}
+
+.supportingDetails summary::marker {
+  color: var(--color-foreground-muted);
+}
+
+.supportingDetails[open] summary {
+  margin-block-end: var(--spacing-1);
+}
+
 @media (max-width: 767px) {
   .regionHint {
     display: block;

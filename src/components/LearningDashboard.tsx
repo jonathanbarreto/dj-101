@@ -18,6 +18,14 @@ export function LearningDashboard() {
         </Text>
       </Stack>
 
+      <Stack direction="vertical" gap={2}>
+        <Heading level={2}>Choose your starting point</Heading>
+        <Text as="p" color="secondary" textWrap="pretty">
+          Start with the physical layout, or begin in rekordbox if the software is already familiar.
+          Every lesson links the two views back together.
+        </Text>
+      </Stack>
+
       <Grid columns={2} gap={4} align="start" className={styles.learningGrid}>
         <ClickableCard
           href="/controller"
