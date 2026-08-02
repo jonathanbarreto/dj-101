@@ -16,6 +16,11 @@ export function SiteFooter() {
             <Link href="/mixing-tutorials" isStandalone>Mixing Tutorials</Link>
             <Link href="/reference/beat-fx" isStandalone>Reference</Link>
           </Stack>
+          <Stack direction="horizontal" gap={3} wrap="wrap" as="nav" aria-label="Quick references">
+            <Text type="label" color="secondary">Quick references</Text>
+            <Link href="/reference/eq-mixing" isStandalone>EQ mixing</Link>
+            <Link href="/reference/phrase-mixing" isStandalone>Phrase mixing</Link>
+          </Stack>
           <Text type="supporting" className={styles.legal}>
             Product images © AlphaTheta Corporation / Pioneer DJ, used for educational
             identification. Pioneer DJ and DDJ-1000 are trademarks of AlphaTheta Corporation.

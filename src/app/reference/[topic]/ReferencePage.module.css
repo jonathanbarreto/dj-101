@@ -22,6 +22,67 @@
   background: var(--color-background-muted);
 }
 
+.visual {
+  display: grid;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  border-block-end: var(--border-width) solid var(--color-border);
+}
+
+.eqAxis,
+.eqBands {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-1);
+  text-align: center;
+}
+
+.eqAxis {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.eqBands span {
+  padding: var(--spacing-3) var(--spacing-2);
+  border-radius: var(--radius-element);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-label);
+}
+
+.eqLow { background: var(--color-background-muted); border-inline-start: var(--spacing-1) solid var(--color-accent); }
+.eqMid { background: var(--color-background-muted); border: var(--border-width) solid var(--color-border-strong); }
+.eqHigh { background: var(--color-background-muted); border-inline-start: var(--spacing-1) solid var(--color-accent); }
+
+.phraseTrack {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+}
+
+.phraseMarkers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-1);
+  block-size: var(--spacing-4);
+  padding-block: var(--spacing-1);
+  background: repeating-linear-gradient(90deg, var(--color-border) 0 1px, transparent 1px 25%);
+}
+
+.phraseMarkers i {
+  display: block;
+  inline-size: var(--spacing-2);
+  block-size: var(--spacing-2);
+  justify-self: center;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+@media (max-width: 48rem) {
+  .phraseTrack { flex-direction: column; gap: var(--spacing-1); }
+}
+
 .tableSection {
   min-width: 0;
 }

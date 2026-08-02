@@ -207,6 +207,17 @@ function QuickReference({topic}: {topic: 'eq-mixing' | 'phrase-mixing'}) {
           : 'Line up the musical blocks of two tracks so beats, bars, and phrases change together. This is the fastest route to transitions that feel intentional.'}
       </ReferenceIntro>
       <section className={styles.quickReference} aria-label={isEq ? 'EQ mixing rules' : 'Phrase mixing rules'}>
+        <div className={styles.visual} aria-label={isEq ? 'EQ frequency map' : 'Phrase structure timeline'} role="img">
+          {isEq ? <>
+            <div className={styles.eqAxis}><span>Low</span><span>Mid</span><span>High</span></div>
+            <div className={styles.eqBands}><span className={styles.eqLow}>Kick · bass</span><span className={styles.eqMid}>Vocals · chords</span><span className={styles.eqHigh}>Hats · air</span></div>
+            <Text type="supporting" color="secondary">Give each track a frequency home before you raise anything.</Text>
+          </> : <>
+            <div className={styles.phraseTrack}><span>Beat 1</span><span>4 bars · 16 beats</span><span>8 bars · 32 beats</span><span>Next phrase</span></div>
+            <div className={styles.phraseMarkers}><i /><i /><i /><i /></div>
+            <Text type="supporting" color="secondary">Launch the incoming track on beat one of a new phrase.</Text>
+          </>}
+        </div>
         {isEq ? <>
           <Heading level={2}>Three moves to remember</Heading>
           <Text as="p"><strong>Low:</strong> own the kick and bass. During a blend, decide which track carries the sub energy and trim the other.</Text>
