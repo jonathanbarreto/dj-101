@@ -77,23 +77,14 @@ afterEach(() => {
 });
 
 describe('SurfaceView', () => {
-  it('organizes the mixer into an accessible signal-flow-first lesson', async () => {
-    const user = userEvent.setup();
+  it('organizes the mixer into an accessible signal-flow-first lesson', () => {
     render(<SurfaceView surface="hardware" sectionId="mixer" />);
 
     expect(screen.getByRole('navigation', {name: 'Mixer lesson region'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'Signal path'}).getAttribute('aria-current'))
-      .toBe('page');
+    expect(screen.queryByRole('button', {name: 'Signal path'})).toBeNull();
     expect(screen.getByText('Choose the source')).toBeDefined();
     expect(screen.getByText('HEADPHONES LEVEL')).toBeDefined();
     expect(screen.queryByRole('button', {name: 'CH 3 TRIM'})).toBeNull();
-
-    await user.click(screen.getByRole('button', {name: 'CH3'}));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-    expect(screen.getByRole('button', {name: 'CH 3 TRIM'})).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'CH 1 TRIM'})).toBeNull();
   });
 
   it('selects and opens a mixer hash destination in its owning region', () => {
@@ -204,22 +195,13 @@ describe('SurfaceView', () => {
     expect(screen.getByText(/player deck is the published rekordbox 7 lesson/i)).toBeDefined();
   });
 
-  it('organizes each hardware deck into three focused image regions', async () => {
-    const user = userEvent.setup();
+  it('shows a focused deck learning view with one region of controls visible', () => {
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
 
     expect(screen.getByRole('navigation', {name: 'Deck lesson region'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'Loop / transport'}).getAttribute('aria-current'))
-      .toBe('page');
+    expect(screen.queryByRole('button', {name: 'Loop / transport'})).toBeNull();
     expect(screen.getByRole('button', {name: 'LOOP IN · 1/2X'})).toBeDefined();
     expect(screen.queryByRole('button', {name: 'JOG DIAL'})).toBeNull();
-
-    await user.click(screen.getByRole('button', {name: 'Jog / tempo'}));
-    act(() => {
-      while (animationFrames.length > 0) animationFrames.shift()!(0);
-    });
-    expect(screen.getByRole('button', {name: 'JOG DIAL'})).toBeDefined();
-    expect(screen.queryByRole('button', {name: 'LOOP IN · 1/2X'})).toBeNull();
     expect(parseInt(screen.getByRole('img', {name: /DDJ-1000/i}).getAttribute('sizes') ?? '0'))
       .toBeLessThanOrEqual(200);
   });
@@ -468,7 +450,7 @@ describe('SurfaceView', () => {
     expect(screen.queryByRole('region', {name: 'Scrollable mixer control image'})).toBeNull();
   });
 
-  it('scrolls a deep-linked mobile tab into view and clears the hash on explicit close', async () => {
+  it('opens the deep-linked mobile marker lesson and clears the hash on explicit close', async () => {
     window.matchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: query === '(max-width: 767px)',
       media: query,
@@ -489,8 +471,8 @@ describe('SurfaceView', () => {
       while (animationFrames.length > 0) animationFrames.shift()!(0);
     });
 
-    expect(screen.getByRole('button', {name: 'Mic'}).getAttribute('aria-current')).toBe('page');
-    expect(scrollTo).toHaveBeenCalled();
+    expect(screen.getByRole('button', {name: 'MIC EQ LOW'}).getAttribute('aria-current')).toBe('page');
+    expect(scrollTo).not.toHaveBeenCalled();
     expect(screen.getByRole('region', {name: 'MIC EQ LOW lesson'})).toBeDefined();
 
     await userEvent.setup().click(screen.getByRole('button', {name: 'Close lesson'}));

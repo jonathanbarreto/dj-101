@@ -182,12 +182,12 @@ export function ControlPreview({
   const physicalAction = getPhysicalAction(behavior.detail);
 
   return (
-    <Stack direction="vertical" gap={3}>
+    <Stack direction="vertical" gap={3} className={styles.preview}>
       <Stack direction="horizontal" gap={2} align="center" wrap="wrap">
         <Heading level={2}>{label}</Heading>
         {isShiftBehavior && <Badge label="SHIFT" />}
       </Stack>
-      <Text as="p">{behavior.summary}</Text>
+      <Text as="p" type="supporting">{behavior.summary}</Text>
       <Text as="p" className={styles.physicalAction}>
         {`Physical action: ${physicalAction}`}
       </Text>

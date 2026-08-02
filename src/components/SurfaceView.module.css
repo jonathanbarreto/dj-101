@@ -51,6 +51,10 @@
   background: var(--color-background-muted);
 }
 
+.sectionHeading {
+  margin-block-end: var(--spacing-1);
+}
+
 .signalGuide {
   max-inline-size: 72ch;
 }

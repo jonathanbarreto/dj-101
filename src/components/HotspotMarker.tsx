@@ -23,6 +23,7 @@ export function HotspotMarker({
       className={[styles.marker, className].filter(Boolean).join(' ')}
     >
       <span className={styles.ring} aria-hidden="true" />
+      <span className={`${styles.ring} ${isOpen ? styles.ringOpen : ''}`} aria-hidden="true" />
       <span
         className={`${styles.dot} ${isOpen ? styles.dotOpen : ''}`}
         aria-hidden="true"

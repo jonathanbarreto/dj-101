@@ -21,6 +21,7 @@ export interface SurfaceNavigatorProps {
   selectedControlLabel?: string;
   regions: readonly Region[];
   isCompact: boolean;
+  showRegionTabs?: boolean;
   overflowRegionIds?: string[];
   onRegionChange: (value: string) => void;
   onViewMap?: () => void;
@@ -35,6 +36,7 @@ export function SurfaceNavigator({
   selectedControlLabel,
   regions,
   isCompact,
+  showRegionTabs = true,
   overflowRegionIds,
   onRegionChange,
   onViewMap,
@@ -70,7 +72,7 @@ export function SurfaceNavigator({
           {resumeTarget ? <Link href={resumeHref(resumeTarget)} isStandalone>Resume</Link> : null}
         </Stack>
       ) : null}
-      {regions.length > 0 ? (
+      {showRegionTabs && regions.length > 0 ? (
         <div className={styles.regionTabs}>
           <TabList
             value={activeRegionId ?? ''}

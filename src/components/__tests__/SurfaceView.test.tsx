@@ -44,7 +44,6 @@ describe('SurfaceView lesson coordination', () => {
   it('opens a valid direct hash in its owning region as a dialog', () => {
     window.history.replaceState(null, '', '/controller/mixer#mixer-ch1-trim');
     render(<SurfaceView surface="hardware" sectionId="mixer" />);
-    expect(screen.getByRole('button', {name: 'Four channels'}).getAttribute('aria-current')).toBe('page');
     expect(document.querySelectorAll('dialog')).toHaveLength(1);
     expect(screen.getByRole('heading', {name: 'CH 1 TRIM'})).toBeDefined();
   });

@@ -17,10 +17,16 @@ export function Stage({surface, rect, children}: StageProps) {
   const crop = cropStyle(rect);
   const canvasStyle = cropCanvasStyle(rect, spec.naturalWidth, spec.naturalHeight);
   const sizes = `${Math.ceil(100 / rect.w)}vw`;
+  const isOverview = rect.x === 0 && rect.y === 0 && rect.w === 1 && rect.h === 1;
 
   return (
     <div className={styles.stage} data-testid="stage" data-stable-stage="true">
-      <div className={styles.canvas} data-testid="stage-canvas" style={canvasStyle}>
+      <div
+        className={styles.canvas}
+        data-testid="stage-canvas"
+        data-stage-mode={isOverview ? 'overview' : 'focus'}
+        style={canvasStyle}
+      >
         <Image
           className={styles.image}
           src={spec.image}

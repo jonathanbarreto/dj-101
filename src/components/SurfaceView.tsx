@@ -76,6 +76,13 @@ const SECTION_PROMPTS: Partial<Record<SectionId, {goal: string; cue: string}>> =
   },
 };
 
+const SECTION_FLOW: SectionId[] = ['deck-left', 'deck-right', 'mixer', 'fx', 'browser'];
+function nextSection(currentId: SectionId): SectionId | null {
+  const index = SECTION_FLOW.indexOf(currentId);
+  if (index === -1) return null;
+  return SECTION_FLOW[(index + 1) % SECTION_FLOW.length];
+}
+
 export interface SurfaceViewProps {
   surface: Surface;
   sectionId?: SectionId;
@@ -155,6 +162,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const selectedControl = allControls.find((control) => control.id === selectedControlId) ?? null;
   const detailAssets = sectionId === undefined ? [] : detailAssetsForLesson(sectionId);
   const tutorialVideos = sectionId === undefined ? [] : tutorialVideosForLesson(sectionId);
+  const nextSectionId = section ? nextSection(section.id) : null;
 
   const activateControl = useCallback((controlId: string, updateHash: boolean) => {
     const control = allControls.find((candidate) => candidate.id === controlId);
@@ -263,6 +271,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           activeRegionLabel={activeRegion?.label}
           selectedControlLabel={selectedControl?.label}
           regions={regions}
+          showRegionTabs={surface === 'hardware' ? section === undefined : true}
           isCompact={isNarrow}
           overflowRegionIds={isMixer ? ['color-fx', 'outputs', 'monitoring', 'mic'] : undefined}
           onViewMap={() => {
@@ -280,7 +289,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           resumeTarget={resumeTarget ?? undefined}
         />
       </div>
-      {activeMixerRegion && (
+      {activeMixerRegion && surface === 'software' && (
         <div className={styles.regionHint}>
           <Text type="supporting">Swipe horizontally for all mixer lessons →</Text>
         </div>
@@ -371,9 +380,13 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       </Stage>
       {section && (
         <Stack direction="vertical" gap={2}>
+          {surface === 'hardware' && (
+            <Text as="h1" type="display-1" className={styles.sectionHeading}>
+            {section.label}
+            </Text>
+          )}
           <Text as="p" type="supporting" textWrap="pretty">
-            Choose a region to narrow the map, then select a control to read what it does,
-            how it behaves, and when to reach for it.
+            Tap a control marker to read what it does, how it behaves, and when to reach for it.
           </Text>
           <div>
             <Text type="label" color="accent">Learning focus</Text>
@@ -389,6 +402,14 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
               Learn one control, practice one transition in it, then move to the next control.
             </Text>
           )}
+          {nextSectionId !== null ? (
+            <Link
+              href={`/controller/${nextSectionId}`}
+              isStandalone
+            >
+              Next: continue into the {SECTIONS[nextSectionId].label} section →
+            </Link>
+          ) : null}
         </Stack>
       )}
       {sectionId === 'browser' && <Text>{browserSectionIntro}</Text>}

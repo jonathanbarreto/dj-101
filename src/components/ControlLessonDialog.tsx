@@ -33,13 +33,12 @@ export function ControlLessonDialog({
       maxHeight="calc(100dvh - 2 * var(--spacing-4))"
       variant={isFullscreen ? 'fullscreen' : 'standard'}
       purpose="info"
-      padding={0}
     >
       <Layout
         className={styles.dialogLayout}
         header={<DialogHeader title={label} onOpenChange={onOpenChange} />}
         content={(
-          <LayoutContent data-testid="lesson-scroll-container">
+          <LayoutContent className={styles.dialogContent} data-testid="lesson-scroll-container">
             <ControlLesson control={control} isShiftActive={isShiftActive} />
           </LayoutContent>
         )}
