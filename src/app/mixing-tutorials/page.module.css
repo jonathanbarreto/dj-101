@@ -25,10 +25,7 @@
   font-weight: 600;
 }
 
-.techniqueCard {
-  min-block-size: 100%;
-  padding: var(--spacing-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-container);
-  background: var(--color-background-muted);
+.filterRow {
+  flex-wrap: wrap;
+  justify-content: space-between;
 }

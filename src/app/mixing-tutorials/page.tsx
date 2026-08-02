@@ -1,13 +1,16 @@
 'use client';
 
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import {AspectRatio} from '@astryxdesign/core/AspectRatio';
 import {Center} from '@astryxdesign/core/Center';
+import {DropdownMenu} from '@astryxdesign/core/DropdownMenu';
 import {Grid} from '@astryxdesign/core/Grid';
 import {Section} from '@astryxdesign/core/Section';
-import {Tab, TabList} from '@astryxdesign/core/TabList';
+import {TextInput} from '@astryxdesign/core/TextInput';
 import {Heading, Text} from '@astryxdesign/core/Text';
+import {ToggleButton, ToggleButtonGroup} from '@astryxdesign/core/ToggleButton';
 import {VStack} from '@astryxdesign/core/Layout';
+import {HStack} from '@astryxdesign/core/Stack';
 import {PageFrame} from '@/components/PageFrame';
 import styles from './page.module.css';
 
@@ -18,52 +21,37 @@ interface MixingVideo {
   title: string;
   description: string;
   category: Exclude<Filter, 'all'>;
+  duration: string;
 }
 
-const TECHNIQUES = [
-  {
-    title: '01 · Basic key mixing',
-    body: 'Blend tracks in the same musical key, such as 8A → 8A. Shared tonal centers keep melodies, chords, and basslines sounding like one continuous story.',
-    use: 'Best for warm-ups, long transitions, melodic house, progressive, trance, and radio-style mixes.',
-  },
-  {
-    title: '02 · Adjacent key mixing',
-    body: 'Move one step around the Camelot Wheel (8A → 7A or 9A), or switch between relative minor and major (8A ↔ 8B). The notes stay close while the emotional color shifts.',
-    use: 'Use it to brighten, deepen, or gently change mood without a harmonic jolt.',
-  },
-  {
-    title: '03 · Power block mixing',
-    body: 'Use compatible keys and energy levels to move quickly between hooks instead of playing full intros and outros. Cue the memorable phrases and make each short blend deliberate.',
-    use: 'A high-impact approach for club and festival moments when the dancefloor needs constant momentum.',
-  },
-  {
-    title: '04 · Live mashup remixing',
-    body: 'Layer vocals, instrumentals, hot cues, and loops across decks, then use echo, reverb, or filters to make the hand-off feel intentional. Keep phrases aligned before adding complexity.',
-    use: 'Save your best experiments as recordings so you can recreate the idea later in a DAW.',
-  },
-  {
-    title: '05 · Energy boost mixing',
-    body: 'A two-semitone key lift (for example, 5A → 7A) creates tension before a drop or peak-time entrance. Treat it as a color effect, not a default rule.',
-    use: 'Try it when energy is dipping, and use a filter sweep, echo freeze, or riser to make the change feel earned.',
-  },
-];
-
 const MIXING_VIDEOS: MixingVideo[] = [
-  {id: 'rpiKaf9DIDI', title: 'Mixing tutorial 01', description: 'A mixing lesson from the supplied YouTube playlist.', category: 'playlist'},
-  {id: 'h0VQEEj--_U', title: 'Mixing tutorial 02', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
-  {id: 'RlVtyYqga-c', title: 'Mixing tutorial 03', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
-  {id: '22XjZKJS69E', title: 'Mixing tutorial 04', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
-  {id: 'DRnYmuxv6Gs', title: 'Mixing tutorial 05', description: 'A mixing lesson from the supplied YouTube playlist.', category: 'playlist'},
-  {id: 'feH8dwYoRkQ', title: 'Mixing tutorial 06', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
-  {id: 'nhrHoaDzmp0', title: 'Mixing tutorial 07', description: 'A standalone mixing lesson for the library.', category: 'standalone'},
-  {id: '23Xcgc_9eZQ', title: 'Harmonic & energy mixing techniques', description: 'Five practical approaches: same-key blends, adjacent keys, power blocks, live mashups, and energy lifts.', category: 'standalone'},
+  {id: 'rpiKaf9DIDI', title: '5 Ways to Mix Between Genres', description: 'Learn advanced transitions that help you move between styles while protecting phrasing and energy.', category: 'playlist', duration: '9:09'},
+  {id: 'h0VQEEj--_U', title: 'The 5 Levels of House Mixing', description: 'Progress from beginner blends to pro house transitions by controlling phrase length, EQ, and momentum.', category: 'standalone', duration: '9:26'},
+  {id: 'RlVtyYqga-c', title: 'How to Mix Techno Like a Pro', description: 'Build a techno blend in real time and learn how to manage long phrases, low end, and tension.', category: 'standalone', duration: '21:32'},
+  {id: '22XjZKJS69E', title: '3 Ways to Mix Techno', description: 'Compare three practical techno transitions and when each one makes sense in a set.', category: 'standalone', duration: '11:25'},
+  {id: 'DRnYmuxv6Gs', title: 'Tech House Set Mixing Techniques', description: 'Follow a complete tech-house performance and see how transitions are chosen and shaped.', category: 'playlist', duration: '14:11'},
+  {id: 'feH8dwYoRkQ', title: 'Transitions for Techno, Trance & Hard House', description: 'Collect reliable transition patterns for driving, high-energy genres without losing the beat.', category: 'standalone', duration: '14:17'},
+  {id: 'nhrHoaDzmp0', title: 'DJ EQ Explained Simply', description: 'Learn what the high, mid, and low EQ knobs actually change and how to use them during a blend.', category: 'standalone', duration: '23:46'},
+  {id: '23Xcgc_9eZQ', title: '5 Ways to Mix in Key', description: 'Learn same-key, adjacent-key, power-block, mashup, and energy-lift ideas for more musical transitions.', category: 'standalone', duration: '22:14'},
+  {id: 'j9Ky8zpsqvY', title: 'Looping Techniques That Change Your Mixes', description: 'Use loops with intention to extend phrases, create tension, and make transitions feel more controlled.', category: 'standalone', duration: '7:36'},
+  {id: 'znNKYw0nKII', title: 'Creative DJ Sets on the DDJ-1000', description: 'Explore performance techniques that turn the DDJ-1000 into a more expressive instrument.', category: 'playlist', duration: '10:33'},
 ];
 
 export default function MixingTutorialsPage() {
   const [filter, setFilter] = useState<Filter>('all');
-  const videos = filter === 'all'
-    ? MIXING_VIDEOS
-    : MIXING_VIDEOS.filter((video) => video.category === filter);
+  const [search, setSearch] = useState('');
+  const [sortOrder, setSortOrder] = useState<'A-Z' | 'Newest'>('Newest');
+  const videos = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const filtered = MIXING_VIDEOS.filter((video) => {
+      const matchesFilter = filter === 'all' || video.category === filter;
+      const matchesSearch = !query || `${video.title} ${video.description}`.toLowerCase().includes(query);
+      return matchesFilter && matchesSearch;
+    });
+    return [...filtered].sort((a, b) => sortOrder === 'A-Z'
+      ? a.title.localeCompare(b.title)
+      : MIXING_VIDEOS.indexOf(a) - MIXING_VIDEOS.indexOf(b));
+  }, [filter, search, sortOrder]);
 
   return (
     <PageFrame>
@@ -77,20 +65,50 @@ export default function MixingTutorialsPage() {
                     <Text type="label" color="accent">Mixed · video library</Text>
                     <Heading level={1}>Mixing Tutorials</Heading>
                     <Text type="body" color="secondary">
-                      A focused watch list for building better transitions. Open a lesson here,
-                      then return to the controller and rekordbox maps to apply it.
+                      Search by technique, filter by collection, and build a watch path that fits your next practice session.
                     </Text>
                   </VStack>
-                  <TabList value={filter} onChange={(value) => setFilter(value as Filter)} aria-label="Filter mixing tutorials">
-                    <Tab value="all" label="All" />
-                    <Tab value="playlist" label="Playlist lessons" />
-                    <Tab value="standalone" label="Standalone lessons" />
-                  </TabList>
                 </VStack>
               </Section>
             </Center>
 
-            <Grid columns={{minWidth: 280, repeat: 'fit'}} gap={4}>
+            <VStack gap={4}>
+              <TextInput
+                label="Search tutorials"
+                isLabelHidden
+                placeholder="Search by technique or genre..."
+                value={search}
+                onChange={setSearch}
+                hasClear
+                size="lg"
+              />
+              <HStack vAlign="center" gap={4} className={styles.filterRow}>
+                <ToggleButtonGroup
+                  label="Filter mixing tutorials"
+                  value={filter}
+                  onChange={(value) => setFilter((value ?? 'all') as Filter)}
+                  size="lg"
+                >
+                  <ToggleButton value="all" label="All" />
+                  <ToggleButton value="playlist" label="Playlist lessons" />
+                  <ToggleButton value="standalone" label="Standalone lessons" />
+                </ToggleButtonGroup>
+                <DropdownMenu
+                  button={{label: sortOrder, size: 'lg'}}
+                  items={[
+                    {label: 'Newest', onClick: () => setSortOrder('Newest')},
+                    {label: 'A–Z', onClick: () => setSortOrder('A-Z')},
+                  ]}
+                />
+              </HStack>
+              <Text type="supporting" color="secondary">{videos.length} {videos.length === 1 ? 'lesson' : 'lessons'}</Text>
+            </VStack>
+
+            {videos.length === 0 ? (
+              <Center>
+                <Text type="supporting" color="secondary">No tutorials match that search. Try a genre, technique, or clear the filters.</Text>
+              </Center>
+            ) : <Grid columns={{minWidth: 280, repeat: 'fit'}} gap={4}>
               {videos.map((video) => (
                 <article className={styles.videoCard} key={video.id}>
                   <AspectRatio ratio={16 / 9}>
@@ -106,32 +124,11 @@ export default function MixingTutorialsPage() {
                   <div className={styles.copy}>
                     <Text className={styles.videoTitle}>{video.title}</Text>
                     <Text type="supporting" color="secondary">{video.description}</Text>
+                    <Text type="supporting" color="secondary">{video.duration} · YouTube lesson</Text>
                   </div>
                 </article>
               ))}
-            </Grid>
-
-            <Section variant="transparent" padding={0}>
-              <VStack gap={4}>
-                <VStack gap={2}>
-                  <Heading level={2}>What you’ll practice</Heading>
-                  <Text color="secondary" textWrap="pretty">
-                    Use rekordbox 7 key analysis as a starting point, then let phrasing, energy, and what you hear guide the final decision.
-                  </Text>
-                </VStack>
-                <Grid columns={{minWidth: 280, repeat: 'fit'}} gap={3}>
-                  {TECHNIQUES.map((technique) => (
-                    <article className={styles.techniqueCard} key={technique.title}>
-                      <VStack gap={2}>
-                        <Heading level={3}>{technique.title}</Heading>
-                        <Text>{technique.body}</Text>
-                        <Text type="supporting" color="secondary">{technique.use}</Text>
-                      </VStack>
-                    </article>
-                  ))}
-                </Grid>
-              </VStack>
-            </Section>
+            </Grid>}
           </VStack>
         </Center>
       </div>
