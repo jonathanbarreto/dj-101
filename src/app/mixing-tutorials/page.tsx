@@ -54,6 +54,12 @@ export default function MixingTutorialsPage() {
       ? a.title.localeCompare(b.title)
       : MIXING_VIDEOS.indexOf(a) - MIXING_VIDEOS.indexOf(b));
   }, [filter, search, sortOrder]);
+  const featured = MIXING_VIDEOS[0];
+  const categoryCounts = {
+    basics: MIXING_VIDEOS.filter((video) => video.category === 'basics').length,
+    transitions: MIXING_VIDEOS.filter((video) => video.category === 'transitions').length,
+    performance: MIXING_VIDEOS.filter((video) => video.category === 'performance').length,
+  };
 
   return (
     <PageFrame>
@@ -67,12 +73,44 @@ export default function MixingTutorialsPage() {
                     <Text type="label" color="accent">Mixed · video library</Text>
                     <Heading level={1}>Mixing Tutorials</Heading>
                     <Text type="body" color="secondary">
-                      Search by technique, filter by collection, and build a watch path that fits your next practice session.
+                      Choose a focused session, then practice one move at a time. Every lesson opens in place so you can learn without losing your path.
                     </Text>
                   </VStack>
                 </VStack>
               </Section>
             </Center>
+
+            {!search && filter === 'all' && (
+              <section className={styles.startPanel} aria-labelledby="start-here-heading">
+                <div className={styles.startCopy}>
+                  <Text type="label" color="accent">Start here</Text>
+                  <Heading level={2} id="start-here-heading">Build a reliable transition vocabulary</Heading>
+                  <Text type="supporting" color="secondary">Begin with genre changes, then use the basics collection to make each blend cleaner and more musical.</Text>
+                  <button className={styles.startButton} type="button" onClick={() => setFilter('transitions')}>Explore transitions</button>
+                </div>
+                <div className={styles.featuredFrame}>
+                  <AspectRatio ratio={16 / 9}>
+                    <a href={`https://www.youtube.com/watch?v=${featured.id}`} target="_blank" rel="noreferrer" aria-label={`Watch ${featured.title} on YouTube`}>
+                      <img className={styles.featuredImage} src={`https://i.ytimg.com/vi/${featured.id}/hqdefault.jpg`} alt="" loading="lazy" />
+                    </a>
+                  </AspectRatio>
+                </div>
+              </section>
+            )}
+
+            <section className={styles.pathGrid} aria-label="Tutorial paths">
+              {([
+                ['basics', 'Mixing basics', 'EQing, looping, phrasing, and key choices.', categoryCounts.basics],
+                ['transitions', 'Transitions', 'Reliable ways to move between tracks and genres.', categoryCounts.transitions],
+                ['performance', 'Performance', 'Turn the DDJ-1000 into a more expressive instrument.', categoryCounts.performance],
+              ] as const).map(([value, title, description, count]) => (
+                <button className={styles.pathCard} type="button" key={value} onClick={() => setFilter(value)} aria-pressed={filter === value}>
+                  <Text type="label" color="accent">{String(count).padStart(2, '0')} lessons</Text>
+                  <Text className={styles.pathTitle}>{title}</Text>
+                  <Text type="supporting" color="secondary">{description}</Text>
+                </button>
+              ))}
+            </section>
 
             <VStack gap={4}>
               <TextInput
@@ -128,7 +166,10 @@ export default function MixingTutorialsPage() {
                     <Text type="label" color="accent">{video.categoryLabel}</Text>
                     <Text className={styles.videoTitle}>{video.title}</Text>
                     <Text type="supporting" color="secondary">{video.description}</Text>
-                    <Text type="supporting" color="secondary">{video.duration} · YouTube lesson</Text>
+                    <div className={styles.metaRow}>
+                      <Text type="supporting" color="secondary">{video.duration} · YouTube lesson</Text>
+                      <a className={styles.watchLink} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noreferrer">Watch on YouTube ↗</a>
+                    </div>
                   </div>
                 </article>
               ))}

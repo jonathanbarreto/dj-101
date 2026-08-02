@@ -29,3 +29,117 @@
   flex-wrap: wrap;
   justify-content: space-between;
 }
+
+.startPanel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+  gap: var(--spacing-6);
+  align-items: center;
+  padding: var(--spacing-6);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-muted);
+}
+
+.startCopy {
+  display: grid;
+  gap: var(--spacing-3);
+}
+
+.startButton,
+.pathCard {
+  font: inherit;
+  color: var(--color-text-primary);
+  text-align: start;
+  cursor: pointer;
+}
+
+.startButton {
+  justify-self: start;
+  padding: var(--spacing-2) var(--spacing-3);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-background);
+  transition: background var(--duration-interaction) var(--easing-standard), border-color var(--duration-interaction) var(--easing-standard);
+}
+
+.startButton:hover,
+.startButton:focus-visible {
+  border-color: var(--color-accent);
+  background: var(--color-background-hover);
+}
+
+.featuredFrame {
+  overflow: hidden;
+  border-radius: var(--radius-control);
+}
+
+.featuredImage {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-interaction) var(--easing-standard), filter var(--duration-interaction) var(--easing-standard);
+}
+
+.featuredFrame a:hover .featuredImage,
+.featuredFrame a:focus-visible .featuredImage {
+  filter: brightness(1.12);
+  transform: scale(1.02);
+}
+
+.pathGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-3);
+}
+
+.pathCard {
+  display: grid;
+  gap: var(--spacing-2);
+  min-block-size: 130px;
+  padding: var(--spacing-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: transparent;
+  transition: background var(--duration-interaction) var(--easing-standard), border-color var(--duration-interaction) var(--easing-standard), transform var(--duration-interaction) var(--easing-standard);
+}
+
+.pathCard:hover,
+.pathCard:focus-visible,
+.pathCard[aria-pressed='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-background-muted);
+  transform: translateY(-2px);
+}
+
+.pathTitle {
+  font-weight: 600;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+}
+
+.watchLink {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
+  text-decoration: none;
+}
+
+.watchLink:hover,
+.watchLink:focus-visible {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .startPanel,
+  .pathGrid {
+    grid-template-columns: 1fr;
+  }
+}
