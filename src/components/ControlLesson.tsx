@@ -36,9 +36,10 @@ export function getActiveControlBehavior(
 export interface ControlLessonProps {
   control: Control;
   isShiftActive: boolean;
+  showSummary?: boolean;
 }
 
-export function ControlLesson({control, isShiftActive}: ControlLessonProps) {
+export function ControlLesson({control, isShiftActive, showSummary = true}: ControlLessonProps) {
   const {behavior, isShiftBehavior} = getActiveControlBehavior(control, isShiftActive);
 
   return (
@@ -52,7 +53,7 @@ export function ControlLesson({control, isShiftActive}: ControlLessonProps) {
         </Stack>
       )}
 
-      <Text type="large" as="p">{behavior.summary}</Text>
+      {showSummary && <Text type="large" as="p">{behavior.summary}</Text>}
       <Markdown headingLevelStart={3}>{behavior.detail}</Markdown>
 
       <Stack direction="vertical" gap={1}>

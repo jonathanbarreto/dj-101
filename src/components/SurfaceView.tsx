@@ -2,6 +2,7 @@
 
 import {Link} from '@astryxdesign/core/Link';
 import {List, ListItem} from '@astryxdesign/core/List';
+import {Button} from '@astryxdesign/core/Button';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Tab, TabList} from '@astryxdesign/core/TabList';
 import {Text} from '@astryxdesign/core/Text';
@@ -50,6 +51,7 @@ import styles from './SurfaceView.module.css';
 import {DetailGallery} from './DetailGallery';
 import {VideoLessons} from './VideoLessons';
 import {tutorialVideosForLesson} from '@/content/videos';
+import {controlsForControllerView, type ControllerTerminalView} from './controllerHotspots';
 
 const FULL: Rect = {x: 0, y: 0, w: 1, h: 1};
 
@@ -153,7 +155,7 @@ interface ControllerEntryPoint {
 const CONTROLLER_ENTRY_POINTS: ControllerEntryPoint[] = [
   {id: 'left-decks', label: 'Decks', at: {x: 0.17, y: 0.52}, sectionId: 'deck-left', summary: 'Explore the left deck by control group.'},
   {id: 'mixer', label: 'Mixer', at: {x: 0.5, y: 0.52}, sectionId: 'mixer', summary: 'Explore the mixer by signal path and performance group.'},
-  {id: 'right-decks', label: 'Decks', at: {x: 0.83, y: 0.52}, sectionId: 'deck-right', summary: 'Explore the right deck by control group.'},
+  {id: 'right-decks', label: 'Decks', at: {x: 0.83, y: 0.52}, sectionId: 'deck-left', summary: 'Explore the deck by control group.'},
 ];
 function nextSection(currentId: SectionId): SectionId | null {
   const index = SECTION_FLOW.indexOf(currentId);
@@ -195,10 +197,13 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const regionNavRef = useRef<HTMLDivElement>(null);
   const sectionPrompt = activeSection?.id === undefined ? undefined : SECTION_PROMPTS[activeSection.id];
 
-  const allControls = useMemo(
-    () => (activeSection === undefined ? [] : controlsInSection(activeSection.id)),
-    [activeSection],
-  );
+  const allControls = useMemo(() => {
+    if (activeSection === undefined) return [];
+    if (surface === 'hardware' && (activeSection.id === 'deck-left' || activeSection.id === 'mixer')) {
+      return controlsForControllerView(activeSection.id as ControllerTerminalView);
+    }
+    return controlsInSection(activeSection.id);
+  }, [activeSection, surface]);
   const [activeRegionId, setActiveRegionId] = useState<RbDeckRegionId>('info');
   const [activeMixerRegionId, setActiveMixerRegionId] = useState<MixerRegionId>('signal');
   const [activeDeckRegionId, setActiveDeckRegionId] = useState<DeckRegionId>('transport');
@@ -210,7 +215,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const activeMixerRegion = isMixer ? getMixerRegion(activeMixerRegionId) : undefined;
   const activeDeckRegion = isDeck ? getDeckRegion(activeDeckRegionId) : undefined;
   const activeRegion = activeRbRegion ?? activeMixerRegion ?? activeDeckRegion;
-  const shouldScopeToRegion = !isHardwareSection || selectedControlId !== null;
+  const shouldScopeToRegion = !isHardwareSection;
   const targetRect = isHardwareSection
     ? (activeSection?.id === 'mixer'
       ? getMixerVisualRect('signal', isNarrow)
@@ -238,11 +243,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         .map((id) => allControls.find((control) => control.id === id))
         .filter((control): control is Control => control !== undefined)
     : allControls;
-  const controls = selectedArea !== undefined
-    ? selectedArea.controlIds
-        .map((id) => allControls.find((control) => control.id === id))
-        .filter((control): control is Control => control !== undefined)
-    : scopedControls;
+  const controls = scopedControls;
   const [crop, setCrop] = useState<{sectionId?: SectionId; rect: Rect}>({
     sectionId: activeSection?.id,
     rect: targetRect,
@@ -264,15 +265,17 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const nextSectionId = activeSection ? nextSection(activeSection.id) : null;
 
   const focusSection = useCallback((nextSectionId: SectionId) => {
-    const nextSectionSpec = SECTIONS[nextSectionId];
+    const terminalSectionId = nextSectionId === 'deck-right' ? 'deck-left' : nextSectionId;
+    if (terminalSectionId !== 'deck-left' && terminalSectionId !== 'mixer') return;
+    const nextSectionSpec = SECTIONS[terminalSectionId];
     if (surface !== 'hardware' || section !== undefined || nextSectionSpec.surface !== 'hardware') return;
-    setFocusedSectionId(nextSectionId);
+    setFocusedSectionId(terminalSectionId);
     setSelectedAreaId(null);
     setSelectedControlId(null);
     setOverlayMode('none');
     setCrop({
-      sectionId: nextSectionId,
-      rect: nextSectionId === 'mixer'
+      sectionId: terminalSectionId,
+      rect: terminalSectionId === 'mixer'
         ? getMixerVisualRect('signal', isNarrow)
         : nextSectionSpec.rect,
     });
@@ -310,11 +313,11 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     const rbRegion = isRbDeck ? getRbDeckRegionForControl(control.id) : undefined;
     const mixerRegion = isMixer ? getMixerRegionForControl(control.id) : undefined;
     const deckRegion = isDeck ? getDeckRegionForControl(control.id) : undefined;
-    if ((isRbDeck && !rbRegion) || (isMixer && !mixerRegion) || (isDeck && !deckRegion)) return false;
-    if (rbRegion) setActiveRegionId(rbRegion.id);
-    if (mixerRegion) setActiveMixerRegionId(mixerRegion.id);
-    if (deckRegion) setActiveDeckRegionId(deckRegion.id);
-    if (isHardwareSection && activeSection) {
+    if (!isHardwareSection && ((isRbDeck && !rbRegion) || (isMixer && !mixerRegion) || (isDeck && !deckRegion))) return false;
+    if (!isHardwareSection && rbRegion) setActiveRegionId(rbRegion.id);
+    if (!isHardwareSection && mixerRegion) setActiveMixerRegionId(mixerRegion.id);
+    if (!isHardwareSection && deckRegion) setActiveDeckRegionId(deckRegion.id);
+    if (!isHardwareSection && activeSection) {
       const regionRect = rbRegion
         ? getRbDeckVisualRect(rbRegion.id, isNarrow)
         : mixerRegion
@@ -392,10 +395,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (isHardwareSection && activeSection) {
       setCrop({
         sectionId: activeSection.id,
-        rect: selectedArea?.rect
-          ?? (activeSection.id === 'mixer'
+        rect: activeSection.id === 'mixer'
           ? getMixerVisualRect('signal', isNarrow)
-          : activeSection.rect),
+          : activeSection.rect,
       });
     }
     queueMicrotask(() => initiatorRef.current?.focus());
@@ -405,17 +407,8 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (!isHardwareSection || !activeSection) return;
     clearMatchingControlHash(selectedControlId ?? '');
     setSelectedControlId(null);
+    setSelectedAreaId(null);
     setOverlayMode('none');
-    if (selectedArea) {
-      setSelectedAreaId(null);
-      setCrop({
-        sectionId: activeSection.id,
-        rect: activeSection.id === 'mixer'
-          ? getMixerVisualRect('signal', isNarrow)
-          : activeSection.rect,
-      });
-      return;
-    }
     if (section === undefined) setFocusedSectionId(null);
     setCrop(section === undefined
       ? {sectionId: undefined, rect: FULL}
@@ -425,7 +418,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             ? getMixerVisualRect('signal', isNarrow)
             : activeSection.rect,
         });
-  }, [activeSection, isHardwareSection, isNarrow, section, selectedArea, selectedControlId]);
+  }, [activeSection, isHardwareSection, isNarrow, section, selectedControlId]);
 
   function selectRegion(value: string) {
     if (isMixer) setActiveMixerRegionId(value as MixerRegionId);
@@ -515,6 +508,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         </div>
       )}
       {activeMixerRegion?.id === 'channels' && <Text>{mixerChannelOverview}</Text>}
+      {isHardwareSection && activeSection !== undefined && (
+        <Button label="Back" size="sm" variant="ghost" onClick={resetSectionView} />
+      )}
       <Stage surface={surface} rect={stageRect}>
         {activeSection === undefined
           ? (
@@ -555,22 +551,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             )
           : isCompactSection && !isHardwareSection
             ? null
-            : isHardwareSection && sectionAreas.length > 0 && selectedArea === undefined && selectedControlId === null
-              ? sectionAreas.map((area) => {
-                if (!isVisible(area.at, stageRect)) return null;
-                const position = toViewport(area.at, stageRect);
-                return (
-                  <div
-                    key={area.id}
-                    className={styles.overviewBeacon}
-                    style={{left: `${position.x * 100}%`, top: `${position.y * 100}%`}}
-                  >
-                    <HotspotMarker aria-label={`Explore ${area.label}`} onClick={() => focusArea(area)} />
-                    <span className={`${styles.overviewBeaconLabel} ${styles.sectionBeaconLabel}`}>{area.label}</span>
-                  </div>
-                );
-              })
-            : controls.map((control) => (
+          : controls.map((control) => (
               <Hotspot
                 key={control.id}
                 control={control}
@@ -591,17 +572,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 markerOffset={activeRbRegion
                   ? getRbDeckMarkerOffset(control.id, isNarrow)
                   : undefined}
+                showLabel={!isHardwareSection}
               />
               ))}
-        {isHardwareSection && activeSection !== undefined && (
-          <div className={styles.resetBeacon}>
-            <HotspotMarker
-              aria-label={selectedArea || selectedControlId ? 'Back to section map' : 'Back to full controller'}
-              onClick={resetSectionView}
-            />
-          </div>
-        )}
-      </Stage>
+        </Stage>
       {activeSection && !isHardwareSection && (
         <Stack direction="vertical" gap={2}>
           <div className={styles.learningFocus}>

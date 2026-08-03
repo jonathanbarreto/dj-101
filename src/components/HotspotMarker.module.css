@@ -15,9 +15,9 @@
 }
 
 .marker:focus-visible {
-  outline: 3px solid var(--color-on-dark);
+  outline: 3px solid var(--color-border-purple);
   outline-offset: 3px;
-  box-shadow: 0 0 0 5px var(--color-text-primary);
+  box-shadow: 0 0 0 5px var(--color-background-surface);
 }
 
 .dot,
@@ -31,27 +31,27 @@
 .dot {
   z-index: 1;
   border: 2px solid var(--color-on-dark);
-  background: var(--color-accent);
+  background: var(--color-border-purple);
 }
 
 .dotOpen {
-  background: var(--color-text-primary);
+  background: var(--color-border-purple);
 }
 
 .ring {
   pointer-events: none;
-  background: var(--color-accent);
+  background: var(--color-background-purple);
   animation:
-    hotspot-pulse calc(var(--duration-slow) * 3) var(--ease-standard) infinite,
-    hotspot-ring-entrance 420ms var(--ease-entrance) both;
-  border: 1px solid var(--color-accent);
+    hotspot-pulse calc(var(--duration-slow) * 2) var(--ease-standard) infinite,
+    hotspot-ring-entrance var(--duration-medium) var(--ease-standard) both;
+  border: 1px solid var(--color-border-purple);
 }
 
 .ringOpen {
   animation:
-    hotspot-pulse 900ms calc(var(--duration-medium) * 0.55) var(--ease-standard) infinite,
-    hotspot-ring-entrance 420ms var(--ease-entrance) both;
-  border-color: var(--color-text-primary);
+    hotspot-pulse var(--duration-slow) var(--duration-medium) var(--ease-standard) infinite,
+    hotspot-ring-entrance var(--duration-medium) var(--ease-standard) both;
+  border-color: var(--color-border-purple);
   opacity: 0.75;
   transform-origin: center;
 }

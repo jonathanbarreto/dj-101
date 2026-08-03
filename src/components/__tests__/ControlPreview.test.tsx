@@ -65,28 +65,25 @@ describe('ControlPreview', () => {
     expect(getPhysicalAction(detail)).toBe(expected);
   });
 
-  it('shows only the glanceable primary preview and a clamped physical action', () => {
+  it('shows the full lesson in one popover surface', () => {
     const {container} = render(
       <ControlPreview
         control={control}
         isShiftActive={false}
-        onReadLesson={() => {}}
         onClose={() => {}}
       />,
     );
 
     expect(screen.getByText('BEAT FX SELECT')).toBeDefined();
     expect(screen.getByText('Chooses one of fourteen Beat FX')).toBeDefined();
-    expect(screen.getByText('Physical action: Turn the selector toward Echo.')).toBeDefined();
-    expect(screen.queryByText(/Then listen/)).toBeNull();
-    expect(screen.queryByText(/Unique why/)).toBeNull();
-    expect(screen.queryByText(/Unique gotcha/)).toBeNull();
-    expect(screen.queryByText(/Unique tip/)).toBeNull();
-    expect(screen.queryByText(/Compare all Beat FX/)).toBeNull();
-    expect(screen.queryByText(/See SLIP/)).toBeNull();
-    expect(screen.queryByText(/DDJ-1000 manual/)).toBeNull();
-    expect(container.querySelector('[class*="physicalAction"]')).not.toBeNull();
-    expect(container.querySelector('[style*="overflow"]')).toBeNull();
+    expect(screen.getAllByRole('document')[0].textContent).toContain('Turn the selector toward Echo.');
+    expect(screen.getByText(/Unique why copy/)).toBeDefined();
+    expect(screen.getByText(/Unique gotcha copy/)).toBeDefined();
+    expect(screen.getByText(/Unique tip copy/)).toBeDefined();
+    expect(screen.getByText(/Compare all Beat FX/)).toBeDefined();
+    expect(screen.getByText('DDJ-1000 manual')).toBeDefined();
+    expect(container.querySelector('[class*="physicalAction"]')).toBeNull();
+    expect(screen.queryByRole('button', {name: 'Read full lesson'})).toBeNull();
   });
 
   it('uses the active Shift label and behavior', () => {
@@ -94,34 +91,29 @@ describe('ControlPreview', () => {
       <ControlPreview
         control={control}
         isShiftActive
-        onReadLesson={() => {}}
         onClose={() => {}}
       />,
     );
 
     expect(screen.getByText('SHIFTED SELECT')).toBeDefined();
-    expect(screen.getByText('SHIFT')).toBeDefined();
+    expect(screen.getAllByText('SHIFT').length).toBeGreaterThan(0);
     expect(screen.getByText('Chooses the shifted function')).toBeDefined();
-    expect(screen.getByText('Physical action: Hold SHIFT and turn the selector.')).toBeDefined();
+    expect(screen.getAllByRole('document')[0].textContent).toContain('Hold SHIFT and turn the selector.');
   });
 
-  it('exposes controlled read-lesson and close actions', async () => {
+  it('exposes a controlled close action', async () => {
     const user = userEvent.setup();
-    const onReadLesson = vi.fn();
     const onClose = vi.fn();
     render(
       <ControlPreview
         control={control}
         isShiftActive={false}
-        onReadLesson={onReadLesson}
         onClose={onClose}
       />,
     );
 
-    await user.click(screen.getByRole('button', {name: 'Read full lesson'}));
     await user.click(screen.getByRole('button', {name: 'Close'}));
 
-    expect(onReadLesson).toHaveBeenCalledOnce();
     expect(onClose).toHaveBeenCalledOnce();
   });
 });

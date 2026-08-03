@@ -1,23 +1,21 @@
 .preview {
   display: grid;
-  inline-size: min(20rem, calc(100vw - 2 * var(--spacing-4)));
-  gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-container);
-  background: var(--color-background-surface);
-  box-shadow: var(--shadow-lg);
-  line-height: 1.5;
+  inline-size: min(28rem, calc(100vw - 2 * var(--spacing-4)));
+  padding: var(--spacing-5);
+  gap: var(--spacing-4);
+  max-block-size: calc(100dvh - 2 * var(--spacing-4));
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
 }
 
-.physicalAction {
-  margin-block: 0;
-  padding: var(--spacing-3);
-  border-inline-start: var(--border-width) solid var(--color-accent);
-  border-radius: var(--radius-element);
-  background: var(--color-background-muted);
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.lessonBody {
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline-end: var(--spacing-2);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--spacing-8);
 }

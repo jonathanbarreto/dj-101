@@ -5,7 +5,7 @@ import {Button} from '@astryxdesign/core/Button';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Heading, Text} from '@astryxdesign/core/Text';
 import type {Control} from '@/content/types';
-import {getActiveControlBehavior} from './ControlLesson';
+import {ControlLesson, getActiveControlBehavior} from './ControlLesson';
 import styles from './ControlPreview.module.css';
 
 function proseLines(markdown: string): string[] {
@@ -168,33 +168,30 @@ export function getPhysicalAction(detail: string): string {
 export interface ControlPreviewProps {
   control: Control;
   isShiftActive: boolean;
-  onReadLesson: () => void;
   onClose: () => void;
 }
 
 export function ControlPreview({
   control,
   isShiftActive,
-  onReadLesson,
   onClose,
 }: ControlPreviewProps) {
   const {behavior, isShiftBehavior, label} = getActiveControlBehavior(control, isShiftActive);
   const physicalAction = getPhysicalAction(behavior.detail);
 
   return (
-    <Stack direction="vertical" gap={3} className={styles.preview}>
-      <Stack direction="horizontal" gap={2} align="center" wrap="wrap">
-        <Heading level={2}>{label}</Heading>
+    <div className={styles.preview}>
+      <Stack direction="horizontal" gap={3} align="center" wrap="wrap">
+        <Heading level={3} accessibilityLevel={2}>{label}</Heading>
         {isShiftBehavior && <Badge label="SHIFT" />}
       </Stack>
-      <Text as="p" type="supporting">{behavior.summary}</Text>
-      <Text as="p" className={styles.physicalAction}>
-        {`Physical action: ${physicalAction}`}
-      </Text>
-      <Stack direction="horizontal" gap={2} wrap="wrap">
-        <Button label="Read full lesson" variant="primary" onClick={onReadLesson} />
+      <Text as="p" type="supporting" textWrap="pretty">{behavior.summary}</Text>
+      <div className={styles.lessonBody}>
+        <ControlLesson control={control} isShiftActive={isShiftActive} showSummary={false} />
+      </div>
+      <div className={styles.footer}>
         <Button label="Close" variant="ghost" onClick={onClose} />
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

@@ -12,36 +12,33 @@ const control: Control = {
 const rect: Rect = {x: 0, y: 0, w: 1, h: 1};
 
 describe('Hotspot', () => {
-  it('is controlled and renders only the compact preview', async () => {
+  it('is controlled and renders the full lesson in one popover', async () => {
     const user = userEvent.setup();
     const onPreviewOpenChange = vi.fn();
-    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={onPreviewOpenChange} onReadLesson={() => {}} />);
-    expect(screen.getByText('Physical action: Presses the physical SLIP control.')).toBeDefined();
-    expect(screen.queryByText('When to use it')).toBeNull();
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={onPreviewOpenChange} />);
+    expect(screen.getByText('Presses the physical SLIP control.')).toBeDefined();
+    expect(screen.getByText('When to use it')).toBeDefined();
     await user.click(screen.getByRole('button', {name: 'Close'}));
     expect(onPreviewOpenChange).toHaveBeenCalledWith(false, expect.any(HTMLButtonElement));
   });
 
-  it('reports the triggering marker and read-full action to its parent', async () => {
-    const user = userEvent.setup();
+  it('does not render a second lesson handoff', () => {
     const onPreviewOpenChange = vi.fn();
-    const onReadLesson = vi.fn();
-    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={onPreviewOpenChange} onReadLesson={onReadLesson} />);
-    await user.click(screen.getByRole('button', {name: 'Read full lesson'}));
-    expect(onReadLesson).toHaveBeenCalledWith(expect.any(HTMLButtonElement));
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={onPreviewOpenChange} />);
+    expect(screen.queryByRole('button', {name: 'Read full lesson'})).toBeNull();
   });
 
   it('reports opening from the marker click to its parent', async () => {
     const user = userEvent.setup();
     const onPreviewOpenChange = vi.fn();
-    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected={false} isPreviewOpen={false} onPreviewOpenChange={onPreviewOpenChange} onReadLesson={() => {}} />);
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected={false} isPreviewOpen={false} onPreviewOpenChange={onPreviewOpenChange} />);
     await user.click(screen.getByRole('button', {name: 'SLIP'}));
     expect(onPreviewOpenChange).toHaveBeenCalledWith(true, expect.any(HTMLButtonElement));
   });
 
   it('uses bounded width and allows Astryx to choose flip placement', () => {
-    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={() => {}} onReadLesson={() => {}} />);
+    render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={() => {}} />);
     expect(screen.getByRole('dialog').parentElement?.style.getPropertyValue('--x-width'))
-      .toBe('min(22rem, calc(100vw - 2 * var(--spacing-3)))');
+      .toBe('min(30rem, calc(100vw - 2 * var(--spacing-4)))');
   });
 });

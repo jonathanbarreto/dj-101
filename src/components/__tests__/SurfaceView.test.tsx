@@ -1,8 +1,9 @@
-import {cleanup, render, screen} from '@testing-library/react';
+import {cleanup, render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {SurfaceView} from '../SurfaceView';
+import {controlsForControllerView, type ControllerTerminalView} from '../controllerHotspots';
 
 const originalMatchMedia = window.matchMedia;
 
@@ -22,23 +23,23 @@ describe('SurfaceView lesson coordination', () => {
   });
   afterEach(() => {
     cleanup();
+    document.querySelectorAll('[popover]').forEach((element) => element.remove());
     vi.restoreAllMocks();
   });
 
-  it('opens a desktop hotspot as a preview, then promotes it to the one full dialog', async () => {
+  it('opens a desktop hotspot with its full lesson in one popover', async () => {
     const user = userEvent.setup();
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-    await user.click(screen.getByRole('button', {name: 'Explore Loop Controls'}));
     const hotspot = screen.getByRole('button', {name: 'LOOP IN · 1/2X'});
+    const image = screen.getByRole('img', {name: 'Pioneer DJ DDJ-1000'});
+    const cropBeforeOpen = image.getAttribute('style');
     await user.click(hotspot);
     expect(window.location.hash).toBe('#deck-left-loop-in');
+    expect(image.getAttribute('style')).toBe(cropBeforeOpen);
     expect(hotspot.getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByRole('dialog', {name: 'LOOP IN · 1/2X'}).getAttribute('hidden')).toBeNull();
-    expect(screen.getAllByRole('button', {name: 'Read full lesson'}).length).toBeGreaterThan(0);
+    expect(screen.getAllByText('When to use it').length).toBeGreaterThan(0);
     expect(document.querySelector('dialog[open]')).toBeNull();
-
-    await user.click(screen.getAllByRole('button', {name: 'Read full lesson'})[0]);
-    expect(document.querySelectorAll('dialog')).toHaveLength(1);
   });
 
   it('opens a valid direct hash in its owning region as a dialog', () => {
@@ -54,10 +55,9 @@ describe('SurfaceView lesson coordination', () => {
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
     expect(document.querySelectorAll('dialog')).toHaveLength(0);
 
-    await user.click(screen.getByRole('button', {name: 'Explore Loop Controls'}));
     await user.click(screen.getByRole('button', {name: 'LOOP IN · 1/2X'}));
-    await user.click(screen.getAllByRole('button', {name: 'Read full lesson'})[0]);
-    await user.click(screen.getAllByRole('button', {name: 'Close'}).at(-1)!);
+    await user.click(within(screen.getByRole('dialog', {name: 'LOOP IN · 1/2X'}))
+      .getByRole('button', {name: 'Close'}));
     expect(window.location.hash).toBe('');
   });
 
@@ -65,7 +65,6 @@ describe('SurfaceView lesson coordination', () => {
     const user = userEvent.setup();
     media(true);
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-    await user.click(screen.getByRole('button', {name: 'Explore Loop Controls'}));
     await user.click(screen.getByRole('button', {name: /LOOP IN/}));
     expect(document.querySelectorAll('dialog')).toHaveLength(1);
   });
@@ -73,11 +72,47 @@ describe('SurfaceView lesson coordination', () => {
   it('keeps hardware guidance inside beacons and popovers', () => {
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
 
-    expect(screen.getByRole('button', {name: 'Explore Loop Controls'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'LOOP IN · 1/2X'})).toBeDefined();
+    expect(document.querySelector('[data-hotspot-label]')).toBeNull();
     expect(screen.queryByRole('switch', {name: /shift/i})).toBeNull();
     expect(screen.queryByText('Learning focus')).toBeNull();
     expect(screen.queryByText(/Controls in/)).toBeNull();
   });
+
+  it('routes both overview deck beacons to the same terminal deck view', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="hardware" />);
+
+    const deckEntries = screen.getAllByRole('button', {name: 'Explore Decks'});
+    expect(deckEntries).toHaveLength(2);
+    await user.click(deckEntries[0]);
+    const firstCrop = screen.getByRole('img', {name: 'Pioneer DJ DDJ-1000'}).getAttribute('style');
+    expect(screen.getByRole('button', {name: 'LOOP IN · 1/2X'})).toBeDefined();
+
+    await user.click(screen.getByRole('button', {name: 'Back'}));
+    await user.click(screen.getAllByRole('button', {name: 'Explore Decks'})[1]);
+    expect(screen.getByRole('img', {name: 'Pioneer DJ DDJ-1000'}).getAttribute('style')).toBe(firstCrop);
+    expect(screen.getByRole('button', {name: 'LOOP IN · 1/2X'})).toBeDefined();
+  });
+
+  for (const terminalView of ['deck-left', 'mixer'] as ControllerTerminalView[]) {
+    for (const control of controlsForControllerView(terminalView)) {
+      it(`opens ${terminalView} hotspot ${control.label} with its full lesson`, async () => {
+        const user = userEvent.setup();
+        render(<SurfaceView surface="hardware" sectionId={terminalView} />);
+
+        const hotspot = screen.getByRole('button', {name: control.label});
+        await user.click(hotspot);
+        expect(hotspot.getAttribute('aria-expanded')).toBe('true');
+        expect(screen.getByRole('heading', {name: control.label})).toBeDefined();
+
+        expect(screen.getAllByText(control.primary.summary).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(control.primary.why).length).toBeGreaterThan(0);
+        await user.click(screen.getAllByRole('button', {name: 'Close'}).at(-1)!);
+        expect(hotspot.getAttribute('aria-expanded')).toBe('false');
+      });
+    }
+  }
 
   it('has no initial full-stage animation frame', () => {
     const frame = vi.spyOn(window, 'requestAnimationFrame');

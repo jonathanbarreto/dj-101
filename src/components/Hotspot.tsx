@@ -21,6 +21,7 @@ export interface HotspotProps {
   /** @deprecated use onPreviewOpenChange */
   onOpenChange?: (isOpen: boolean) => void;
   markerOffset?: Point;
+  showLabel?: boolean;
 }
 
 export function Hotspot({
@@ -34,6 +35,7 @@ export function Hotspot({
   isOpen,
   onOpenChange,
   markerOffset = {x: 0, y: 0},
+  showLabel = true,
 }: HotspotProps) {
   const visible = isVisible(control.at, rect);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -81,11 +83,10 @@ export function Hotspot({
           onOpenChange?.(nextIsOpen);
         }}
         label={label}
-        width="min(22rem, calc(100vw - 2 * var(--spacing-3)))"
+        width="min(30rem, calc(100vw - 2 * var(--spacing-4)))"
         content={<ControlPreview
           control={control}
           isShiftActive={isShiftActive}
-          onReadLesson={() => onReadLesson?.(triggerRef.current)}
           onClose={() => onPreviewOpenChange?.(false, triggerRef.current)}
         />}
       >
@@ -100,12 +101,12 @@ export function Hotspot({
                 onPreviewOpenChange?.(true, triggerRef.current);
               }}
               aria-haspopup={triggerProps['aria-haspopup']}
-              aria-expanded={triggerProps['aria-expanded']}
+              aria-expanded={(isPreviewOpen ?? isOpen ?? false) && (isSelected ?? true)}
               aria-controls={triggerProps['aria-controls']}
               aria-label={label}
               isOpen={(isPreviewOpen ?? isOpen ?? false) && (isSelected ?? true)}
             />
-            <span className={styles.label} aria-hidden="true">{label}</span>
+            {showLabel ? <span className={styles.label} data-hotspot-label aria-hidden="true">{label}</span> : null}
           </>
         )}
       </Popover>
