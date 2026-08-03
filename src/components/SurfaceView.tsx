@@ -89,24 +89,45 @@ interface SectionArea {
 
 const SECTION_AREAS: Partial<Record<SectionId, SectionArea[]>> = {
   'deck-left': [
-    {id: 'transport', label: 'Loop & transport', at: {x: 0.17, y: 0.15}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [...DECK_REGIONS[0].leftControlIds]},
-    {id: 'jog', label: 'Jog & tempo', at: {x: 0.17, y: 0.43}, rect: DECK_REGIONS[1].rect['deck-left'], controlIds: [...DECK_REGIONS[1].leftControlIds]},
-    {id: 'pads', label: 'Pads & key', at: {x: 0.17, y: 0.75}, rect: DECK_REGIONS[2].rect['deck-left'], controlIds: [...DECK_REGIONS[2].leftControlIds]},
+    {id: 'transport', label: 'Loop Controls', at: {x: 0.07, y: 0.08}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [...DECK_REGIONS[0].leftControlIds]},
+    {id: 'quantize', label: 'Quantize', at: {x: 0.23, y: 0.08}, rect: DECK_REGIONS[1].rect['deck-left'], controlIds: [...DECK_REGIONS[1].leftControlIds]},
+    {id: 'browser', label: 'Browser', at: {x: 0.31, y: 0.08}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [], targetSectionId: 'browser'},
+    {id: 'deck-select', label: 'Deck Select', at: {x: 0.06, y: 0.25}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [...DECK_REGIONS[0].leftControlIds]},
+    {id: 'jog', label: 'Jog Wheel', at: {x: 0.17, y: 0.43}, rect: DECK_REGIONS[1].rect['deck-left'], controlIds: [...DECK_REGIONS[1].leftControlIds]},
+    {id: 'shift', label: 'Shift', at: {x: 0.04, y: 0.57}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [...DECK_REGIONS[0].leftControlIds]},
+    {id: 'tempo-sync', label: 'Tempo & Sync', at: {x: 0.28, y: 0.64}, rect: DECK_REGIONS[1].rect['deck-left'], controlIds: [...DECK_REGIONS[1].leftControlIds]},
+    {id: 'pad-modes', label: 'Pad Modes', at: {x: 0.19, y: 0.7}, rect: DECK_REGIONS[2].rect['deck-left'], controlIds: [...DECK_REGIONS[2].leftControlIds]},
+    {id: 'cue', label: 'Cue', at: {x: 0.05, y: 0.79}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [...DECK_REGIONS[0].leftControlIds]},
+    {id: 'pads', label: 'Pads', at: {x: 0.18, y: 0.86}, rect: DECK_REGIONS[2].rect['deck-left'], controlIds: [...DECK_REGIONS[2].leftControlIds]},
+    {id: 'play', label: 'Play', at: {x: 0.05, y: 0.92}, rect: DECK_REGIONS[0].rect['deck-left'], controlIds: [...DECK_REGIONS[0].leftControlIds]},
   ],
   'deck-right': [
-    {id: 'transport', label: 'Loop & transport', at: {x: 0.83, y: 0.15}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: DECK_REGIONS[0].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
-    {id: 'jog', label: 'Jog & tempo', at: {x: 0.83, y: 0.43}, rect: DECK_REGIONS[1].rect['deck-right'], controlIds: DECK_REGIONS[1].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
-    {id: 'pads', label: 'Pads & key', at: {x: 0.83, y: 0.75}, rect: DECK_REGIONS[2].rect['deck-right'], controlIds: DECK_REGIONS[2].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'transport', label: 'Loop Controls', at: {x: 0.93, y: 0.08}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: DECK_REGIONS[0].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'quantize', label: 'Quantize', at: {x: 0.77, y: 0.08}, rect: DECK_REGIONS[1].rect['deck-right'], controlIds: DECK_REGIONS[1].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'browser', label: 'Browser', at: {x: 0.69, y: 0.08}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: [], targetSectionId: 'browser'},
+    {id: 'deck-select', label: 'Deck Select', at: {x: 0.94, y: 0.25}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: DECK_REGIONS[0].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'jog', label: 'Jog Wheel', at: {x: 0.83, y: 0.43}, rect: DECK_REGIONS[1].rect['deck-right'], controlIds: DECK_REGIONS[1].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'shift', label: 'Shift', at: {x: 0.96, y: 0.57}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: DECK_REGIONS[0].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'tempo-sync', label: 'Tempo & Sync', at: {x: 0.72, y: 0.64}, rect: DECK_REGIONS[1].rect['deck-right'], controlIds: DECK_REGIONS[1].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'pad-modes', label: 'Pad Modes', at: {x: 0.81, y: 0.7}, rect: DECK_REGIONS[2].rect['deck-right'], controlIds: DECK_REGIONS[2].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'cue', label: 'Cue', at: {x: 0.95, y: 0.79}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: DECK_REGIONS[0].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'pads', label: 'Pads', at: {x: 0.82, y: 0.86}, rect: DECK_REGIONS[2].rect['deck-right'], controlIds: DECK_REGIONS[2].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
+    {id: 'play', label: 'Play', at: {x: 0.95, y: 0.92}, rect: DECK_REGIONS[0].rect['deck-right'], controlIds: DECK_REGIONS[0].leftControlIds.map((id) => id.replace('deck-left-', 'deck-right-'))},
   ],
   mixer: [
-    {id: 'input-gain', label: 'Input & gain', at: {x: 0.49, y: 0.13}, rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956}, controlIds: ['mixer-ch1-input', 'mixer-ch2-input', 'mixer-ch3-input', 'mixer-ch4-input', 'mixer-ch1-trim', 'mixer-ch2-trim', 'mixer-ch3-trim', 'mixer-ch4-trim']},
-    {id: 'eq', label: 'Channel EQ', at: {x: 0.49, y: 0.3}, rect: {x: 0.32, y: 0.16, w: 0.16, h: 0.46}, controlIds: ['mixer-ch1-high', 'mixer-ch1-mid', 'mixer-ch1-low']},
-    {id: 'color-fx', label: 'Color FX', at: {x: 0.37, y: 0.49}, rect: {x: 0.32, y: 0.42, w: 0.15, h: 0.24}, controlIds: ['mixer-sound-color-fx-select', 'mixer-ch1-color']},
-    {id: 'headphone-cue', label: 'Headphone cue', at: {x: 0.37, y: 0.74}, rect: {x: 0.31, y: 0.55, w: 0.16, h: 0.36}, controlIds: ['mixer-ch1-cue', 'mixer-headphones-mixing', 'mixer-headphones-level']},
-    {id: 'master-booth', label: 'Master & booth', at: {x: 0.62, y: 0.24}, rect: {x: 0.58, y: 0.04, w: 0.11, h: 0.43}, controlIds: ['mixer-master-level', 'mixer-master-meter-clip', 'mixer-booth-monitor', 'mixer-master-cue']},
-    {id: 'channel-faders', label: 'Channel faders', at: {x: 0.5, y: 0.72}, rect: {x: 0.34, y: 0.56, w: 0.3, h: 0.3}, controlIds: ['mixer-ch1-fader', 'mixer-ch2-fader', 'mixer-ch3-fader', 'mixer-ch4-fader']},
-    {id: 'crossfader', label: 'Crossfader', at: {x: 0.5, y: 0.93}, rect: {x: 0.34, y: 0.68, w: 0.34, h: 0.3}, controlIds: ['mixer-crossfader', 'mixer-ch1-crossfader-assign', 'mixer-ch2-crossfader-assign']},
-    {id: 'beat-fx', label: 'Beat FX', at: {x: 0.62, y: 0.76}, rect: {x: 0.56, y: 0.48, w: 0.13, h: 0.49}, controlIds: [], targetSectionId: 'fx'},
+    {id: 'master-volume', label: 'Master Volume', at: {x: 0.63, y: 0.09}, rect: {x: 0.58, y: 0.04, w: 0.11, h: 0.43}, controlIds: ['mixer-master-level', 'mixer-master-meter-clip', 'mixer-booth-monitor', 'mixer-master-cue']},
+    {id: 'trim', label: 'Trim', at: {x: 0.37, y: 0.14}, rect: {x: 0.25, y: 0.022, w: 0.5, h: 0.956}, controlIds: ['mixer-ch1-input', 'mixer-ch2-input', 'mixer-ch3-input', 'mixer-ch4-input', 'mixer-ch1-trim', 'mixer-ch2-trim', 'mixer-ch3-trim', 'mixer-ch4-trim']},
+    {id: 'eq-high', label: 'EQ: Hi', at: {x: 0.37, y: 0.26}, rect: {x: 0.32, y: 0.16, w: 0.16, h: 0.46}, controlIds: ['mixer-ch1-high']},
+    {id: 'eq-mid', label: 'EQ: Med', at: {x: 0.37, y: 0.35}, rect: {x: 0.32, y: 0.16, w: 0.16, h: 0.46}, controlIds: ['mixer-ch1-mid']},
+    {id: 'eq-low', label: 'EQ: Low', at: {x: 0.37, y: 0.44}, rect: {x: 0.32, y: 0.16, w: 0.16, h: 0.46}, controlIds: ['mixer-ch1-low']},
+    {id: 'color-fx-options', label: 'Color FX Options', at: {x: 0.35, y: 0.49}, rect: {x: 0.32, y: 0.42, w: 0.15, h: 0.24}, controlIds: ['mixer-sound-color-fx-select']},
+    {id: 'color-fx', label: 'Color FX Low / Hi', at: {x: 0.52, y: 0.49}, rect: {x: 0.32, y: 0.42, w: 0.15, h: 0.24}, controlIds: ['mixer-ch1-color']},
+    {id: 'headphone-cue', label: 'Headphones', at: {x: 0.35, y: 0.67}, rect: {x: 0.31, y: 0.55, w: 0.16, h: 0.36}, controlIds: ['mixer-ch1-cue', 'mixer-headphones-mixing', 'mixer-headphones-level']},
+    {id: 'beat-fx-options', label: 'Beat FX Options', at: {x: 0.62, y: 0.65}, rect: {x: 0.56, y: 0.48, w: 0.13, h: 0.49}, controlIds: [], targetSectionId: 'fx'},
+    {id: 'channel-faders', label: 'Channel Faders', at: {x: 0.48, y: 0.71}, rect: {x: 0.34, y: 0.56, w: 0.3, h: 0.3}, controlIds: ['mixer-ch1-fader', 'mixer-ch2-fader', 'mixer-ch3-fader', 'mixer-ch4-fader']},
+    {id: 'beat-fx-channel', label: 'Beat FX Channel', at: {x: 0.63, y: 0.76}, rect: {x: 0.56, y: 0.68, w: 0.13, h: 0.15}, controlIds: [], targetSectionId: 'fx'},
+    {id: 'beat-fx-control', label: 'Beat FX Control', at: {x: 0.63, y: 0.85}, rect: {x: 0.56, y: 0.78, w: 0.13, h: 0.2}, controlIds: [], targetSectionId: 'fx'},
+    {id: 'crossfader', label: 'Cross Fader', at: {x: 0.48, y: 0.94}, rect: {x: 0.34, y: 0.68, w: 0.34, h: 0.3}, controlIds: ['mixer-crossfader', 'mixer-ch1-crossfader-assign', 'mixer-ch2-crossfader-assign']},
   ],
   fx: [
     {id: 'effect', label: 'Choose effect', at: {x: 0.62, y: 0.65}, rect: {x: 0.56, y: 0.49, w: 0.13, h: 0.23}, controlIds: ['fx-display', 'fx-selector']},
@@ -125,35 +146,14 @@ interface ControllerEntryPoint {
   label: string;
   at: Point;
   sectionId: SectionId;
-  areaId: string;
+  areaId?: string;
   summary: string;
 }
 
 const CONTROLLER_ENTRY_POINTS: ControllerEntryPoint[] = [
-  {id: 'left-loop', label: 'Loop Controls', at: {x: 0.042, y: 0.08}, sectionId: 'deck-left', areaId: 'transport', summary: 'Work with loops, cue calls, and deck transport.'},
-  {id: 'left-quantize', label: 'Quantize', at: {x: 0.227, y: 0.08}, sectionId: 'deck-left', areaId: 'jog', summary: 'Keep cue and loop actions aligned to the beat grid.'},
-  {id: 'left-browser', label: 'Browser', at: {x: 0.305, y: 0.08}, sectionId: 'browser', areaId: 'browse', summary: 'Find and load the next track from the library.'},
-  {id: 'right-loop', label: 'Loop Controls', at: {x: 0.674, y: 0.08}, sectionId: 'deck-right', areaId: 'transport', summary: 'Work with loops, cue calls, and deck transport.'},
-  {id: 'right-quantize', label: 'Quantize', at: {x: 0.844, y: 0.08}, sectionId: 'deck-right', areaId: 'jog', summary: 'Keep cue and loop actions aligned to the beat grid.'},
-  {id: 'right-browser', label: 'Browser', at: {x: 0.93, y: 0.08}, sectionId: 'browser', areaId: 'browse', summary: 'Find and load the next track from the library.'},
-  {id: 'master', label: 'Master', at: {x: 0.62, y: 0.09}, sectionId: 'mixer', areaId: 'master-booth', summary: 'Set the room and booth monitor independently.'},
-  {id: 'eq', label: 'EQ', at: {x: 0.49, y: 0.28}, sectionId: 'mixer', areaId: 'eq', summary: 'Shape the frequencies of a representative channel.'},
-  {id: 'color-fx', label: 'Sound Color FX', at: {x: 0.4, y: 0.48}, sectionId: 'mixer', areaId: 'color-fx', summary: 'Choose a color effect, then add it to the channel.'},
-  {id: 'headphones', label: 'Headphones', at: {x: 0.37, y: 0.68}, sectionId: 'mixer', areaId: 'headphone-cue', summary: 'Prepare the next track privately before bringing it into the mix.'},
-  {id: 'beat-fx', label: 'Beat FX', at: {x: 0.62, y: 0.66}, sectionId: 'fx', areaId: 'effect', summary: 'Choose, time, route, and perform a Beat FX.'},
-  {id: 'channel-faders', label: 'Channel Faders', at: {x: 0.49, y: 0.72}, sectionId: 'mixer', areaId: 'channel-faders', summary: 'Set the balance of each channel in the mix.'},
-  {id: 'crossfader', label: 'Cross Fader', at: {x: 0.49, y: 0.94}, sectionId: 'mixer', areaId: 'crossfader', summary: 'Assign channels, then blend or cut between them.'},
-  {id: 'left-deck-select', label: 'Deck Select', at: {x: 0.04, y: 0.22}, sectionId: 'deck-left', areaId: 'transport', summary: 'Select the deck pair before using deck-specific controls.'},
-  {id: 'left-jog', label: 'Jog Wheel', at: {x: 0.17, y: 0.43}, sectionId: 'deck-left', areaId: 'jog', summary: 'Control jog feel, tempo, sync, and vinyl behavior.'},
-  {id: 'left-sync', label: 'Sync', at: {x: 0.31, y: 0.6}, sectionId: 'deck-left', areaId: 'jog', summary: 'Align the selected deck to the current sync master.'},
-  {id: 'left-key-sync', label: 'Key Sync', at: {x: 0.27, y: 0.77}, sectionId: 'deck-left', areaId: 'pads', summary: 'Match the musical key with the master deck.'},
-  {id: 'left-pads', label: 'Pads', at: {x: 0.17, y: 0.84}, sectionId: 'deck-left', areaId: 'pads', summary: 'Use performance pads, pad modes, and key controls.'},
-  {id: 'left-tempo', label: 'Tempo', at: {x: 0.31, y: 0.92}, sectionId: 'deck-left', areaId: 'jog', summary: 'Adjust playback speed with the tempo fader.'},
-  {id: 'right-deck-select', label: 'Deck Select', at: {x: 0.675, y: 0.22}, sectionId: 'deck-right', areaId: 'transport', summary: 'Select the deck pair before using deck-specific controls.'},
-  {id: 'right-jog', label: 'Jog Wheel', at: {x: 0.83, y: 0.43}, sectionId: 'deck-right', areaId: 'jog', summary: 'Control jog feel, tempo, sync, and vinyl behavior.'},
-  {id: 'right-sync', label: 'Sync', at: {x: 0.94, y: 0.6}, sectionId: 'deck-right', areaId: 'jog', summary: 'Align the selected deck to the current sync master.'},
-  {id: 'right-pads', label: 'Pads', at: {x: 0.83, y: 0.84}, sectionId: 'deck-right', areaId: 'pads', summary: 'Use performance pads, pad modes, and key controls.'},
-  {id: 'right-tempo', label: 'Tempo', at: {x: 0.94, y: 0.92}, sectionId: 'deck-right', areaId: 'jog', summary: 'Adjust playback speed with the tempo fader.'},
+  {id: 'left-decks', label: 'Decks', at: {x: 0.17, y: 0.52}, sectionId: 'deck-left', summary: 'Explore the left deck by control group.'},
+  {id: 'mixer', label: 'Mixer', at: {x: 0.5, y: 0.52}, sectionId: 'mixer', summary: 'Explore the mixer by signal path and performance group.'},
+  {id: 'right-decks', label: 'Decks', at: {x: 0.83, y: 0.52}, sectionId: 'deck-right', summary: 'Explore the right deck by control group.'},
 ];
 function nextSection(currentId: SectionId): SectionId | null {
   const index = SECTION_FLOW.indexOf(currentId);
@@ -212,8 +212,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const activeRegion = activeRbRegion ?? activeMixerRegion ?? activeDeckRegion;
   const shouldScopeToRegion = !isHardwareSection || selectedControlId !== null;
   const targetRect = isHardwareSection
-    ? selectedArea?.rect
-      ?? (activeSection?.id === 'mixer'
+    ? (activeSection?.id === 'mixer'
       ? getMixerVisualRect('signal', isNarrow)
       : activeSection?.rect ?? FULL)
     : activeRbRegion
@@ -288,10 +287,13 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     setSelectedAreaId(area.id);
     setSelectedControlId(null);
     setOverlayMode('none');
-    setCrop({sectionId: activeSection.id, rect: area.rect});
   }, [activeSection, focusSection]);
 
   const focusEntryPoint = useCallback((entry: ControllerEntryPoint) => {
+    if (entry.areaId === undefined) {
+      focusSection(entry.sectionId);
+      return;
+    }
     const area = SECTION_AREAS[entry.sectionId]?.find((candidate) => candidate.id === entry.areaId);
     if (!area || surface !== 'hardware' || section !== undefined) return;
     setFocusedSectionId(entry.sectionId);
@@ -299,7 +301,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     setSelectedControlId(null);
     setOverlayMode('none');
     setCrop({sectionId: entry.sectionId, rect: area.rect});
-  }, [section, surface]);
+  }, [focusSection, section, surface]);
 
   const activateControl = useCallback((controlId: string, updateHash: boolean) => {
     const control = allControls.find((candidate) => candidate.id === controlId);
@@ -564,7 +566,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                     style={{left: `${position.x * 100}%`, top: `${position.y * 100}%`}}
                   >
                     <HotspotMarker aria-label={`Explore ${area.label}`} onClick={() => focusArea(area)} />
-                    <span className={styles.overviewBeaconLabel}>{area.label}</span>
+                    <span className={`${styles.overviewBeaconLabel} ${styles.sectionBeaconLabel}`}>{area.label}</span>
                   </div>
                 );
               })

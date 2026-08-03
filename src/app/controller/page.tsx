@@ -1,4 +1,6 @@
 import type {Metadata} from 'next';
+import {Stack} from '@astryxdesign/core/Stack';
+import {Text} from '@astryxdesign/core/Text';
 import {SurfaceView} from '@/components/SurfaceView';
 import {PageFrame} from '@/components/PageFrame';
 
@@ -18,7 +20,15 @@ export const metadata: Metadata = {
 export default function ControllerPage() {
   return (
     <PageFrame>
-      <SurfaceView surface="hardware" />
+      <Stack direction="vertical" gap={4} xstyle={undefined}>
+        <Stack direction="vertical" gap={2} xstyle={undefined}>
+          <Text as="h1" type="display-1">DDJ-1000</Text>
+          <Text as="p" type="large">
+            Learn the decks, mixer, effects, pads, browser controls, and connections where they live.
+          </Text>
+        </Stack>
+        <SurfaceView surface="hardware" />
+      </Stack>
     </PageFrame>
   );
 }

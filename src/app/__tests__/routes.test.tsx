@@ -63,7 +63,7 @@ describe('routes', () => {
   it('renders the overview page titles', () => {
     const controller = render(<ControllerPage />);
     expect(screen.getByRole('img', {name: 'Pioneer DJ DDJ-1000'})).toBeDefined();
-    expect(screen.getByRole('button', {name: 'Explore EQ'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Explore Mixer'})).toBeDefined();
     controller.unmount();
 
     render(<RekordboxPage />);
@@ -75,7 +75,7 @@ describe('routes', () => {
     const controller = render(<ControllerPage />);
     expect(screen.queryByRole('navigation', {name: 'Surface orientation'})).toBeNull();
     expect(screen.queryByRole('navigation', {name: 'Breadcrumb'})).toBeNull();
-    expect(screen.queryByRole('heading')).toBeNull();
+    expect(screen.getByRole('heading', {name: 'DDJ-1000'})).toBeDefined();
     controller.unmount();
 
     const section = render(await RekordboxSectionPage({

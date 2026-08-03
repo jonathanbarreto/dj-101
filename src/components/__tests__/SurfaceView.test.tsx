@@ -28,7 +28,7 @@ describe('SurfaceView lesson coordination', () => {
   it('opens a desktop hotspot as a preview, then promotes it to the one full dialog', async () => {
     const user = userEvent.setup();
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-    await user.click(screen.getByRole('button', {name: 'Explore Loop & transport'}));
+    await user.click(screen.getByRole('button', {name: 'Explore Loop Controls'}));
     const hotspot = screen.getByRole('button', {name: 'LOOP IN · 1/2X'});
     await user.click(hotspot);
     expect(window.location.hash).toBe('#deck-left-loop-in');
@@ -54,7 +54,7 @@ describe('SurfaceView lesson coordination', () => {
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
     expect(document.querySelectorAll('dialog')).toHaveLength(0);
 
-    await user.click(screen.getByRole('button', {name: 'Explore Loop & transport'}));
+    await user.click(screen.getByRole('button', {name: 'Explore Loop Controls'}));
     await user.click(screen.getByRole('button', {name: 'LOOP IN · 1/2X'}));
     await user.click(screen.getAllByRole('button', {name: 'Read full lesson'})[0]);
     await user.click(screen.getAllByRole('button', {name: 'Close'}).at(-1)!);
@@ -65,7 +65,7 @@ describe('SurfaceView lesson coordination', () => {
     const user = userEvent.setup();
     media(true);
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
-    await user.click(screen.getByRole('button', {name: 'Explore Loop & transport'}));
+    await user.click(screen.getByRole('button', {name: 'Explore Loop Controls'}));
     await user.click(screen.getByRole('button', {name: /LOOP IN/}));
     expect(document.querySelectorAll('dialog')).toHaveLength(1);
   });
@@ -73,7 +73,7 @@ describe('SurfaceView lesson coordination', () => {
   it('keeps hardware guidance inside beacons and popovers', () => {
     render(<SurfaceView surface="hardware" sectionId="deck-left" />);
 
-    expect(screen.getByRole('button', {name: 'Explore Loop & transport'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Explore Loop Controls'})).toBeDefined();
     expect(screen.queryByRole('switch', {name: /shift/i})).toBeNull();
     expect(screen.queryByText('Learning focus')).toBeNull();
     expect(screen.queryByText(/Controls in/)).toBeNull();

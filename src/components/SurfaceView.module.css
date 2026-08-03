@@ -32,7 +32,7 @@
 
 .overviewBeaconLabel {
   position: absolute;
-  top: calc(100% - var(--spacing-1));
+  top: var(--spacing-3);
   left: 50%;
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-element);
@@ -49,6 +49,10 @@
   transform: translateX(-50%);
   backdrop-filter: blur(8px);
   pointer-events: none;
+}
+
+.sectionBeaconLabel {
+  display: none;
 }
 
 .overviewBeaconLabelStart {
