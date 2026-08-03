@@ -1,5 +1,7 @@
 import {describe, expect, it} from 'vitest';
 
+import {controlsInSection} from '@/content';
+
 import {controlsForControllerView} from '../controllerHotspots';
 
 const BEAT_FX_TARGETS = {
@@ -17,6 +19,17 @@ describe('controlsForControllerView', () => {
       const terminalControl = mixerControls.find((control) => control.id === controlId);
 
       expect(terminalControl?.at).toEqual(target);
+    }
+  });
+
+  it('uses canonical source positions for Deck hotspots', () => {
+    const terminalControls = controlsForControllerView('deck-left');
+
+    for (const terminalControl of terminalControls) {
+      const canonicalControl = controlsInSection(terminalControl.section)
+        .find((control) => control.id === terminalControl.id);
+
+      expect(terminalControl.at).toEqual(canonicalControl?.at);
     }
   });
 });
