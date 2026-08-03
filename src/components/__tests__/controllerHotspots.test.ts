@@ -19,6 +19,7 @@ const DECK_HOTSPOT_IDS = [
   'deck-left-jog-dial',
   'deck-left-beat-sync',
   'deck-left-memory',
+  'deck-left-master-tempo',
   'deck-left-tempo-slider',
   'deck-left-hot-cue',
   'deck-left-pad-fx-1',
@@ -33,6 +34,7 @@ const DECK_HOTSPOT_IDS = [
 const DECK_CALIBRATED_TARGETS = {
   'deck-left-jog-dial': {x: 0.17, y: 0.43},
   'deck-left-pad-grid': {x: 0.18, y: 0.86},
+  'deck-left-tempo-slider': {x: 0.3027, y: 0.7341},
 } as const;
 
 describe('controlsForControllerView', () => {
