@@ -5,6 +5,7 @@ import {rightDeckControls} from './hardware/right-deck';
 import {mixerControls} from './hardware/mixer';
 import {hardwareFxControls} from './hardware/fx';
 import {rbDeckControls} from './rekordbox/deck';
+import {rbLibraryControls, rbPerformanceControls} from './rekordbox/workspaces';
 
 const modules: Control[][] = [
   deckControls,
@@ -13,6 +14,8 @@ const modules: Control[][] = [
   mixerControls,
   hardwareFxControls,
   rbDeckControls,
+  rbLibraryControls,
+  rbPerformanceControls,
 ];
 
 export const ALL_CONTROLS: Control[] = modules.flat();

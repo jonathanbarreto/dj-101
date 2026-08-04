@@ -121,7 +121,7 @@ describe('production release integrity', () => {
     await expect(rekordboxSectionMetadata({
       params: Promise.resolve({section: 'rb-deck'}),
     })).resolves.toMatchObject({
-      openGraph: {title: 'Player deck in rekordbox 7', url: '/rekordbox/rb-deck'},
+      openGraph: {title: 'Player Deck in rekordbox 7', url: '/rekordbox/rb-deck'},
     });
     await expect(referenceMetadata({
       params: Promise.resolve({topic: 'beat-fx'}),
@@ -168,6 +168,8 @@ describe('production release integrity', () => {
       'http://localhost:3000/controller/front',
       'http://localhost:3000/rekordbox',
       'http://localhost:3000/rekordbox/rb-deck',
+      'http://localhost:3000/rekordbox/rb-mixer',
+      'http://localhost:3000/rekordbox/rb-sources',
       'http://localhost:3000/reference',
       'http://localhost:3000/reference/beat-fx',
       'http://localhost:3000/reference/sound-color-fx',

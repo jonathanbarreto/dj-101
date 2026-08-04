@@ -71,7 +71,7 @@ describe('routes', () => {
     expect(screen.queryByRole('main')).toBeNull();
   });
 
-  it('keeps controller hardware map-only while rekordbox retains its orientation UI', async () => {
+  it('keeps controller and rekordbox focused views map-only', async () => {
     const controller = render(<ControllerPage />);
     expect(screen.queryByRole('navigation', {name: 'Surface orientation'})).toBeNull();
     expect(screen.queryByRole('navigation', {name: 'Breadcrumb'})).toBeNull();
@@ -81,15 +81,14 @@ describe('routes', () => {
     const section = render(await RekordboxSectionPage({
       params: Promise.resolve({section: 'rb-deck'}),
     }));
-    expect(screen.getByRole('navigation', {name: 'Surface orientation'})).toBeDefined();
-    expect(screen.getByRole('link', {name: 'View map'}).getAttribute('href'))
-      .toBe('/rekordbox');
+    expect(screen.queryByRole('navigation', {name: 'Surface orientation'})).toBeNull();
+    expect(screen.getByRole('button', {name: 'Back'})).toBeDefined();
     expect(screen.queryByRole('navigation', {name: 'Breadcrumb'})).toBeNull();
     expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1);
     section.unmount();
   });
 
-  it('offers Resume from the rekordbox map only after a valid same-surface target is stored', () => {
+  it('keeps the rekordbox overview limited to its progressive entry points', () => {
     window.sessionStorage.setItem(RESUME_STORAGE_KEY, JSON.stringify({
       surface: 'hardware', sectionId: 'deck-left', controlId: 'deck-left-play-pause',
     }));
@@ -101,8 +100,8 @@ describe('routes', () => {
       surface: 'software', sectionId: 'rb-deck', controlId: 'rb-deck-title',
     }));
     render(<RekordboxPage />);
-    expect(screen.getByRole('link', {name: 'Resume'}).getAttribute('href'))
-      .toBe('/rekordbox/rb-deck#rb-deck-title');
+    expect(screen.queryByRole('link', {name: 'Resume'})).toBeNull();
+    expect(screen.getByRole('button', {name: 'Explore Player Deck'})).toBeDefined();
   });
 
   it('generates static params only for the matching surface', () => {
@@ -114,6 +113,8 @@ describe('routes', () => {
     expect(hardwareSections).toContain('front');
     expect(hardwareSections).not.toContain('rb-deck');
     expect(softwareSections).toContain('rb-deck');
+    expect(softwareSections).toContain('rb-sources');
+    expect(softwareSections).toContain('rb-mixer');
     expect(softwareSections).not.toContain('deck-left');
   });
 

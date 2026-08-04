@@ -52,6 +52,7 @@ import {DetailGallery} from './DetailGallery';
 import {VideoLessons} from './VideoLessons';
 import {tutorialVideosForLesson} from '@/content/videos';
 import {controlsForControllerView, type ControllerTerminalView} from './controllerHotspots';
+import {controlsForRekordboxView, type RekordboxTerminalView} from './rekordboxHotspots';
 
 const FULL: Rect = {x: 0, y: 0, w: 1, h: 1};
 
@@ -157,6 +158,12 @@ const CONTROLLER_ENTRY_POINTS: ControllerEntryPoint[] = [
   {id: 'mixer', label: 'Mixer', at: {x: 0.5, y: 0.52}, sectionId: 'mixer', summary: 'Explore the mixer by signal path and performance group.'},
   {id: 'right-decks', label: 'Decks', at: {x: 0.83, y: 0.52}, sectionId: 'deck-left', summary: 'Explore the deck by control group.'},
 ];
+
+const REKORDBOX_ENTRY_POINTS: ControllerEntryPoint[] = [
+  {id: 'player-deck', label: 'Player Deck', at: {x: 0.24, y: 0.4}, sectionId: 'rb-deck', summary: 'Learn the loaded deck and its performance controls.'},
+  {id: 'performance-mix', label: 'Performance & Mix', at: {x: 0.58, y: 0.19}, sectionId: 'rb-mixer', summary: 'Learn waveforms, effects, mixer, sampler, and recording.'},
+  {id: 'browser-library', label: 'Browser & Library', at: {x: 0.49, y: 0.86}, sectionId: 'rb-sources', summary: 'Learn sources, search, track selection, and preview.'},
+];
 function nextSection(currentId: SectionId): SectionId | null {
   const index = SECTION_FLOW.indexOf(currentId);
   if (index === -1) return null;
@@ -193,6 +200,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const isMixer = activeSection?.id === 'mixer';
   const isDeck = isDeckSection(activeSection?.id);
   const isHardwareSection = surface === 'hardware' && activeSection !== undefined;
+  const isSoftwareSection = surface === 'software' && activeSection !== undefined
+    && ['rb-deck', 'rb-sources', 'rb-mixer'].includes(activeSection.id);
+  const isProgressiveSection = isHardwareSection || isSoftwareSection;
   const isNarrow = useMediaQuery('(max-width: 767px)', false);
   const regionNavRef = useRef<HTMLDivElement>(null);
   const sectionPrompt = activeSection?.id === undefined ? undefined : SECTION_PROMPTS[activeSection.id];
@@ -201,6 +211,9 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (activeSection === undefined) return [];
     if (surface === 'hardware' && (activeSection.id === 'deck-left' || activeSection.id === 'mixer')) {
       return controlsForControllerView(activeSection.id as ControllerTerminalView);
+    }
+    if (surface === 'software' && ['rb-deck', 'rb-sources', 'rb-mixer'].includes(activeSection.id)) {
+      return controlsForRekordboxView(activeSection.id as RekordboxTerminalView);
     }
     return controlsInSection(activeSection.id);
   }, [activeSection, surface]);
@@ -211,12 +224,12 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
   const sectionAreas = activeSection === undefined ? [] : SECTION_AREAS[activeSection.id] ?? [];
   const selectedArea = sectionAreas.find((area) => area.id === selectedAreaId);
-  const activeRbRegion = isRbDeck ? getRbDeckRegion(activeRegionId) : undefined;
+  const activeRbRegion = isRbDeck && !isSoftwareSection ? getRbDeckRegion(activeRegionId) : undefined;
   const activeMixerRegion = isMixer ? getMixerRegion(activeMixerRegionId) : undefined;
   const activeDeckRegion = isDeck ? getDeckRegion(activeDeckRegionId) : undefined;
   const activeRegion = activeRbRegion ?? activeMixerRegion ?? activeDeckRegion;
-  const shouldScopeToRegion = !isHardwareSection;
-  const targetRect = isHardwareSection
+  const shouldScopeToRegion = !isProgressiveSection;
+  const targetRect = isProgressiveSection
     ? (activeSection?.id === 'mixer'
       ? getMixerVisualRect('signal', isNarrow)
       : activeSection?.rect ?? FULL)
@@ -257,8 +270,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
   const populatedSections = sections.filter((candidate) => controlsInSection(candidate.id).length > 0);
   const unavailableSections = sections.filter((candidate) => controlsInSection(candidate.id).length === 0);
   const isCompactSection = isNarrow && activeSection !== undefined;
-  const showControlIndex = (activeRegion !== undefined && shouldScopeToRegion && controls.length > 0)
-    || (isCompactSection && controls.length > 0);
+  const showControlIndex = !isSoftwareSection && (
+    (activeRegion !== undefined && shouldScopeToRegion && controls.length > 0)
+    || (isCompactSection && controls.length > 0)
+  );
   const selectedControl = allControls.find((control) => control.id === selectedControlId) ?? null;
   const detailAssets = activeSection === undefined ? [] : detailAssetsForLesson(activeSection.id);
   const tutorialVideos = activeSection === undefined ? [] : tutorialVideosForLesson(activeSection.id);
@@ -266,9 +281,11 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
 
   const focusSection = useCallback((nextSectionId: SectionId) => {
     const terminalSectionId = nextSectionId === 'deck-right' ? 'deck-left' : nextSectionId;
-    if (terminalSectionId !== 'deck-left' && terminalSectionId !== 'mixer') return;
+    const hardwareTerminal = terminalSectionId === 'deck-left' || terminalSectionId === 'mixer';
+    const softwareTerminal = terminalSectionId === 'rb-deck' || terminalSectionId === 'rb-sources' || terminalSectionId === 'rb-mixer';
+    if ((!hardwareTerminal || surface !== 'hardware') && (!softwareTerminal || surface !== 'software')) return;
     const nextSectionSpec = SECTIONS[terminalSectionId];
-    if (surface !== 'hardware' || section !== undefined || nextSectionSpec.surface !== 'hardware') return;
+    if (section !== undefined || nextSectionSpec.surface !== surface) return;
     setFocusedSectionId(terminalSectionId);
     setSelectedAreaId(null);
     setSelectedControlId(null);
@@ -313,11 +330,11 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     const rbRegion = isRbDeck ? getRbDeckRegionForControl(control.id) : undefined;
     const mixerRegion = isMixer ? getMixerRegionForControl(control.id) : undefined;
     const deckRegion = isDeck ? getDeckRegionForControl(control.id) : undefined;
-    if (!isHardwareSection && ((isRbDeck && !rbRegion) || (isMixer && !mixerRegion) || (isDeck && !deckRegion))) return false;
-    if (!isHardwareSection && rbRegion) setActiveRegionId(rbRegion.id);
-    if (!isHardwareSection && mixerRegion) setActiveMixerRegionId(mixerRegion.id);
-    if (!isHardwareSection && deckRegion) setActiveDeckRegionId(deckRegion.id);
-    if (!isHardwareSection && activeSection) {
+    if (!isProgressiveSection && ((isRbDeck && !rbRegion) || (isMixer && !mixerRegion) || (isDeck && !deckRegion))) return false;
+    if (!isProgressiveSection && rbRegion) setActiveRegionId(rbRegion.id);
+    if (!isProgressiveSection && mixerRegion) setActiveMixerRegionId(mixerRegion.id);
+    if (!isProgressiveSection && deckRegion) setActiveDeckRegionId(deckRegion.id);
+    if (!isProgressiveSection && activeSection) {
       const regionRect = rbRegion
         ? getRbDeckVisualRect(rbRegion.id, isNarrow)
         : mixerRegion
@@ -341,7 +358,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       }
     }
     return true;
-  }, [activeSection, allControls, isDeck, isHardwareSection, isMixer, isNarrow, isRbDeck, sectionId, selectedArea?.rect, surface]);
+  }, [activeSection, allControls, isDeck, isMixer, isNarrow, isProgressiveSection, isRbDeck, sectionId, selectedArea?.rect, surface]);
 
   useEffect(() => {
     setCrop({sectionId: activeSection?.id, rect: targetRect});
@@ -392,7 +409,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
     if (controlId) clearMatchingControlHash(controlId);
     setOverlayMode('none');
     setSelectedControlId(null);
-    if (isHardwareSection && activeSection) {
+    if (isProgressiveSection && activeSection) {
       setCrop({
         sectionId: activeSection.id,
         rect: activeSection.id === 'mixer'
@@ -401,10 +418,10 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
       });
     }
     queueMicrotask(() => initiatorRef.current?.focus());
-  }, [activeSection, isHardwareSection, isNarrow, selectedArea?.rect, selectedControlId]);
+  }, [activeSection, isNarrow, isProgressiveSection, selectedArea?.rect, selectedControlId]);
 
   const resetSectionView = useCallback(() => {
-    if (!isHardwareSection || !activeSection) return;
+    if (!isProgressiveSection || !activeSection) return;
     clearMatchingControlHash(selectedControlId ?? '');
     setSelectedControlId(null);
     setSelectedAreaId(null);
@@ -418,7 +435,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
             ? getMixerVisualRect('signal', isNarrow)
             : activeSection.rect,
         });
-  }, [activeSection, isHardwareSection, isNarrow, section, selectedControlId]);
+  }, [activeSection, isNarrow, isProgressiveSection, section, selectedControlId]);
 
   function selectRegion(value: string) {
     if (isMixer) setActiveMixerRegionId(value as MixerRegionId);
@@ -442,7 +459,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
 
   return (
     <Stack direction="vertical" gap={3} xstyle={undefined}>
-      {surface !== 'hardware' && <div ref={regionNavRef}>
+      {surface === 'software' && activeSection !== undefined && !isSoftwareSection && <div ref={regionNavRef}>
         <SurfaceNavigator
           surface={surface}
           section={activeSection}
@@ -508,14 +525,14 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
         </div>
       )}
       {activeMixerRegion?.id === 'channels' && <Text>{mixerChannelOverview}</Text>}
-      {isHardwareSection && activeSection !== undefined && (
+      {isProgressiveSection && activeSection !== undefined && (
         <Button label="Back" size="sm" variant="ghost" onClick={resetSectionView} />
       )}
       <Stage surface={surface} rect={stageRect}>
         {activeSection === undefined
           ? (
               <>
-                {surface === 'hardware' ? CONTROLLER_ENTRY_POINTS.map((entry) => (
+                {(surface === 'hardware' ? CONTROLLER_ENTRY_POINTS : REKORDBOX_ENTRY_POINTS).map((entry) => (
                   <div
                     key={entry.id}
                     className={styles.overviewBeacon}
@@ -528,24 +545,6 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                       entry.at.x > 0.9 ? styles.overviewBeaconLabelEnd : '',
                     ].filter(Boolean).join(' ')}>{entry.label}</span>
                   </div>
-                )) : populatedSections.map((candidate) => (
-                  <div
-                    key={candidate.id}
-                    className={styles.overviewBeacon}
-                    style={{left: `${candidate.marker.x * 100}%`, top: `${candidate.marker.y * 100}%`}}
-                  >
-                    <HotspotMarker aria-label={`Explore ${candidate.label}`} onClick={() => focusSection(candidate.id)} />
-                    <span className={styles.overviewBeaconLabel}>{candidate.label}</span>
-                  </div>
-                ))}
-                {surface !== 'hardware' && unavailableSections.map((candidate) => (
-                  <span
-                    key={candidate.id}
-                    className={styles.overviewLabel}
-                    style={{left: `${candidate.marker.x * 100}%`, top: `${candidate.marker.y * 100}%`}}
-                  >
-                    {candidate.label}
-                  </span>
                 ))}
               </>
             )
@@ -572,7 +571,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
                 markerOffset={activeRbRegion
                   ? getRbDeckMarkerOffset(control.id, isNarrow)
                   : undefined}
-                showLabel={!isHardwareSection}
+                showLabel={!isProgressiveSection}
               />
               ))}
         </Stage>
@@ -645,13 +644,6 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           ))}
         </List>
       )}
-      {activeSection === undefined && surface === 'software' && unavailableSections.length > 0 && (
-        <Text type="supporting">
-          {isNarrow
-            ? 'Player deck is the published rekordbox 7 lesson. More Performance mode zones will be added as their teaching content is completed.'
-            : 'Muted zone names are orientation only; their lesson routes are not published yet.'}
-        </Text>
-      )}
       {activeSection === undefined && surface === 'hardware' && !isNarrow && false && (
         <List
           hasDividers
@@ -680,7 +672,7 @@ function SurfaceViewInner({surface, sectionId}: SurfaceViewProps) {
           />
         </div>
       )}
-      {!isHardwareSection && (detailAssets.length > 0 || tutorialVideos.length > 0) && (
+      {!isProgressiveSection && (detailAssets.length > 0 || tutorialVideos.length > 0) && (
         <details className={styles.supportingDetails}>
           <summary>
             {detailAssets.length > 0 && tutorialVideos.length > 0

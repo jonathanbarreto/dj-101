@@ -6,13 +6,13 @@ import {PageFrame} from '@/components/PageFrame';
 
 export const metadata: Metadata = {
   title: 'rekordbox 7',
-  description: 'Learn the rekordbox 7 Performance mode player deck and how it corresponds to the DDJ-1000 hardware.',
+  description: 'Learn rekordbox 7 through its player deck, browser, library, waveforms, mixer, effects, sampler, and recording controls.',
   alternates: {canonical: '/rekordbox'},
   openGraph: {
     type: 'website',
     siteName: 'Start Djing',
     title: 'rekordbox 7',
-    description: 'Learn the rekordbox 7 Performance mode player deck and how it corresponds to the DDJ-1000 hardware.',
+    description: 'Learn rekordbox 7 through its player deck, browser, library, waveforms, mixer, effects, sampler, and recording controls.',
     url: '/rekordbox',
   },
 };
@@ -23,7 +23,7 @@ export default function RekordboxPage() {
       <Stack direction="vertical" gap={4} xstyle={undefined}>
         <Text as="h1" type="display-1">rekordbox 7</Text>
         <Text type="large" as="p">
-          Orient yourself in Performance mode, then open the populated player deck lesson.
+          Learn the player deck, browser, library, waveforms, mixer, effects, sampler, and recording controls where they live.
         </Text>
         <SurfaceView surface="software" />
       </Stack>

@@ -95,6 +95,34 @@ describe('SurfaceView lesson coordination', () => {
     expect(screen.getByRole('button', {name: 'LOOP IN · 1/2X'})).toBeDefined();
   });
 
+  it('uses three progressive rekordbox entry points and no focused-view labels or tabs', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="software" />);
+
+    expect(screen.getByRole('button', {name: 'Explore Player Deck'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Explore Performance & Mix'})).toBeDefined();
+    expect(screen.getByRole('button', {name: 'Explore Browser & Library'})).toBeDefined();
+    expect(screen.queryByText(/Muted zone names/)).toBeNull();
+
+    await user.click(screen.getByRole('button', {name: 'Explore Browser & Library'}));
+    expect(screen.getByRole('button', {name: 'COLLECTION & SOURCES'})).toBeDefined();
+    expect(screen.queryByRole('navigation', {name: 'Surface orientation'})).toBeNull();
+    expect(document.querySelector('[data-hotspot-label]')).toBeNull();
+    expect(screen.queryByText(/Controls in/)).toBeNull();
+  });
+
+  it('opens a complete rekordbox workspace lesson from its first hotspot', async () => {
+    const user = userEvent.setup();
+    render(<SurfaceView surface="software" sectionId="rb-mixer" />);
+
+    const hotspot = screen.getByRole('button', {name: 'STACKED WAVEFORMS'});
+    await user.click(hotspot);
+    expect(hotspot.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getAllByText('When to use it').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/anticipate changes, then confirm the blend by ear/i).length)
+      .toBeGreaterThan(0);
+  });
+
   for (const terminalView of ['deck-left', 'mixer'] as ControllerTerminalView[]) {
     for (const control of controlsForControllerView(terminalView)) {
       it(`opens ${terminalView} hotspot ${control.label} with its full lesson`, async () => {
