@@ -17,13 +17,14 @@
     "check": "pnpm test && pnpm typecheck && pnpm build"
   },
   "dependencies": {
-    "@astryxdesign/core": "^0.2.0",
-    "@astryxdesign/theme-neutral": "^0.2.0",
+    "@astryxdesign/core": "^0.7.4",
+    "@astryxdesign/theme-neutral": "^0.7.4",
     "next": "^15.5.16",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
+    "@astryxdesign/cli": "^0.7.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",

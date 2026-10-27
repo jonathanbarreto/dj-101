@@ -148,8 +148,9 @@ describe('SurfaceNavigator', () => {
 
     await user.click(overflowTrigger);
     const overflowMenu = screen.getByRole('menu', {name: 'More'});
-    expect(within(overflowMenu).getByRole('menuitem', {name: 'Color FX'})).toBeDefined();
-    await user.click(within(overflowMenu).getByRole('menuitem', {name: 'Headphones + sampler'}));
+    // Astryx >= 0.7: TabMenu overflow options are single-select menuitemradio.
+    expect(within(overflowMenu).getByRole('menuitemradio', {name: 'Color FX'})).toBeDefined();
+    await user.click(within(overflowMenu).getByRole('menuitemradio', {name: 'Headphones + sampler'}));
     expect(onRegionChange).toHaveBeenCalledWith('headphones');
   });
 
