@@ -14,7 +14,8 @@ vi.mock('next/navigation', () => ({
 beforeEach(() => {
   usePathnameMock.mockReturnValue('/');
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-    matches: query === '(max-width: 768px)',
+    // AppShell's below-md query (Astryx >= 0.7 uses range syntax).
+    matches: query === '(width < 768px)',
     media: query,
     onchange: null,
     addListener: vi.fn(),

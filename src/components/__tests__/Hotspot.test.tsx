@@ -39,6 +39,6 @@ describe('Hotspot', () => {
   it('uses bounded width and allows Astryx to choose flip placement', () => {
     render(<Hotspot control={control} rect={rect} isShiftActive={false} isSelected isPreviewOpen onPreviewOpenChange={() => {}} />);
     expect(screen.getByRole('dialog').parentElement?.style.getPropertyValue('--x-width'))
-      .toBe('min(30rem, calc(100vw - 2 * var(--spacing-4)))');
+      .toContain('min(30rem, calc(100vw - 2 * var(--spacing-4)))'); // Astryx adds its own viewport clamp around it
   });
 });
